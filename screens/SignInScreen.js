@@ -17,6 +17,12 @@ const BrainsportIcon = styled.Image`
     width: 80px;
     height: 80px;
 `;
+const BrainsportIconText = styled.Image`
+    position: absolute;
+    top: 130px;
+    /* width: 120px;
+    height: 80px; */
+`;
 
 
 const TextInput = styled.TextInput`
@@ -36,7 +42,7 @@ const TextInput = styled.TextInput`
 const SigninForm = styled.View`
   align-items: center;
   height: ${screenHeight}px;
-  padding-top: 180px;
+  padding-top: 230px;
 `;
 
 const Title = styled.Text`
@@ -152,6 +158,7 @@ const SignInScreen = ({navigation}) => {
     return (
     <Container source={require("../assets/brainsport-bg.png")}>
       <BrainsportIcon source={require("../assets/brainsport-logo.png")}/>
+      <BrainsportIconText source={require("../assets/logo-brainsport.png")}/>
       <SigninForm >
         <TouchableWithoutFeedback onPress={()=> handleFocusEmail()}>
           <InputContainer >
