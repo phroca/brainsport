@@ -1,0 +1,625 @@
+[{
+        "id": "tcarr1",
+        "valeur": "1",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "D", "T"
+        ]
+    },
+    {
+        "id": "tcarr2",
+        "valeur": "2",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "N"
+        ]
+    },
+    {
+        "id": "tcarr3",
+        "valeur": "3",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "M"
+        ]
+    },
+    {
+        "id": "tcarr4",
+        "valeur": "4",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "R"
+        ]
+    },
+    {
+        "id": "tcarr5",
+        "valeur": "5",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "L"
+        ]
+    },
+    {
+        "id": "tcarr6",
+        "valeur": "6",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "CH", "G", "J"
+        ]
+    },
+    {
+        "id": "tcarr7",
+        "valeur": "7",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "K", "QU", "GU"
+        ]
+    },
+    {
+        "id": "tcarr8",
+        "valeur": "8",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "F", "V"
+        ]
+    },
+    {
+        "id": "tcarr9",
+        "valeur": "9",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "B", "P"
+        ]
+    },
+    {
+        "id": "tcarr10",
+        "valeur": "10",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "V"
+        }
+    },
+    {
+        "id": "tcarr11",
+        "valeur": "V",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "10"
+        }
+    },
+    {
+        "id": "tcarr12",
+        "valeur": "D",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "R"
+        }
+    },
+    {
+        "id": "tcarr13",
+        "valeur": "R",
+        "couleur": "carreau",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "D"
+        }
+    },
+    {
+        "id": "ttre1",
+        "valeur": "1",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "D", "T"
+        ]
+    },
+    {
+        "id": "ttre2",
+        "valeur": "2",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "N"
+        ]
+    },
+    {
+        "id": "ttre3",
+        "valeur": "3",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "M"
+        ]
+    },
+    {
+        "id": "ttre4",
+        "valeur": "4",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "R"
+        ]
+    },
+    {
+        "id": "ttre5",
+        "valeur": "5",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "L"
+        ]
+    },
+    {
+        "id": "ttre6",
+        "valeur": "6",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "CH", "G", "J"
+        ]
+    },
+    {
+        "id": "ttre7",
+        "valeur": "7",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "K", "QU", "GU"
+        ]
+    },
+    {
+        "id": "ttre8",
+        "valeur": "8",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "F", "V"
+        ]
+    },
+    {
+        "id": "ttre9",
+        "valeur": "9",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "B", "P"
+        ]
+    },
+    {
+        "id": "ttre10",
+        "valeur": "10",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "V"
+        }
+    },
+    {
+        "id": "ttre11",
+        "valeur": "V",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "10"
+        }
+    },
+    {
+        "id": "ttre12",
+        "valeur": "D",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "R"
+        }
+    },
+    {
+        "id": "ttre13",
+        "valeur": "R",
+        "couleur": "trefle",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "D"
+        }
+    },
+    {
+        "id": "tcoe1",
+        "valeur": "1",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "D", "T"
+        ]
+    },
+    {
+        "id": "tcoe2",
+        "valeur": "2",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "N"
+        ]
+    },
+    {
+        "id": "tcoe3",
+        "valeur": "3",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "M"
+        ]
+    },
+    {
+        "id": "tcoe4",
+        "valeur": "4",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "R"
+        ]
+    },
+    {
+        "id": "tcoe5",
+        "valeur": "5",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "L"
+        ]
+    },
+    {
+        "id": "tcoe6",
+        "valeur": "6",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "CH", "G", "J"
+        ]
+    },
+    {
+        "id": "tcoe7",
+        "valeur": "7",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "K", "QU", "GU"
+        ]
+    },
+    {
+        "id": "tcoe8",
+        "valeur": "8",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "F", "V"
+        ]
+    },
+    {
+        "id": "tcoe9",
+        "valeur": "9",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "B", "P"
+        ]
+    },
+    {
+        "id": "tcoe10",
+        "valeur": "10",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "V"
+        }
+    },
+    {
+        "id": "tcoe11",
+        "valeur": "V",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "10"
+        }
+    },
+    {
+        "id": "tcoe12",
+        "valeur": "D",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "R"
+        }
+    },
+    {
+        "id": "tcoe13",
+        "valeur": "R",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "D"
+        }
+    },
+    {
+        "id": "tpiq1",
+        "valeur": "1",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "D", "T"
+        ]
+    },
+    {
+        "id": "tpiq2",
+        "valeur": "2",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "N"
+        ]
+    },
+    {
+        "id": "tpiq3",
+        "valeur": "3",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "M"
+        ]
+    },
+    {
+        "id": "tpiq4",
+        "valeur": "4",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "R"
+        ]
+    },
+    {
+        "id": "tpiq5",
+        "valeur": "5",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "L"
+        ]
+    },
+    {
+        "id": "tpiq6",
+        "valeur": "6",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "CH", "G", "J"
+        ]
+    },
+    {
+        "id": "tpiq7",
+        "valeur": "7",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "K", "QU", "GU"
+        ]
+    },
+    {
+        "id": "tpiq8",
+        "valeur": "8",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "F", "V"
+        ]
+    },
+    {
+        "id": "tpiq9",
+        "valeur": "9",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "B", "P"
+        ]
+    },
+    {
+        "id": "tpiq10",
+        "valeur": "10",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "V"
+        }
+    },
+    {
+        "id": "tpiq11",
+        "valeur": "V",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "10"
+        }
+    },
+    {
+        "id": "tpiq12",
+        "valeur": "D",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "R"
+        }
+    },
+    {
+        "id": "tpiq13",
+        "valeur": "R",
+        "couleur": "pique",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "D"
+        }
+    }
+]

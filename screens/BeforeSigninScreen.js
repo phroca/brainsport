@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Animated, View, Dimensions } from "react-native";
 import styled from "styled-components/native";
 import { TouchableOpacity } from 'react-native';
@@ -44,8 +44,58 @@ const ContainerIndicator = styled.View`
 
 const SigninButton = styled.View`
   position: absolute;
-  bottom: 200px;  
+  bottom: 200px;
+  flex-direction: row;
 `;
+
+const TouchableBtn = styled.TouchableOpacity`
+    flex-direction: row;
+    width: 150px;
+    height: 50px;
+    background-color: transparent;
+    border: 1px solid #FFFFFF;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+`
+const TouchableBtnPlein = styled.TouchableOpacity`
+    flex-direction: row;
+    width: 150px;
+    height: 50px;
+    background-color: #FFFFFF;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+`
+
+const TextPasser = styled.Text`
+    text-transform: uppercase;
+    color: #FFFFFF;
+`
+const TextSuivant = styled.Text`
+    text-transform: uppercase;
+    color: #000000;
+    font-weight: bold;
+`
+
+const ViewSpace = styled.View`
+    width: 15px;
+`
+
+const TouchableBtnSignin = styled.TouchableOpacity`
+width: 250px;
+height: 50px;
+background-color: #FFFFFF;
+justify-content: center;
+align-items: center;
+border-radius: 10px;
+`
+
+const TextSignin = styled.Text`
+    text-transform: uppercase;
+    color: #000000;
+    font-weight: bold;
+`
 const DATA = [
     {
       "key": "001",
@@ -104,7 +154,7 @@ const DATA = [
                   const inputRange = [(i - 1)* width, i * width, (i + 1) * width];
                   const scale = scrollX.interpolate({
                       inputRange,
-                      outputRange:[0.8,1.4,0.8],
+                      outputRange:[0.5,1.4,0.5],
                       extrapolate: 'clamp'
                   });
                   const opacity = scrollX.interpolate({
@@ -115,11 +165,11 @@ const DATA = [
                   return (
                       <Animated.View key={`indicator-${i}`} 
                           style={{
-                            height: 10,
+                            height: 2,
                             width: 10,
-                            borderRadius: 5,
+                            borderRadius: 2,
                             backgroundColor: '#FFFFFF',
-                            margin: 10,
+                            marginHorizontal: 3,
                             opacity,
                             transform: [
                                 {
@@ -138,6 +188,25 @@ const DATA = [
 const BeforeSigninScreen = ({navigation}) => {
     //Changement de la valeur lors du scroll pour les éléments de la liste
     const scrollX  = useRef(new Animated.Value(0)).current;
+    const ref = useRef(null);
+    const [currentItemIndex, setCurrentItemIndex] = useState(0);
+    const updateCurrentItemIndex = element => {
+        const contentOffsetX = element.nativeEvent.contentOffset.x;
+        const currentIndex = Math.round(contentOffsetX / width);
+        setCurrentItemIndex(currentIndex);
+    };
+    const goNextItem = () => {
+        const nextItemIndex = currentItemIndex + 1;
+        const offset = nextItemIndex * width;
+        ref?.current?.scrollToOffset({offset});
+        setCurrentItemIndex(nextItemIndex);
+    };
+    const skip = () => {
+        const lastItemIndex = DATA.length - 1;
+        const offset = lastItemIndex * width;
+        ref?.current?.scrollToOffset({offset});
+        setCurrentItemIndex(lastItemIndex);
+    }
     return (
             
         <Container source={require("../assets/brainsport-bg.png")}> 
@@ -145,6 +214,7 @@ const BeforeSigninScreen = ({navigation}) => {
             <StatusBar hidden />
             <Animated.FlatList 
                 data={DATA}
+                ref={ref}
                 keyExtractor={item => item.key}
                 horizontal
                 scrollEventThrottle={32}
@@ -152,6 +222,7 @@ const BeforeSigninScreen = ({navigation}) => {
                     [{nativeEvent: {contentOffset: {x: scrollX}}}],
                     {useNativeDriver: false}
                 )}
+                onMomentumScrollEnd={updateCurrentItemIndex}
                 contentContainerStyle={{paddingBottom: 100}}
                 showsHorizontalScrollIndicator={false}
                 pagingEnabled
@@ -164,13 +235,25 @@ const BeforeSigninScreen = ({navigation}) => {
                 }}
             />
             <SigninButton>
-                <TouchableOpacity onPress={()=> navigation.navigate('Signin')}>
-                    <Ionicons name="arrow-forward" size={36} color="#FFFFFF" />
-                </TouchableOpacity>
+            {
+                currentItemIndex === DATA.length -1 ? 
+                (<TouchableBtnSignin onPress={()=> navigation.navigate('Signin')}>
+                    <TextSignin>Commencer</TextSignin>
+                </TouchableBtnSignin>) : 
+                (<><TouchableBtn onPress={() => skip()}>
+                        <TextPasser>Passer</TextPasser>
+                    </TouchableBtn>
+                    <ViewSpace />
+                    <TouchableBtnPlein onPress={() => goNextItem()}>
+                        <TextSuivant>Suivant</TextSuivant><Ionicons name="arrow-forward" size={20} color="#000000" />
+                    </TouchableBtnPlein></>)
+                    
+            }    
             </SigninButton>
             <Indicator scrollX={scrollX}/>
         </Container>
     )
 }
 
+//
 export default BeforeSigninScreen;

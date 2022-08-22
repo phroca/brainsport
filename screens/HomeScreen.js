@@ -7,14 +7,11 @@ import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
  import { NotificationIcon } from '../components/NotificationIcon';
 import Avatar from '../components/Avatar';
+import Card from '../components/Card';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const RootView = styled.View`
-    background: black;
-    flex: 1;
-`;
-
 const Container = styled.ImageBackground`
+  flex:1;
   width: 100%;
   height: 100%;
 `;
@@ -23,67 +20,70 @@ const TitleBar = styled.View`
   width: 100%;
   margin-top: 100px;
   margin-bottom: 30px;
-  padding-left: 40px;
-  padding-right: 40px;
 `;
 
 const Title = styled.Text`
-
   color: #FFFFFF;
   font-size: 40px;
   font-weight: bold;
+  text-align: center;
 `;
 
 const Subtitle = styled.Text`
 color: #FFFFFF;
-//font-family:'NunitoSans_700Bold';
   font-size: 14px;
   margin-left: 40px;
   margin-top: 10px;
   margin-right: 40px;
 `;
 
-const Name = styled.Text`
-color: #FFFFFF;
-  font-size: 14px;
-  //font-family: 'NunitoSans_400Regular';
+
+const ButtonView = styled.View`
+  background: #FFFFFF;
+  width: 295px;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin-top: 20px;
 `;
 
-const AnimatedContainer = Animated.createAnimatedComponent(Container);
+const ButtonText = styled.Text`
+  color: #000000;
+  font-size: 14px;
+  font-weight: bold;
+`;
 
+const ButtonFooter = styled.View`
+    position: absolute;
+    bottom: 150px;
+    left: 40px;
+`;
 
-export default function HomeScreen() {
+export default function HomeScreen({navigation}) {
     const [username, setUsername] = useState("Test");
-    const navigation = useNavigation();
 
   return (
-        <RootView>
-            <Container source={require("../assets/brainsport-bg.png")}>     
+          <Container source={require("../assets/brainsport-bg.png")}>   
             <StatusBar style="auto" />
-            <SafeAreaView>
-                <ScrollView style={{height: "100%"}}>
-                  <TitleBar>
 
-                      <TouchableOpacity style={{ position: "absolute", top: 0, left: 20 }} >
-                          {/* <Avatar /> */}
-                      </TouchableOpacity>
+                  <TitleBar>
                       <Title>Bonjour {username} !</Title>
-                      {/* <Name>{username}</Name> */}
-                      {/* <NotificationIcon style={{ position: "absolute", right: 20, top: 5 }} /> */}
                   </TitleBar>
                   <Subtitle >
                       Bienvenue chez Brainsport ! 
                       Commencez votre aventure par créer votre jeu !
                   </Subtitle>
+                
+                  <ButtonFooter>
+                    <TouchableOpacity onPress={()=> navigation.navigate("Rules")}>
+                      <ButtonView>
+                        <ButtonText>Commencer</ButtonText>
+                      </ButtonView>
+                    </TouchableOpacity>
+                  </ButtonFooter>
 
-                  <ScrollView horizontal={true} style={{ paddingBottom: 30 }} showsHorizontalScrollIndicator={false}>
-                
-                  </ScrollView>
-                
-                </ScrollView>
-            </SafeAreaView>
           </Container>
-        </RootView>
   );
 }
 
