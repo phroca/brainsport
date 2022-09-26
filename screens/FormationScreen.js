@@ -3,6 +3,7 @@ import React from "react";
 import { Dimensions, SafeAreaView, ScrollView, TouchableOpacity } from "react-native";
 import styled from 'styled-components/native';
 import FormationCard from "../components/FormationCard";
+import FormatorCard from "../components/FormatorCard";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -25,9 +26,21 @@ const Title = styled.Text`
   font-weight: bold;
   text-align: center;
 `;
+const FormationsSection = styled.View`
+margin-top: 30px;
+margin-bottom: 30px;
+`
 
-const OtherContainer = styled.View`
+const OtherSection = styled.View`
   margin-left: 25px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+`
+const Separator = styled.View`
+  background-color: #bdbdbd;
+  height: 1px;
+  opacity: 0.5;
+
 `
 const Subtitle = styled.Text`
   color: #FFFFFF;
@@ -61,40 +74,50 @@ const FormationScreen = () => {
                   <Title>Formations</Title>
                   
                 </TitleBar>
-                <TouchableOpacity >
-                    <FormationCard isFree={true} titleCard="Gérer mieux son temps" sourceImg={require("../assets/formation/gestion-temps.jpg")}/>
-                </TouchableOpacity>
-                <TouchableOpacity >
-                    <FormationCard isFree={true} titleCard="Mieux dormir" sourceImg={require("../assets/formation/mieux-dormir.jpg")}/>
-                </TouchableOpacity>
-                <TouchableOpacity >
-                    <FormationCard isFree={true} titleCard="Se nourrir sans grossir" sourceImg={require("../assets/formation/nien-manger.jpg")}/>
-                </TouchableOpacity>
-                <TouchableOpacity >
-                    <FormationCard isFree={true} titleCard="Bouger sans se faire mal" sourceImg={require("../assets/formation/bouger.jpg")}/>
-                </TouchableOpacity>
-                <TouchableOpacity >
-                    <FormationCard isFree={true} titleCard="Gérer son stress" sourceImg={require("../assets/formation/stress.jpg")}/>
-                </TouchableOpacity>
-                <TouchableOpacity >
-                    <FormationCard isFree={false} titleCard="Les 4 AS" sourceImg={require("../assets/formation/les-4-as.jpg")}/>
-                </TouchableOpacity>
-                <OtherContainer>
-                <Subtitle>Les formations des formateurs</Subtitle>
-
-                <Subtitle>Le mentorat</Subtitle>
-                <ButtonView>
-                  <ButtonText>
-                    En savoir plus
-                  </ButtonText>
-                </ButtonView>
-                <Subtitle>Le chapelet des succès</Subtitle>
-                <ButtonView>
-                  <ButtonText>
-                    En savoir plus
-                  </ButtonText>
-                </ButtonView>
-                </OtherContainer>
+                <FormationsSection>
+                  <TouchableOpacity >
+                      <FormationCard isFree={true} titleCard="Gérer mieux son temps" sourceImg={require("../assets/formation/gestion-temps.jpg")}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity >
+                      <FormationCard isFree={true} titleCard="Mieux dormir" sourceImg={require("../assets/formation/mieux-dormir.jpg")}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity >
+                      <FormationCard isFree={true} titleCard="Se nourrir sans grossir" sourceImg={require("../assets/formation/nien-manger.jpg")}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity >
+                      <FormationCard isFree={true} titleCard="Bouger sans se faire mal" sourceImg={require("../assets/formation/bouger.jpg")}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity >
+                      <FormationCard isFree={true} titleCard="Gérer son stress" sourceImg={require("../assets/formation/stress.jpg")}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity >
+                      <FormationCard isFree={false} titleCard="Les 4 AS" sourceImg={require("../assets/formation/les-4-as.jpg")}/>
+                  </TouchableOpacity>
+                </FormationsSection>
+                <OtherSection>
+                  <Subtitle>Les formations des formateurs</Subtitle>
+                    <FormatorCard topic="Julien Test" title="Formation Laurem ipsum" notation="4.2" sourceImg={require("../assets/formation/formator.jpg")}/>
+                    <Separator />
+                    <FormatorCard topic="Bob Poc" title="Formation Laurem ipsum" notation="4" sourceImg={require("../assets/formation/formator.jpg")}/>
+                    <Separator />
+                    <FormatorCard topic="Marion Juste" title="Formation Laurem ipsum" notation="4.6" sourceImg={require("../assets/formation/formator-female.jpg")}/>
+                </OtherSection>
+                <OtherSection>
+                  <Subtitle>Le mentorat</Subtitle>
+                  <ButtonView>
+                    <ButtonText>
+                      En savoir plus
+                    </ButtonText>
+                  </ButtonView>
+                </OtherSection>
+                <OtherSection>
+                  <Subtitle>Le chapelet des succès</Subtitle>
+                  <ButtonView>
+                    <ButtonText>
+                      En savoir plus
+                    </ButtonText>
+                  </ButtonView>
+                </OtherSection>
               </ScrollView>
             </SafeAreaView>
         </Container>);
