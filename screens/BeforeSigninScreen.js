@@ -190,6 +190,10 @@ const BeforeSigninScreen = ({navigation}) => {
     const scrollX  = useRef(new Animated.Value(0)).current;
     const ref = useRef(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
+
+    useState(() => {
+        
+    }, [])
     const updateCurrentItemIndex = element => {
         const contentOffsetX = element.nativeEvent.contentOffset.x;
         const currentIndex = Math.round(contentOffsetX / width);
