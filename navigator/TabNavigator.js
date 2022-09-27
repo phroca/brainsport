@@ -58,7 +58,7 @@ const TabNavigator = () => {
             <BlurView tint="dark" intensity={80} style={{
                 ...StyleSheet.absoluteFill,
                 borderTopLeftRadius: 15,
-                borderTopRightRadius: 15,
+                borderTopRightRadius: 15
             }} />
             ),
                 tabBarIcon: ({focused, color, size}) => {
@@ -83,6 +83,7 @@ const TabNavigator = () => {
                 <Tab.Screen name="Communauté" component={CommunauteScreen} />
                 <Tab.Screen name="Home" component={HomeNavigator} 
                 options={{
+
                 tabBarIcon: ({focused}) => {
                     return  focused ? <MaterialCommunityIcons name="cards-playing" size={30} color="#FFFFFF"/> : <MaterialCommunityIcons name="cards-outline" size={30} color="#FFFFFF"/>;
                 },

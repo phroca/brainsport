@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-brainsport-dev-11152-authRole",
+      "UnauthRoleArn": "arn:aws:iam::229433807467:role/amplify-brainsport-dev-11152-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::229433807467:role/amplify-brainsport-dev-11152-authRole",
+      "Region": "eu-west-3",
+      "DeploymentBucketName": "amplify-brainsport-dev-11152-deployment",
+      "UnauthRoleName": "amplify-brainsport-dev-11152-unauthRole",
+      "StackName": "amplify-brainsport-dev-11152",
+      "StackId": "arn:aws:cloudformation:eu-west-3:229433807467:stack/amplify-brainsport-dev-11152/919c5320-3df0-11ed-8f55-06f6bf7bf22c",
+      "AmplifyAppId": "d1fsul6pdwd56j"
+    },
+    "categories": {
+      "auth": {
+        "brainsport69b8d293": {}
+      }
+    }
+  }
+}

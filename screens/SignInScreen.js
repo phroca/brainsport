@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components/native";
 import { Alert, Dimensions, Animated } from "react-native";
 import { Button, Keyboard, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import Toast from 'react-native-toast-message';
+import { Auth } from 'aws-amplify';
+import Loading from "../components/Loading";
 
 const screenHeight = Dimensions.get("window").height;
 
@@ -145,12 +148,38 @@ const SignInScreen = ({navigation}) => {
 
 
     async function handleSignIn() {
-        setIsLoading(true);   
+           
         try {
-          setIsLoading(false);
-          navigation.navigate("Main");
+          setIsLoading(true);
+          Auth.signIn(email, password).then((user)=>{
+            setIsLoading(false);
+            Toast.show({
+              type: 'success',
+              text1: 'Connexion réussie',
+              text2:  "Bienvenue sur E-Fusion."
+            });
+            navigation.navigate("Main");
+          }).catch((error) => {
+            setIsLoading(false);
+            Toast.show({
+              type: 'error',
+              text1: "Erreur de connexion" ,
+              text2: "veuillez réessayer ultérieurement."
+            });
+          });
+
         } catch (error) {
             setIsLoading(false);
+            const causeError = (e) => {
+              if(e.includes("AuthError")) return "l'email ne peut pas être vide.";
+              if(e.includes("InvalidParameterException")) return " l'email est malformé.";
+              if(e.includes("NotAuthorizedException")) return "email ou mot de passe incorrect.";
+            }
+            Toast.show({
+              type: 'error',
+              text1: 'Erreur de connexion',
+              text2:  causeError(""+error)
+            });
             console.log('error signing in', error);
         }
     };
@@ -194,6 +223,7 @@ const SignInScreen = ({navigation}) => {
             </TouchableOpacity>
         </ButtonFooter>
       </SigninForm>
+      <Loading isActive={isLoading} />
     </Container>
 )
 }
