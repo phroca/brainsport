@@ -1,0 +1,87 @@
+{
+    "couleurs": [
+        "carreau",
+        "trefle",
+        "coeur",
+        "pique"
+    ],
+    "valeurs": [{
+            "valeur": "1",
+            "conditions": [
+                "D", "T"
+            ]
+        },
+        {
+            "valeur": "2",
+            "conditions": [
+                "N"
+            ]
+        },
+        {
+            "valeur": "3",
+            "conditions": [
+                "M"
+            ]
+        },
+        {
+            "valeur": "4",
+            "conditions": [
+                "R"
+            ]
+        },
+        {
+            "valeur": "5",
+            "conditions": [
+                "L"
+            ]
+        },
+        {
+            "valeur": "6",
+            "conditions": [
+                "CH", "G", "J"
+            ]
+        },
+        {
+            "valeur": "7",
+            "conditions": [
+                "K", "QU", "GU"
+            ]
+        },
+        {
+            "valeur": "8",
+            "conditions": [
+                "F", "V"
+            ]
+        },
+        {
+            "valeur": "9",
+            "conditions": [
+                "B", "P"
+            ]
+        },
+        {
+            "valeur": "10",
+            "conditions": {
+                "couple": "V"
+            }
+        },
+        {
+            "valeur": "V",
+            "conditions": {
+                "couple": "10"
+            }
+        },
+        {
+            "valeur": "D",
+            "conditions": {
+                "couple": "R"
+            }
+        },
+        {
+            "valeur": "R",
+            "conditions": {
+                "couple": "D"
+            }
+        }
+    ]
+}

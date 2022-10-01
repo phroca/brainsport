@@ -1,0 +1,17 @@
+type Card @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  valeur: String
+  couleur: String
+  personnage: String
+  verbe: String
+  objet: String
+  lieu: String
+  conditions: AWSJSON
+  packcardID: ID! @index(name: "byPackCard")
+}
+
+type PackCard @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  userId: String
+  Cards: [Card] @hasMany(indexName: "byPackCard", fields: ["id"])
+}

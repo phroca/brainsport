@@ -1,9 +1,11 @@
+import Auth from "@aws-amplify/auth";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from 'styled-components/native';
 import Card from "../components/Card";
+import CardService from "../services/Card.service";
 
 const Container = styled.ImageBackground`
   flex:1;
@@ -61,6 +63,12 @@ const CardContainer = styled.View`
 `
 
 const RulesScreen = ({navigation}) => {
+
+  const handleInitCreationCard = async() => {
+    const user = await Auth.currentAuthenticatedUser();
+    CardService.initCardCreationMock(user?.pool?.userPoolId);
+    navigation.navigate("Card Association");
+  }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar style="auto" />
@@ -87,7 +95,8 @@ const RulesScreen = ({navigation}) => {
             sit amet pretium dui efficitur.
             </Paragraph>
             <ButtonFooter>
-                <TouchableOpacity onPress={()=> navigation.navigate("Card Association")}>
+                {/* <TouchableOpacity onPress={()=> navigation.navigate("Card Association")}> */}
+                <TouchableOpacity onPress={()=> handleInitCreationCard()}>
                     <ButtonView>
                     <ButtonText>Commencer</ButtonText>
                     </ButtonView>

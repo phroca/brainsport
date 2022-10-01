@@ -5,6 +5,7 @@ import { Button, Keyboard, TouchableOpacity, TouchableWithoutFeedback } from "re
 import Toast from 'react-native-toast-message';
 import { Auth } from 'aws-amplify';
 import Loading from "../components/Loading";
+import CardService from "../services/Card.service";
 
 const screenHeight = Dimensions.get("window").height;
 

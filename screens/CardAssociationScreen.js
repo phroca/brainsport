@@ -1,8 +1,9 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import styled from 'styled-components/native';
 import Card from "../components/Card";
+import CardService from "../services/Card.service";
 import tab from "../tabCard.json"
 const {width, height} = Dimensions.get("screen");
 
@@ -77,13 +78,23 @@ const SigninButton = styled.View`
 const ViewSpace = styled.View`
     width: 15px;
 `;
-const CardAssociationScreen = () => {
+const CardAssociationScreen = ({route}) => {
     const [personnage, setPersonnage] = useState("");
     const [verbe, setVerbe] = useState("");
     const [objet, setObjet] = useState("");
     const [lieu, setLieu] = useState("");
-
+    const { userCards } = route.params;
+    //const [userCards, setUserCards] = useState({"userId": "", "cards": []});
     const ref = useRef(null);
+    useEffect(()=> {
+        setPropertiesFromIndex(0);
+        // CardService.getUserCardsMock().then((userCardsData)=> {
+        //     setUserCards(userCardsData);
+        //     console.log("USERDATA CARD =>>", userCardsData);
+            
+        // });
+    },[]);
+
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const updateCurrentItemIndex = element => {
         const contentOffsetX = element.nativeEvent.contentOffset.x;
@@ -107,36 +118,47 @@ const CardAssociationScreen = () => {
     const handleFocusLieu = () => {
         refLieu.current.focus();
     }
+    const setPropertiesFromIndex = (itemIndex)=> {
+        const currentCard = userCards.cards[itemIndex];
+        setPersonnage(currentCard.personnage);
+        setVerbe(currentCard.verbe);
+        setObjet(currentCard.objet);
+        setLieu(currentCard.lieu);
+    }
 
     const handlePrevCard = () => {
-        const nextItemIndex = currentItemIndex > 0 ? currentItemIndex - 1 : 0;
-        const offset = nextItemIndex * width;
+        const prevItemIndex = currentItemIndex > 0 ? currentItemIndex - 1 : 0;
+        const offset = prevItemIndex * width;
         ref?.current?.scrollToOffset({offset});
-        setCurrentItemIndex(nextItemIndex);
+        setCurrentItemIndex(prevItemIndex);
+        setPropertiesFromIndex(prevItemIndex);
     }
     const handleNextCard = () => {
-        const nextItemIndex = currentItemIndex < tab.length - 1 ? currentItemIndex + 1 : tab.length - 1;
+        const nextItemIndex = currentItemIndex < userCards.cards.length - 1 ? currentItemIndex + 1 : userCards.cards.length - 1;
         const offset = nextItemIndex * width;
         ref?.current?.scrollToOffset({offset});
+        CardService.saveCard(userCards, currentItemIndex, personnage, verbe, objet, lieu);
+        setPropertiesFromIndex(nextItemIndex);
         setCurrentItemIndex(nextItemIndex);
     }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
             <Animated.FlatList
-            data={tab}
+            data={userCards.cards}
             ref={ref}
             style={{flex: 0.1}}
-            keyExtractor={item => item.id}
+            keyExtractor={item => "card-"+item.couleur+"-"+item.valeur}
             horizontal
             scrollEventThrottle={32}
             onMomentumScrollEnd={updateCurrentItemIndex}
-            pagingEnabled
+            pagingEnabled={false}
+            scrollEnabled={false}
             showsHorizontalScrollIndicator={false}
-            renderItem={({item}) => {
+            renderItem={({item, index}) => {
                 return (<FlatView>
                     <Card
-                    key={item.id}
+                    key={"card-"+item.couleur+"-"+item.valeur}
                     couleur={item.couleur}
                     valeur={item.valeur}
                     />
@@ -148,25 +170,25 @@ const CardAssociationScreen = () => {
                 <TouchableWithoutFeedback onPress={() => handleFocusPersonnage()}>
                 <InputContainer >
                     <PreText>Personnage</PreText>
-                    <TextInput ref={refPersonnage} onChangeText={(e)=> setPersonnage(e)} />
+                    <TextInput ref={refPersonnage} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
                 </InputContainer>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback onPress={() => handleFocusVerbe()}>
                 <InputContainer>
                     <PreText>Verbe</PreText>
-                    <TextInput ref={refVerbe} onChangeText={(e)=> setVerbe(e)} />
+                    <TextInput ref={refVerbe} value={verbe} onChangeText={(e)=> setVerbe(e)} />
                 </InputContainer>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback onPress={() => handleFocusObjet()}>
                 <InputContainer >
                     <PreText>Objet</PreText>
-                    <TextInput ref={refObjet} onChangeText={(e)=> setObjet(e)} />
+                    <TextInput ref={refObjet} value={objet} onChangeText={(e)=> setObjet(e)} />
                 </InputContainer>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback onPress={() => handleFocusLieu()}>
                 <InputContainer>
                     <PreText>Lieu</PreText>
-                    <TextInput ref={refLieu} onChangeText={(e)=> setLieu(e)} />
+                    <TextInput ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
                 </InputContainer>
                 </TouchableWithoutFeedback>
                 <SigninButton>

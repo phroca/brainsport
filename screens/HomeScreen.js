@@ -9,6 +9,8 @@ import { useNavigation } from '@react-navigation/native';
 import Avatar from '../components/Avatar';
 import Card from '../components/Card';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
+import Auth from "@aws-amplify/auth";
+import CardService from '../services/Card.service';
 
 const Container = styled.ImageBackground`
   flex:1;
@@ -61,9 +63,19 @@ const ButtonFooter = styled.View`
 `;
 
 export default function HomeScreen({navigation}) {
-    const [username, setUsername] = useState("Test");
-
-  return (
+    const [username, setUsername] = useState("");
+    const [currentUSerDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
+    useEffect(()=> {
+      (async() => {
+        const user = await Auth.currentAuthenticatedUser();
+        setUsername(user?.attributes?.given_name);
+      })();
+      CardService.getUserCardsMock().then((userCardsData)=> {
+        setCurrentUserDataCard(userCardsData);
+      });
+    },[])
+    
+  return !currentUSerDataCard ?( 
           <Container source={require("../assets/brainsport-bg.png")}>   
             <StatusBar style="auto" />
 
@@ -84,6 +96,28 @@ export default function HomeScreen({navigation}) {
                   </ButtonFooter>
 
           </Container>
-  );
+
+  ) : ( 
+    <Container source={require("../assets/brainsport-bg.png")}>   
+      <StatusBar style="auto" />
+
+            <TitleBar>
+                <Title>Bonjour {username} !</Title>
+            </TitleBar>
+            <Subtitle >
+                Votre tableau n'est pas encore terminé !
+            </Subtitle>
+          
+            <ButtonFooter>
+              <TouchableOpacity onPress={()=> navigation.navigate("Card Association", { userCards: currentUSerDataCard })}>
+                <ButtonView>
+                  <ButtonText>Continuer</ButtonText>
+                </ButtonView>
+              </TouchableOpacity>
+            </ButtonFooter>
+
+    </Container>
+
+);
 }
 
