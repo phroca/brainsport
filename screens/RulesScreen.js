@@ -1,6 +1,6 @@
 import Auth from "@aws-amplify/auth";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useState } from "react";
 import { ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from 'styled-components/native';
@@ -63,11 +63,16 @@ const CardContainer = styled.View`
 `
 
 const RulesScreen = ({navigation}) => {
+  const [currentUSerDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
+  const [currentFamillyProgress, setCurrentFamillyProgress] = useState({});
 
   const handleInitCreationCard = async() => {
     const user = await Auth.currentAuthenticatedUser();
-    CardService.initCardCreationMock(user?.pool?.userPoolId);
-    navigation.navigate("Card Association");
+    const userCardsData = await CardService.initCardCreationMock(user?.pool?.userPoolId);
+    const famillyProgressData = await CardService.initFamillyProgress();
+    setCurrentUserDataCard(userCardsData);
+    setCurrentFamillyProgress(famillyProgressData);
+    navigation.navigate("Card Association", { userCards: currentUSerDataCard, famillyProgress: currentFamillyProgress });
   }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>

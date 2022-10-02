@@ -1,11 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
-import { Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import { ActivityIndicator, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
 import CardService from "../services/Card.service";
 import tab from "../tabCard.json"
 const {width, height} = Dimensions.get("screen");
+const widthContent = width - 50;
 
 const Container = styled.ImageBackground`
   flex:1;
@@ -28,7 +30,7 @@ const CardForm = styled.View`
 
 const TextInput = styled.TextInput`
   border: 1px solid #53565f;
-  width: 295px;
+  width: ${widthContent}px;
   height: 40px;
   border-radius: 10px;
   font-size: 17px;
@@ -42,7 +44,7 @@ const TextInput = styled.TextInput`
 
 const ButtonView = styled.View`
   background: #FFFFFF;
-  width: 140px;
+  width: ${widthContent/2 -10}px;;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -54,6 +56,12 @@ const ButtonText = styled.Text`
   color: #000000;
   font-size: 14px;
   font-weight: bold;
+`;
+
+const ButtonSaveText = styled.Text`
+color: #FFFFFF;
+font-size: 14px;
+font-weight: bold;
 `;
 
 const PreText = styled.Text`
@@ -75,24 +83,39 @@ const SigninButton = styled.View`
     flex-direction: row;
 `;
 
-const ViewSpace = styled.View`
-    width: 15px;
+const SaveButton = styled.View`
+    position: relative;
+    justify-content: center;
+    align-items: center;
 `;
-const CardAssociationScreen = ({route}) => {
+
+const ButtonSaveView = styled.View`
+  background: #A138F2;
+  width: ${widthContent}px;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin-top: 20px;
+`;
+
+const ViewSpace = styled.View`
+    width: 20px;
+`;
+
+const CardAssociationScreen = ({route, navigation}) => {
     const [personnage, setPersonnage] = useState("");
     const [verbe, setVerbe] = useState("");
     const [objet, setObjet] = useState("");
     const [lieu, setLieu] = useState("");
-    const { userCards } = route.params;
-    //const [userCards, setUserCards] = useState({"userId": "", "cards": []});
+    const [loadingSaveCard, setloadingSaveCard] = useState(false);
+    const { userCards, famillyProgress } = route.params;
     const ref = useRef(null);
     useEffect(()=> {
+        console.log("USERCARDS =>", userCards);
+        console.log("FAMILLYPROGRESS =>", famillyProgress);
+
         setPropertiesFromIndex(0);
-        // CardService.getUserCardsMock().then((userCardsData)=> {
-        //     setUserCards(userCardsData);
-        //     console.log("USERDATA CARD =>>", userCardsData);
-            
-        // });
     },[]);
 
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -126,6 +149,26 @@ const CardAssociationScreen = ({route}) => {
         setLieu(currentCard.lieu);
     }
 
+    const handleSaveCurrentCard = () =>{
+        setloadingSaveCard(true);
+        CardService.saveCard(userCards, currentItemIndex, personnage, verbe, objet, lieu).then(()=> {
+            setloadingSaveCard(false);
+            Toast.show({
+              type: 'success',
+              text1: 'Enregistrement réussi',
+              text2:  "La carte a bien été enregistrée"
+            });
+            checkFamillyCardDone();
+        }).catch((e) => {
+            setloadingSaveCard(false);
+            Toast.show({
+                type: 'error',
+                text1: "Erreur à l'enregistrement" ,
+                text2: "veuillez réessayer ultérieurement."
+              });
+        });
+    }
+
     const handlePrevCard = () => {
         const prevItemIndex = currentItemIndex > 0 ? currentItemIndex - 1 : 0;
         const offset = prevItemIndex * width;
@@ -136,10 +179,49 @@ const CardAssociationScreen = ({route}) => {
     const handleNextCard = () => {
         const nextItemIndex = currentItemIndex < userCards.cards.length - 1 ? currentItemIndex + 1 : userCards.cards.length - 1;
         const offset = nextItemIndex * width;
-        ref?.current?.scrollToOffset({offset});
-        CardService.saveCard(userCards, currentItemIndex, personnage, verbe, objet, lieu);
+        ref?.current?.scrollToOffset({offset});      
         setPropertiesFromIndex(nextItemIndex);
         setCurrentItemIndex(nextItemIndex);
+    }
+
+    const checkFamillyCardDone = () => {
+        const elementCarteRemplie = (element) => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu != "";
+        const isListCardCoeurFamillyRemplie = userCards.cards.filter(element => element.couleur === "coeur").every(elementCarteRemplie);
+        const isListCardCarreauFamillyRemplie = userCards.cards.filter(element => element.couleur === "carreau").every(elementCarteRemplie);
+        const isListCardTrefleFamillyRemplie = userCards.cards.filter(element => element.couleur === "trefle").every(elementCarteRemplie);
+        const isListCardPiqueFamillyRemplie = userCards.cards.filter(element => element.couleur === "pique").every(elementCarteRemplie);
+        
+        if(isListCardCoeurFamillyRemplie && !famillyProgress.coeur){
+            CardService.updateFamillyProgress(famillyProgress, "coeur", true).then((data)=> {
+                if(data) navigation.navigate("FamillyModal")
+            });
+        } 
+        if(isListCardCarreauFamillyRemplie && !famillyProgress.carreau){
+            CardService.updateFamillyProgress(famillyProgress, "carreau", true).then((data)=> {
+                if(data) navigation.navigate("FamillyModal")
+            });
+        } 
+        if(isListCardTrefleFamillyRemplie && !famillyProgress.trefle){
+            CardService.updateFamillyProgress(famillyProgress, "trefle", true).then((data)=> {
+                if(data) navigation.navigate("FamillyModal")
+            });
+        } 
+        if(isListCardPiqueFamillyRemplie && !famillyProgress.pique){
+            CardService.updateFamillyProgress(famillyProgress, "pique", true).then((data)=> {
+                if(data) navigation.navigate("FamillyModal")
+            });
+        } 
+/*
+        const isUneFamilleRemplie = isListCardCoeurFamillyRemplie || isListCardCarreauFamillyRemplie || isListCardTrefleFamillyRemplie || isListCardPiqueFamillyRemplie;
+        const isDeuxFamillesRemplies = (isListCardCoeurFamillyRemplie && isListCardCarreauFamillyRemplie) || (isListCardCoeurFamillyRemplie && isListCardTrefleFamillyRemplie) 
+        || (isListCardCoeurFamillyRemplie && isListCardPiqueFamillyRemplie) || (isListCardCarreauFamillyRemplie && isListCardTrefleFamillyRemplie) 
+        || (isListCardCarreauFamillyRemplie && isListCardPiqueFamillyRemplie) || (isListCardPiqueFamillyRemplie && isListCardTrefleFamillyRemplie)
+        const isTroisFamillesRemplies = (isListCardCoeurFamillyRemplie && isListCardCarreauFamillyRemplie && isListCardTrefleFamillyRemplie) || 
+        (isListCardCarreauFamillyRemplie && isListCardTrefleFamillyRemplie && isListCardPiqueFamillyRemplie) 
+        || (isListCardCoeurFamillyRemplie && isListCardCarreauFamillyRemplie  && isListCardPiqueFamillyRemplie) 
+        || (isListCardCoeurFamillyRemplie && isListCardTrefleFamillyRemplie && isListCardPiqueFamillyRemplie) 
+        const isToutesFamillesRemplies = isListCardCoeurFamillyRemplie && isListCardCarreauFamillyRemplie && isListCardTrefleFamillyRemplie && isListCardPiqueFamillyRemplie
+        */
     }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
@@ -147,7 +229,7 @@ const CardAssociationScreen = ({route}) => {
             <Animated.FlatList
             data={userCards.cards}
             ref={ref}
-            style={{flex: 0.1}}
+            style={{flex: 0.1, marginBottom: -130}}
             keyExtractor={item => "card-"+item.couleur+"-"+item.valeur}
             horizontal
             scrollEventThrottle={32}
@@ -191,6 +273,14 @@ const CardAssociationScreen = ({route}) => {
                     <TextInput ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
                 </InputContainer>
                 </TouchableWithoutFeedback>
+                <SaveButton>
+                    <TouchableOpacity onPress={()=> handleSaveCurrentCard()}>
+                        <ButtonSaveView>
+                            {!loadingSaveCard && <ButtonSaveText>Enregistrer</ButtonSaveText>}
+                            {loadingSaveCard && <ActivityIndicator size="large" color="#FFFFFF" />}
+                        </ButtonSaveView>
+                    </TouchableOpacity>
+                </SaveButton>
                 <SigninButton>
                     <TouchableOpacity onPress={()=> handlePrevCard()}>
                         <ButtonView>

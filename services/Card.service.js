@@ -4,6 +4,10 @@ import { Card } from '../src/models';
 import { PackCard } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+/**
+ * 
+ * @param {*} userId 
+ */
 const initCardCreation = async(userId)=> {
     cardStructure.couleurs.forEach((couleur)=> {
         cardStructure.valeurs.forEach((valeur)=>{
@@ -29,7 +33,10 @@ const initCardCreation = async(userId)=> {
     );
 }
 
-
+/**
+ * 
+ * @param {*} userId 
+ */
 const initCardCreationMock = async(userId) => {
     const userCards = {userId: userId, cards: []};
     cardStructure.couleurs.forEach((couleur)=> {
@@ -48,18 +55,21 @@ const initCardCreationMock = async(userId) => {
     });
     try{
         getUserCardsMock().then((data) => {
-            console.log("DATA => ", data);
             if(!data){
                 const jsonValue = JSON.stringify(userCards);
                 AsyncStorage.setItem('@user_Cards', jsonValue);
             }
         })
+        return userCards;
     } catch(e){
         console.log(e);
     }
     
 }
-
+/**
+ * 
+ * @returns 
+ */
 const getUserCardsMock = async() => {
     try{
         const jsonValue = await AsyncStorage.getItem('@user_Cards')
@@ -69,6 +79,15 @@ const getUserCardsMock = async() => {
     }
 }
 
+/**
+ * 
+ * @param {*} userCardsIn 
+ * @param {*} currentCardIndexIn 
+ * @param {*} personnage 
+ * @param {*} verbe 
+ * @param {*} objet 
+ * @param {*} lieu 
+ */
 const saveCard = async(userCardsIn, currentCardIndexIn, personnage, verbe, objet, lieu) => {
     try{
         let userCards = {...userCardsIn};
@@ -83,11 +102,85 @@ const saveCard = async(userCardsIn, currentCardIndexIn, personnage, verbe, objet
     }
 }
 
+/**
+ * 
+ */
+const initFamillyProgress = async() => {
+    try{
+        const famillyProgress = 
+            {   
+                "carreau": false,
+                "coeur": false,
+                "trefle": false,          
+                "pique": false,
+            };
+        
+        const jsonValue = JSON.stringify(famillyProgress);
+        await AsyncStorage.setItem('@user_Familyprogress', jsonValue);
+        return famillyProgress;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+/**
+ * 
+ * @returns 
+ */
+const getFamillyProgress = async() => {
+    try{
+        const jsonValue = await AsyncStorage.getItem('@user_Familyprogress')
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch(e){
+        console.log(e);
+    }
+}
+/**
+ * 
+ * @param {*} famillyProgressIn 
+ * @param {*} famillyCard 
+ * @param {*} flagFamillyRemplie 
+ */
+const updateFamillyProgress = async(famillyProgressIn, famillyCard, flagFamillyRemplie) => {
+    try{
+        let famillyProgress = {...famillyProgressIn};
+        if(famillyCard === "carreau") {
+            famillyProgress.carreau = flagFamillyRemplie;
+        }
+        if(famillyCard === "coeur") {
+            famillyProgress.coeur = flagFamillyRemplie;
+        }
+        if(famillyCard === "trefle") {
+            famillyProgress.trefle = flagFamillyRemplie;
+        }
+        if(famillyCard === "pique") {
+            famillyProgress.pique = flagFamillyRemplie;
+        }
+        const jsonValue = JSON.stringify(famillyProgress);
+        await AsyncStorage.setItem('@user_Familyprogress', jsonValue);
+        return famillyProgress;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+const clearAll = async () => {
+    try {
+      await AsyncStorage.clear()
+    } catch(e) {
+      // clear error
+    }
+    console.log('Clear Done.')
+  }
 const CardService ={
     initCardCreation,
     initCardCreationMock,
     getUserCardsMock,
-    saveCard
+    saveCard,
+    initFamillyProgress,
+    getFamillyProgress,
+    updateFamillyProgress,
+    clearAll
 };
 
 export default CardService;
