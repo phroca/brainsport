@@ -20,6 +20,7 @@ const Header = styled.View`
     align-items: center;
     margin-top: 50px;
     margin-bottom: 30px;
+    flex-direction: row;
 `;
 const CloseButton = styled.View`
   width: ${widthContent}px;
@@ -58,7 +59,7 @@ const ButtonText = styled.Text`
 const NotificationFamillyModal = ({navigation}) => {
 
     const handleStartGame = () => {
-
+        navigation.navigate("Home");
     }
 
     return (
@@ -66,7 +67,7 @@ const NotificationFamillyModal = ({navigation}) => {
             <Header>
                 <CloseButton>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <MaterialCommunityIcons name="close-circle-outline" size={24} color="#FFFFFF" />
+                        <MaterialCommunityIcons name="close-circle-outline" size={24} color="#FFFFFF7b" />
                     </TouchableOpacity>
                 </CloseButton>
             </Header>

@@ -128,17 +128,9 @@ export default function HomeScreen({navigation}) {
       })
     },[])
     
-    const handleSelectCarreau = () => {
-      
-    }
-    const handleSelectCoeur = () => {
-
-    }
-    const handleSelectTrefle = () => {
-
-    }
-    const handleSelectPique = () => {
-
+    const handleSelectFamilly = (couleur) => {
+      const famillyFiltered = currentUSerDataCard.cards.filter(elt=> elt.couleur === couleur);
+      navigation.navigate("PlayFamilly", {famillyToPlay: famillyFiltered});
     }
 
   return !currentUSerDataCard ?( 
@@ -188,7 +180,7 @@ export default function HomeScreen({navigation}) {
                 Tu as la possibilité de jouer parmi les familles déja enregistrées
             </Subtitle>
             <ListPlayCard>
-            <TouchableOpacity onPress={() => handleSelectCarreau()}>
+            {currentFamillyProgress?.carreau &&<TouchableOpacity onPress={() => handleSelectFamilly("carreau")}>
               <PlayCard >
                   <ContentLabel>
                       <Label>Carreau</Label>
@@ -197,8 +189,8 @@ export default function HomeScreen({navigation}) {
                   <MaterialCommunityIcons name="cards-diamond" size={20} color="red" />
                   </LogoCard>
               </PlayCard>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectCoeur()}>
+            </TouchableOpacity> }
+            {currentFamillyProgress?.coeur && <TouchableOpacity onPress={() => handleSelectFamilly("coeur")}>
               <PlayCard >
                   <ContentLabel>
                       <Label>Coeur</Label>
@@ -207,8 +199,8 @@ export default function HomeScreen({navigation}) {
                     <MaterialCommunityIcons name="cards-heart" size={20} color="red" />
                   </LogoCard>
               </PlayCard>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectTrefle()}>
+            </TouchableOpacity> }
+            {currentFamillyProgress?.trefle && <TouchableOpacity onPress={() => handleSelectFamilly("trefle")}>
               <PlayCard >
                   <ContentLabel>
                       <Label>Trèfle</Label>
@@ -217,8 +209,8 @@ export default function HomeScreen({navigation}) {
                     <MaterialCommunityIcons name="cards-club" size={20} color="black" />
                   </LogoCard>
               </PlayCard>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectPique()}>
+            </TouchableOpacity>}
+            {currentFamillyProgress?.pique && <TouchableOpacity onPress={() => handleSelectFamilly("pique")}>
               <PlayCard >
                   <ContentLabel>
                       <Label>Pique</Label>
@@ -227,7 +219,7 @@ export default function HomeScreen({navigation}) {
                     <MaterialCommunityIcons name="cards-spade" size={20} color="black" />
                   </LogoCard>
               </PlayCard>
-            </TouchableOpacity>
+            </TouchableOpacity>}
             </ListPlayCard>
             </ScrollView>
         </SafeAreaView>      

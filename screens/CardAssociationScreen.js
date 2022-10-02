@@ -112,9 +112,6 @@ const CardAssociationScreen = ({route, navigation}) => {
     const { userCards, famillyProgress } = route.params;
     const ref = useRef(null);
     useEffect(()=> {
-        console.log("USERCARDS =>", userCards);
-        console.log("FAMILLYPROGRESS =>", famillyProgress);
-
         setPropertiesFromIndex(0);
     },[]);
 

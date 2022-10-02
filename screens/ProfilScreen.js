@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions, TouchableOpacity } from "react-native";
+import { Dimensions, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from "react-native";
 import styled from 'styled-components/native';
 import CardService from '../services/Card.service';
 import Toast from 'react-native-toast-message';
@@ -13,6 +13,32 @@ const Container = styled.ImageBackground`
   flex:1;
   width: 100%;
   height: 100%;
+`;
+const TitleBar = styled.View`
+  width: 100%;
+  margin-top: 100px;
+  margin-bottom: 30px;
+`;
+
+const Title = styled.Text`
+  color: #FFFFFF;
+  font-size: 40px;
+  font-weight: bold;
+  text-align: center;
+`;
+
+const Subtitle = styled.Text`
+color: #FFFFFF;
+  font-size: 14px;
+  margin-left: 40px;
+  margin-top: 10px;
+  margin-right: 40px;
+`;
+
+const ButtonAction = styled.View`
+  justify-content: center;
+  align-items: center;
+  margin-top: 100px;
 `;
 
 const ButtonView = styled.View`
@@ -50,6 +76,15 @@ const ProfilScreen = ({navigation}) => {
   }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
+        <SafeAreaView>
+          <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
+            <TitleBar>
+                <Title>Profil</Title>
+            </TitleBar>
+            <Subtitle >
+                Functionnalities Coming soon
+            </Subtitle>        
+          <ButtonAction>
             <TouchableOpacity onPress={()=> handleReinit()}>
               <ButtonView>
                 <ButtonText>Reinitialiser</ButtonText>
@@ -60,6 +95,9 @@ const ProfilScreen = ({navigation}) => {
                 <ButtonText>Se déconnecter</ButtonText>
               </ButtonView>
             </TouchableOpacity>
+          </ButtonAction>
+          </ScrollView>
+          </SafeAreaView>
         </Container>);
 }
 

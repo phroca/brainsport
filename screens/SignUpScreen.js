@@ -16,15 +16,15 @@ const ImageBG = styled.Image`
   height: 100%;
 `;
 const TextInput = styled.TextInput`
-  border: 1px solid #dbdfea;
+  border: 1px solid #53565f;
   width: 295px;
   height: 44px;
   border-radius: 10px;
   font-size: 17px;
-  color: #3c4560;
+  color: #FFFFFF;
   padding-left: 120px;
   margin-top: 20px;
-  background: white;
+  background: #3c4560;
   z-index: 1;
 `;
 
@@ -44,19 +44,19 @@ const Title = styled.Text`
   font-size: 22px;
   font-weight: bold;
   width: 275px;
-  color: #131516;
+  color: white;
   text-align: left;
 `;
 const SubTitle = styled.Text`
   margin-top: 20px;
   font-size: 14px;
   width: 275px;
-  color: #62666A;
+  color: white;
   text-align: left;
 `;
 
 const ButtonView = styled.View`
-  background: #0A3CA0;
+  background: white;
   width: 295px;
   height: 50px;
   justify-content: center;
@@ -66,18 +66,18 @@ const ButtonView = styled.View`
   box-shadow: 0 10px 20px #c2cbff;
 `;
 const ButtonViewSecondary = styled.View`
-  background: #131516;
+  background: #3c4560;
   width: 295px;
   height: 50px;
   justify-content: center;
   align-items: center;
   border-radius: 10px;
   margin-top: 20px;
-  box-shadow: 0 10px 20px #c2cbff;
+  //box-shadow: 0 10px 20px #c2cbff;
 `;
 
 const ButtonText = styled.Text`
-  color: white;
+  color: black;
   font-weight: bold;
   font-size: 14px;
 `;
@@ -97,6 +97,7 @@ const ButtonTextLink = styled.Text`
 `;
 
 const PreText = styled.Text`
+color: #FFFFFF;
   width: 100px;
   height: 24px;
   font-weight:bold;

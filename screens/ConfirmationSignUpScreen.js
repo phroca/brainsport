@@ -51,7 +51,7 @@ const Title = styled.Text`
   font-size: 22px;
   font-weight: bold;
   width: 275px;
-  color: #131516;
+  color: white;
   text-align: left;
 `;
 
@@ -64,7 +64,7 @@ const SubTitle = styled.Text`
 `;
 
 const ButtonView = styled.View`
-  background: #5263ff;
+  background: white;
   width: 295px;
   height: 50px;
   justify-content: center;
@@ -100,7 +100,7 @@ const ButtonViewLink = styled.View`
 `;
 
 const ButtonTextLink = styled.Text`
-  color: #5263ff;
+  color: white;
   text-decoration: underline;
   font-size: 16px;
 `;
