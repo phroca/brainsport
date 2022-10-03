@@ -1,11 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
 import CardService from "../services/Card.service";
-import tab from "../tabCard.json"
+import Voice from '@react-native-voice/voice';
+
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
 
@@ -75,6 +77,14 @@ color: #FFFFFF;
   z-index: 2;
 `;
 
+PostText = styled.View`
+    position: absolute;
+    width: 30px;
+    top: 20px;
+    right: 10px;
+    z-index: 2;
+`;
+
 const InputContainer = styled.View`
     position: relative;
 `;
@@ -104,6 +114,8 @@ const ViewSpace = styled.View`
 `;
 
 const CardAssociationScreen = ({route, navigation}) => {
+    const [recordStarted, setRecordStarted] = useState(false);
+    let [results, setResults] = useState([]);
     const [personnage, setPersonnage] = useState("");
     const [verbe, setVerbe] = useState("");
     const [objet, setObjet] = useState("");
@@ -113,6 +125,14 @@ const CardAssociationScreen = ({route, navigation}) => {
     const ref = useRef(null);
     useEffect(()=> {
         setPropertiesFromIndex(0);
+    },[]);
+
+    useEffect(()=> {
+        Voice.onSpeechError = onSpeechError;
+        Voice.onSpeechResults = onSpeechResults;
+        return () => {
+            Voice.destroy().then(Voice.removeAllListeners);
+        }
     },[]);
 
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -140,10 +160,10 @@ const CardAssociationScreen = ({route, navigation}) => {
     }
     const setPropertiesFromIndex = (itemIndex)=> {
         const currentCard = userCards.cards[itemIndex];
-        setPersonnage(currentCard.personnage);
-        setVerbe(currentCard.verbe);
-        setObjet(currentCard.objet);
-        setLieu(currentCard.lieu);
+        setPersonnage(currentCard?.personnage);
+        setVerbe(currentCard?.verbe);
+        setObjet(currentCard?.objet);
+        setLieu(currentCard?.lieu);
     }
 
     const handleSaveCurrentCard = () =>{
@@ -220,6 +240,25 @@ const CardAssociationScreen = ({route, navigation}) => {
         const isToutesFamillesRemplies = isListCardCoeurFamillyRemplie && isListCardCarreauFamillyRemplie && isListCardTrefleFamillyRemplie && isListCardPiqueFamillyRemplie
         */
     }
+
+    const handleStartSpeechForPersonnage = async () => {
+        await Voice.start("fr-FR");
+        setRecordStarted(true);
+        
+    }
+    const handleStopSpeechForPersonnage = async () => {
+        await Voice.stop();
+        setPersonnage(results.join(" "));
+        setRecordStarted(false);
+    }
+
+    const onSpeechResults = (result) => {
+        setResults(result.value);
+    };
+    
+    const onSpeechError = (error) => {
+    console.log(error);
+    };
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
@@ -250,6 +289,15 @@ const CardAssociationScreen = ({route, navigation}) => {
                 <InputContainer >
                     <PreText>Personnage</PreText>
                     <TextInput ref={refPersonnage} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
+                    <PostText>
+                    {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForPersonnage()}>
+                            <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                        </TouchableOpacity> }
+                    {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForPersonnage()}>
+                        <MaterialCommunityIcons name="record" size={20} color="red" />
+                        </TouchableOpacity> }
+
+                    </PostText>
                 </InputContainer>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback onPress={() => handleFocusVerbe()}>
