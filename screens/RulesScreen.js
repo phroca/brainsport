@@ -65,17 +65,17 @@ const CardContainer = styled.View`
 const RulesScreen = ({navigation}) => {
 
   const handleInitCreationCard = async() => {
-    const user = await Auth.currentAuthenticatedUser();
-    CardService.initCardCreationMock(user?.pool?.userPoolId).then((userCardsData)=> {
-      if(userCardsData){
-        CardService.initFamillyProgress().then((famillyProgressData)=> {
-          if(famillyProgressData){
-            navigation.navigate("Card Association", { userCards: userCardsData, famillyProgress: famillyProgressData });
-          }
-          
-        })
-      }
-    });    
+      const user = await Auth.currentAuthenticatedUser();
+      CardService.initCardCreationMock(user?.pool?.userPoolId).then((userCardsData)=> {
+        if(userCardsData){
+          CardService.initFamillyProgress().then((famillyProgressData)=> {
+            if(famillyProgressData){
+              navigation.navigate("Card Association", { userCards: userCardsData, famillyProgress: famillyProgressData });
+            }
+            
+          })
+        }
+      });  
   }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
