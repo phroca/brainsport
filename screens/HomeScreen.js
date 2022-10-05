@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, ScrollView, TouchableOpacity, Animated, Easing, KeyboardAvoidingView, Dimensions, PermissionsAndroid } from 'react-native';
+import { SafeAreaView, ScrollView, TouchableOpacity, Animated, Easing, KeyboardAvoidingView, Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 // import Card from '../components/Card';
 // import Menu from '../components/menu/Menu';
@@ -114,31 +114,6 @@ export default function HomeScreen({navigation}) {
     const [username, setUsername] = useState("");
     const [currentUSerDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
     const [currentFamillyProgress, setCurrentFamillyProgress] = useState({});
-    
-
-    const requestAudioPermission = async () => {
-      try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-          {
-            title: "Enregistrement audio",
-            message:
-              "Brainsport a besoin de ton autorisation " +
-              "pour utiliser ton microphone.",
-            buttonNeutral: "Plus tard",
-            buttonNegative: "Annuler",
-            buttonPositive: "OK"
-          }
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log("Permission accordée");
-        } else {
-          console.log("Permission refusé");
-        }
-      } catch (err) {
-        console.warn(err);
-      }
-    };
 
     useEffect(()=> {
       (async() => {
@@ -151,7 +126,6 @@ export default function HomeScreen({navigation}) {
       CardService.getFamillyProgress().then((famillyProgressData) => {
         setCurrentFamillyProgress(famillyProgressData);
       })
-      requestAudioPermission();
 
     },[])
     

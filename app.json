@@ -18,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.irocap.brainsport"
     },
     "android": {
       "adaptiveIcon": {
@@ -41,6 +42,11 @@
           "speechRecognitionPermission": "Autoriser $(PRODUCT_NAME) à reconnaitre la voix de l'utilisateur"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "77686e4a-6456-4620-b8ad-baf81be012d5"
+      }
+    }
   }
 }
