@@ -253,6 +253,7 @@ const CardAssociationScreen = ({route, navigation}) => {
     }
 
     const onSpeechResults = (result) => {
+        console.log(result.value);
         setResults(result.value);
     };
     
