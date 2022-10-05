@@ -128,6 +128,7 @@ const CardAssociationScreen = ({route, navigation}) => {
     },[]);
 
     useEffect(()=> {
+        Voice.onSpeechStart = onSpeechStart;
         Voice.onSpeechError = onSpeechError;
         Voice.onSpeechResults = onSpeechResults;
         return () => {
@@ -242,10 +243,14 @@ const CardAssociationScreen = ({route, navigation}) => {
     }
 
     const handleStartSpeechForPersonnage = async () => {
-        await Voice.start("fr-FR");
-        setRecordStarted(true);
-        
+        try {
+            await Voice.start("fr-FR");
+            setRecordStarted(true);
+        } catch (e){
+            console.error(e);
+        }  
     }
+
     const handleStopSpeechForPersonnage = async () => {
         await Voice.stop();
         setPersonnage(results.join(" "));
@@ -253,8 +258,11 @@ const CardAssociationScreen = ({route, navigation}) => {
     }
 
     const onSpeechResults = (result) => {
-        console.log(result.value);
+        console.log("result =>",result.value);
         setResults(result.value);
+    };
+    const onSpeechStart = (data) => {
+        console.log("start =>", data);
     };
     
     const onSpeechError = (error) => {
