@@ -128,6 +128,18 @@ const CardAssociationScreen = ({route, navigation}) => {
     },[]);
 
     useEffect(()=> {
+        const onSpeechResults = (result) => {
+            console.log("result =>",result.value);
+            setResults(result.value ?? []);
+        };
+        const onSpeechStart = (data) => {
+            console.log("start =>", data);
+        };
+        
+        const onSpeechError = (error) => {
+        console.log(error);
+        };
+        
         Voice.onSpeechStart = onSpeechStart;
         Voice.onSpeechError = onSpeechError;
         Voice.onSpeechResults = onSpeechResults;
@@ -257,17 +269,7 @@ const CardAssociationScreen = ({route, navigation}) => {
         setRecordStarted(false);
     }
 
-    const onSpeechResults = (result) => {
-        console.log("result =>",result.value);
-        setResults(result.value);
-    };
-    const onSpeechStart = (data) => {
-        console.log("start =>", data);
-    };
-    
-    const onSpeechError = (error) => {
-    console.log(error);
-    };
+
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
