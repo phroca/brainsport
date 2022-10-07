@@ -115,7 +115,7 @@ const ViewSpace = styled.View`
 
 const CardAssociationScreen = ({route, navigation}) => {
     const [recordStarted, setRecordStarted] = useState(false);
-    let [results, setResults] = useState([]);
+    const [results, setResults] = useState([]);
     const [personnage, setPersonnage] = useState("");
     const [verbe, setVerbe] = useState("");
     const [objet, setObjet] = useState("");
