@@ -6,7 +6,7 @@ import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
 import CardService from "../services/Card.service";
-import Voice from '@react-native-voice/voice';
+//import Voice from '@react-native-voice/voice';
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -127,7 +127,7 @@ const CardAssociationScreen = ({route, navigation}) => {
         setPropertiesFromIndex(0);
     },[]);
 
-    useEffect(()=> {
+    /*useEffect(()=> {
         const onSpeechResults = (result) => {
             console.log("result =>",result.value);
             setResults(result.value ?? []);
@@ -146,7 +146,7 @@ const CardAssociationScreen = ({route, navigation}) => {
         return () => {
             Voice.destroy().then(Voice.removeAllListeners);
         }
-    },[]);
+    },[]);*/
 
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const updateCurrentItemIndex = element => {
@@ -255,18 +255,18 @@ const CardAssociationScreen = ({route, navigation}) => {
     }
 
     const handleStartSpeechForPersonnage = async () => {
-        try {
+        /*try {
             await Voice.start("fr-FR");
             setRecordStarted(true);
         } catch (e){
             console.error(e);
-        }  
+        }  */
     }
 
     const handleStopSpeechForPersonnage = async () => {
-        await Voice.stop();
+        /*await Voice.stop();
         setPersonnage(results.join(" "));
-        setRecordStarted(false);
+        setRecordStarted(false);*/
     }
 
 

@@ -4,10 +4,40 @@ import styled from 'styled-components/native';
 import CardService from '../services/Card.service';
 import Toast from 'react-native-toast-message';
 import { Auth } from 'aws-amplify';
+import { Ionicons } from '@expo/vector-icons';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const widthContent = screenWidth  - 50;
+
+
+const PROFIL_ACTIONS = [
+  {
+    "id": "pa1",
+    "title": "Mon avatar",
+    "routeName": "Avater"
+  },
+  {
+    "id": "pa2",
+    "title": "Ma bibliothèque",
+    "routeName": "Bibliothèque"
+  },
+  {
+    "id": "pa3",
+    "title": "Statistiques",
+    "routeName": "Statistiques"
+  },
+  {
+    "id": "pa4",
+    "title": "Amis",
+    "routeName": "Amis"
+  },
+  {
+    "id": "pa5",
+    "title": "Support",
+    "routeName": "Support"
+  },
+];
 
 const Container = styled.ImageBackground`
   flex:1;
@@ -57,6 +87,80 @@ const ButtonText = styled.Text`
   font-weight: bold;
 `;
 
+const ProfilActions = styled.View`
+
+justify-content: center;
+  align-items: center;
+`;
+
+const ProfilAction = styled.View`
+width: ${widthContent}px;
+height: 50px;
+background: #0000003d;
+border-radius: 10px;
+margin-top: 20px;
+z-index: 1;
+justify-content: center;
+position: relative;
+`;
+
+const ActionTitle = styled.Text`
+color: #FFFFFF;
+  font-size: 18px;
+  z-index: 2;
+  margin: 0 20px;
+`;
+
+const ActionButton = styled.View`
+position: absolute;
+right: 20px;
+`;
+
+const ProgresSection = styled.View`
+
+justify-content: center;
+  align-items: center;
+`;
+const ProgresHeader = styled.View`
+width: ${widthContent}px;
+height: 50px;
+justify-content: center;
+align-items: center;
+position: relative;
+`;
+
+const ProgresTitle = styled.Text`
+color: #FFFFFF;
+  font-size: 18px;
+  z-index: 2;
+  margin: 0 20px;
+`;
+
+const ProgresCards = styled.View`
+justify-content: center;
+  align-items: center;
+  flex-direction: row;
+`;
+
+const ProgresCard = styled.View`
+width: 80px;
+height: 80px;
+background: #0000003d;
+margin: 0 20px;
+justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+`;
+const ProgresNumber = styled.Text`
+color: #FFFFFF;
+  font-size: 25px;
+  font-weight: bold;
+`;
+const ProgresLabel = styled.Text`
+color: #FFFFFF;
+  font-size: 14px;
+`;
+
 const ProfilScreen = ({navigation}) => {
 
   const handleReinit = () => {
@@ -81,9 +185,49 @@ const ProfilScreen = ({navigation}) => {
             <TitleBar>
                 <Title>Profil</Title>
             </TitleBar>
-            <Subtitle >
-                Functionnalities Coming soon
-            </Subtitle>        
+            <TouchableOpacity onPress={()=>navigation.navigate("Progres")}>
+              <ProgresSection>
+                <ProgresHeader>
+                <ProgresTitle>
+                  Mon Progrès
+                </ProgresTitle>
+                </ProgresHeader>
+                <ProgresCards>
+                <ProgresCard>
+                  <ProgresNumber>
+                      0
+                  </ProgresNumber>
+                  <ProgresLabel>
+                    jours
+                  </ProgresLabel>
+                </ProgresCard>
+                <ProgresCard>
+                  <ProgresNumber>
+                      0
+                  </ProgresNumber>
+                  <ProgresLabel>
+                    exos
+                  </ProgresLabel>
+                </ProgresCard>
+                </ProgresCards>
+              </ProgresSection>
+            </TouchableOpacity>
+            <ProfilActions>
+              {
+                PROFIL_ACTIONS.map((elt, index) => (
+                <TouchableOpacity key={elt.id} onPress={()=> navigation.navigate(elt.routeName)}>
+                  <ProfilAction>
+                    <ActionTitle>
+                      {elt.title}
+                    </ActionTitle>
+                    <ActionButton>
+                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                    </ActionButton>
+                  </ProfilAction>
+                </TouchableOpacity>
+                ))
+              } 
+            </ProfilActions>       
           <ButtonAction>
             <TouchableOpacity onPress={()=> handleReinit()}>
               <ButtonView>

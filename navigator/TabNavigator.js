@@ -9,6 +9,7 @@ import ProgresScreen from '../screens/ProgresScreen';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import HomeNavigator from './HomeNavigator';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import ProfilNavigator from './ProfilNavigator';
 
 const activeColor = "#A138F2";
 const inactiveColor = "#FFFFFF";
@@ -30,7 +31,7 @@ const ProfileStackScreen = ({navigation}) => {
         }}>
             <ProfileStack.Screen
             name="Profil Main"
-            component={ProfilScreen}
+            component={ProfilNavigator}
             options={{
                 headerTitle: (props) => <ProfilLogo {...props} />,
                 headerRight: () => (
@@ -111,7 +112,6 @@ const TabNavigator = () => {
                 />
                
                 <Tab.Screen name="Profil" component={ProfileStackScreen} /> 
-                <Tab.Screen name="Progres" component={ProgresScreen} />
             </Tab.Navigator> 
     );
 }
