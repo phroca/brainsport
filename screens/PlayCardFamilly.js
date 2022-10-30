@@ -12,7 +12,7 @@ const widthContent = screenWidth  - 50;
 
 const listChoose =[
     "personage", "verbe", "action", "lieu"
-]
+];
 
 const Container = styled.ImageBackground`
   flex:1;
@@ -56,32 +56,48 @@ const FlatView = styled.View`
 const TitleChooseContainer = styled.View`
     justify-content: center;
     align-items: center;
-    bottom: 250px;
-`
+    bottom: 200px;
+`;
+
 const TitleChoose = styled.Text`
     color: #FFFFFF;
     font-size: 30px;
     font-weight: bold;
-`
+`;
+
 const ChronoButton = styled.View`
-  bottom: 100px;
-  justify-content: center;
+    bottom: 100px;
+    justify-content: center;
     align-items: center;
 `;
 
+const ButtonContainer = styled.View`
+    justify-content: center;
+    align-items: center;
+    bottom: 150px;
+`;
+
 const TouchableBtnFinish = styled.TouchableOpacity`
-width: ${widthContent}px;
-height: 50px;
-background-color: #FFFFFF;
-justify-content: center;
-align-items: center;
-border-radius: 10px;
-`
+    width: ${widthContent}px;
+    height: 50px;
+    background-color: #FFFFFF;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+`;
+
+const TouchableBtnNext = styled.TouchableOpacity`
+    height: 50px;
+    justify-content: center;
+    align-items: center;
+
+`;
+
 const TextFinish = styled.Text`
     text-transform: uppercase;
     color: #000000;
     font-weight: bold;
-`
+`;
 
 const PlayCardFamilly = ({navigation, route}) => {
     const [min, setMin] = useState(0);
@@ -89,6 +105,8 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [intervalTime, setIntervalTime] = useState(null);
     const { famillyToPlay } = route.params;
     const [ cardsPlay, setCardsPlay] = useState([]);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [currentQuestion, setCurrentQuestion] = useState("");
     const ref = useRef(null);
     let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
     useEffect(()=> {
@@ -101,6 +119,7 @@ const PlayCardFamilly = ({navigation, route}) => {
             }
         }, 1);
         setIntervalTime(int);*/
+        setCurrentQuestion(listChoose[0]);
         const shuffledArray = famillyToPlay.sort((a, b) => 0.5 - Math.random());
         setCardsPlay(shuffledArray);
     },[])
@@ -109,7 +128,7 @@ const PlayCardFamilly = ({navigation, route}) => {
         clearInterval(this.interval);
     }
     const shuffleList = () =>{
-       const indexRandom = Math.round(Math.random()*listChoose.length)
+       const indexRandom = Math.round(Math.random()*listChoose.length);
         return listChoose[indexRandom];
     }
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -130,6 +149,29 @@ const PlayCardFamilly = ({navigation, route}) => {
     //     ref?.current?.scrollToOffset({offset});      
     //     setCurrentItemIndex(nextItemIndex);
     // }
+
+    const handleNextOnList = () => {
+        let id = currentQuestionIndex;
+        console.log(id);
+        //if(id === 0 || currentItemIndex !== 0) goNextItem();
+        if(id === 3 ) {
+            setCurrentQuestionIndex(0);
+            setCurrentQuestion(listChoose[0]);
+            goNextItem()
+        } else {
+            id++;
+            setCurrentQuestionIndex(id);
+            setCurrentQuestion(listChoose[id]); 
+        }
+        
+    }
+
+    const goNextItem = () => {
+        const nextItemIndex = currentItemIndex + 1;
+        const offset = nextItemIndex * screenWidth;
+        ref?.current?.scrollToOffset({offset});
+        setCurrentItemIndex(nextItemIndex);
+    };
 
     const stopChrono = () => {
         navigation.navigate("Accueil");
@@ -173,8 +215,13 @@ const PlayCardFamilly = ({navigation, route}) => {
             }}
             />
             <TitleChooseContainer>
-                <TitleChoose>{shuffleList()} ?</TitleChoose>
-                </TitleChooseContainer>
+                <TitleChoose>{currentQuestion} ?</TitleChoose>
+            </TitleChooseContainer>
+            <ButtonContainer>
+                <TouchableBtnNext onPress={() => handleNextOnList()}>
+                    <MaterialCommunityIcons name="arrow-right-thin-circle-outline" size={40} color="#FFFFFF" />
+                </TouchableBtnNext>
+            </ButtonContainer>
             <ChronoButton>
             {currentItemIndex === cardsPlay.length -1 &&
                 <TouchableBtnFinish onPress={()=> stopChrono()}>

@@ -69,6 +69,7 @@ const ButtonAction = styled.View`
   justify-content: center;
   align-items: center;
   margin-top: 100px;
+  margin-bottom: 100px;
 `;
 
 const ButtonView = styled.View`

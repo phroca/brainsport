@@ -72,7 +72,10 @@ const TabNavigator = () => {
                     iconName = focused ? 'account-circle' : 'account-circle-outline';
                 } else if(route.name === "Progres") {
                     iconName = focused ? 'bullseye-arrow' : 'bullseye-arrow';
+                } else if(route.name === "Home") {
+                    iconName = focused ? 'cards-playing' : 'cards-outline';
                 }
+
                 return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
                 },
                     tabBarActiveTintColor: activeColor,
@@ -82,35 +85,7 @@ const TabNavigator = () => {
                 
                 <Tab.Screen name="Formation" component={FormationScreen} />
                 <Tab.Screen name="Communauté" component={CommunauteScreen} />
-                <Tab.Screen name="Home" component={HomeNavigator} 
-                options={{
-
-                tabBarIcon: ({focused}) => {
-                    return  focused ? <MaterialCommunityIcons name="cards-playing" size={30} color="#FFFFFF"/> : <MaterialCommunityIcons name="cards-outline" size={30} color="#FFFFFF"/>;
-                },
-                tabBarButton: ({children, onPress})=>{
-                    return  <TouchableOpacity activeOpacity={1} style={{
-                        top: -20,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}
-                    onPress={onPress}>
-                        <View style={{
-                            width: 40,
-                            height: 40,
-                            borderRadius: 15,
-                            backgroundColor: '#A138F2'
-                        }}>
-                            {children}
-                        </View>
-                        
-                    </TouchableOpacity>
-                }
-                }}
-
-
-                />
-               
+                <Tab.Screen name="Home" component={HomeNavigator} />
                 <Tab.Screen name="Profil" component={ProfileStackScreen} /> 
             </Tab.Navigator> 
     );
