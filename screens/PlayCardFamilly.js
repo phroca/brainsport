@@ -110,18 +110,13 @@ const PlayCardFamilly = ({navigation, route}) => {
     const ref = useRef(null);
     let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
     useEffect(()=> {
-        /*const int = setInterval(() => {
-                if (sec !== 59) {
-                setSec((prev)=> ({...prev, sec: ++sec}));
-            } else {
-                setSec(0);
-                setMin((prev)=> ({...prev, min: ++min}));
-            }
-        }, 1);
-        setIntervalTime(int);*/
+        const int = setInterval(() => {
+                setSec(sec=> sec + 1);
+            }, 1000);
         setCurrentQuestion(listChoose[0]);
         const shuffledArray = famillyToPlay.sort((a, b) => 0.5 - Math.random());
         setCardsPlay(shuffledArray);
+        return () => clearInterval(int);
     },[])
 
     const reset = () => {
@@ -155,9 +150,11 @@ const PlayCardFamilly = ({navigation, route}) => {
         console.log(id);
         //if(id === 0 || currentItemIndex !== 0) goNextItem();
         if(id === 3 ) {
-            setCurrentQuestionIndex(0);
-            setCurrentQuestion(listChoose[0]);
-            goNextItem()
+            if(currentItemIndex !== cardsPlay.length -1){
+                setCurrentQuestionIndex(0);
+                setCurrentQuestion(listChoose[0]);
+                goNextItem();
+            }
         } else {
             id++;
             setCurrentQuestionIndex(id);
@@ -182,9 +179,9 @@ const PlayCardFamilly = ({navigation, route}) => {
         <StatusBar style="auto" />
         <Header>
             <ChronoContainer>
-                <ChronoText>{padToTwo(min)}</ChronoText>
+                <ChronoText>{padToTwo(Math.trunc(sec/60))}</ChronoText>
                 <ChronoText>:</ChronoText>
-                <ChronoText>{padToTwo(sec)}</ChronoText>
+                <ChronoText>{padToTwo(sec%60)}</ChronoText>
             </ChronoContainer>
             <CloseButton>
                 <TouchableOpacity style={{position: "absolute", right:0}} onPress={() => navigation.goBack()}>
@@ -223,7 +220,7 @@ const PlayCardFamilly = ({navigation, route}) => {
                 </TouchableBtnNext>
             </ButtonContainer>
             <ChronoButton>
-            {currentItemIndex === cardsPlay.length -1 &&
+            {currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3 &&
                 <TouchableBtnFinish onPress={()=> stopChrono()}>
                     <TextFinish>Terminer</TextFinish>
                 </TouchableBtnFinish>}
