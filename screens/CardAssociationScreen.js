@@ -269,6 +269,52 @@ const CardAssociationScreen = ({route, navigation}) => {
         setRecordStarted(false);*/
     }
 
+    const handleStartSpeechForVerbe = async () => {
+        /*try {
+            await Voice.start("fr-FR");
+            setRecordStarted(true);
+        } catch (e){
+            console.error(e);
+        }  */
+    }
+
+    const handleStopSpeechForVerbe = async () => {
+        /*await Voice.stop();
+        setPersonnage(results.join(" "));
+        setRecordStarted(false);*/
+    }
+
+    const handleStartSpeechForObjet = async () => {
+        /*try {
+            await Voice.start("fr-FR");
+            setRecordStarted(true);
+        } catch (e){
+            console.error(e);
+        }  */
+    }
+
+    const handleStopSpeechForObjet = async () => {
+        /*await Voice.stop();
+        setPersonnage(results.join(" "));
+        setRecordStarted(false);*/
+    }
+
+    const handleStartSpeechForLieu = async () => {
+        /*try {
+            await Voice.start("fr-FR");
+            setRecordStarted(true);
+        } catch (e){
+            console.error(e);
+        }  */
+    }
+
+    const handleStopSpeechForLieu = async () => {
+        /*await Voice.stop();
+        setPersonnage(results.join(" "));
+        setRecordStarted(false);*/
+    }
+
+
 
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
@@ -315,18 +361,45 @@ const CardAssociationScreen = ({route, navigation}) => {
                 <InputContainer>
                     <PreText>Verbe</PreText>
                     <TextInput ref={refVerbe} value={verbe} onChangeText={(e)=> setVerbe(e)} />
+                    <PostText>
+                    {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForVerbe()}>
+                            <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                        </TouchableOpacity> }
+                    {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForVerbe()}>
+                        <MaterialCommunityIcons name="record" size={20} color="red" />
+                        </TouchableOpacity> }
+
+                    </PostText>
                 </InputContainer>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback onPress={() => handleFocusObjet()}>
                 <InputContainer >
                     <PreText>Objet</PreText>
                     <TextInput ref={refObjet} value={objet} onChangeText={(e)=> setObjet(e)} />
+                    <PostText>
+                    {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForObjet()}>
+                            <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                        </TouchableOpacity> }
+                    {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForObjet()}>
+                        <MaterialCommunityIcons name="record" size={20} color="red" />
+                        </TouchableOpacity> }
+
+                    </PostText>
                 </InputContainer>
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback onPress={() => handleFocusLieu()}>
                 <InputContainer>
                     <PreText>Lieu</PreText>
                     <TextInput ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
+                    <PostText>
+                    {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForLieu()}>
+                            <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                        </TouchableOpacity> }
+                    {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForLieu()}>
+                        <MaterialCommunityIcons name="record" size={20} color="red" />
+                        </TouchableOpacity> }
+
+                    </PostText>
                 </InputContainer>
                 </TouchableWithoutFeedback>
                 <SaveButton>

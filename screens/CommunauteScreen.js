@@ -1,6 +1,10 @@
 import React from "react";
-import { SafeAreaView, ScrollView, StatusBar } from "react-native";
+import { SafeAreaView, ScrollView, StatusBar, Dimensions } from "react-native";
 import styled from 'styled-components/native';
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const widthContent = screenWidth  - 50;
 
 const Container = styled.ImageBackground`
   flex:1;
@@ -29,6 +33,38 @@ color: #FFFFFF;
   margin-right: 40px;
 `;
 
+const ConnecterSection = styled.View`
+    justify-content: center;
+  align-items: center;
+`;
+
+const Mappemonde = styled.Image`
+  width: ${widthContent}px;
+  height: 200px;
+`;
+
+const LinkText = styled.Text`
+  color: #FFFFFF;
+  text-transform: uppercase;
+  font-size: 12px;
+`;
+
+const ChallengeSection = styled.View`
+    justify-content: center;
+  align-items: center;
+`;
+const EvenementSection = styled.View`
+    justify-content: center;
+  align-items: center;
+`;
+const ClassementSection = styled.View`
+    justify-content: center;
+  align-items: center;
+`;
+const GroupesSection = styled.View`
+    justify-content: center;
+  align-items: center;
+`;
 const CommunauteScreen = () => {
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
@@ -37,9 +73,22 @@ const CommunauteScreen = () => {
             <TitleBar>
                 <Title>Communauté</Title>
             </TitleBar>
-            <Subtitle >
-                Coming soon
-            </Subtitle>
+            <ConnecterSection>
+                <Mappemonde source={require("../assets/mappemonde.png")}/>
+                <LinkText>Se connecter aux membres</LinkText>
+            </ConnecterSection>
+            <ChallengeSection>
+
+            </ChallengeSection>
+            <EvenementSection>
+
+            </EvenementSection>
+            <ClassementSection>
+
+            </ClassementSection>
+            <GroupesSection>
+
+            </GroupesSection>
             </ScrollView>
           </SafeAreaView>
         </Container>);
