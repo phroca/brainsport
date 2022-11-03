@@ -2,7 +2,9 @@ import React, { useRef, useState } from "react";
 import { SafeAreaView, ScrollView, StatusBar, Dimensions, Animated } from "react-native";
 import styled from 'styled-components/native';
 import {challengeList} from "../challenge-list";
+import {eventList} from "../event-list";
 import ChallengeCard from "../components/ChallengeCard";
+import EventCard from "../components/EventCard";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -36,7 +38,7 @@ color: #FFFFFF;
 `;
 
 const ConnecterSection = styled.View`
-    justify-content: center;
+  justify-content: center;
   align-items: center;
 `;
 
@@ -51,24 +53,53 @@ const LinkText = styled.Text`
   font-size: 12px;
 `;
 
-const ChallengeSection = styled.View`
-    justify-content: center;
+const CommuSection = styled.View`
+  justify-content: center;
   align-items: center;
+  margin-left: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
 `;
+
+const SectionTitle = styled.View`
+  width: ${screenWidth}px;
+  margin-left: 10px;
+  text-align: left;
+`;
+
+const SectionTitleText = styled.Text`
+  width: ${screenWidth}px;
+  color: #FFFFFF;
+  font-size: 20px;
+  text-transform: capitalize;
+  font-weight: bold;
+`;
+
+
 const EvenementSection = styled.View`
-    justify-content: center;
+  justify-content: center;
   align-items: center;
 `;
+
 const ClassementSection = styled.View`
-    justify-content: center;
+  justify-content: center;
   align-items: center;
 `;
+
 const GroupesSection = styled.View`
-    justify-content: center;
+  justify-content: center;
   align-items: center;
 `;
+
+const CardContainer = styled.View`
+  margin-right: 10px;
+  margin-left: 10px;
+`;
+
 const CommunauteScreen = () => {
     const challengeRef = useRef(null);
+    const eventRef = useRef(null);
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
 
     const updateCurrentItemIndex = element => {
@@ -87,7 +118,13 @@ const CommunauteScreen = () => {
                 <Mappemonde source={require("../assets/mappemonde.png")}/>
                 <LinkText>Se connecter aux membres</LinkText>
             </ConnecterSection>
-            <ChallengeSection>
+            <CommuSection>
+              <SectionTitle>
+                <SectionTitleText>
+                  Challenge
+                </SectionTitleText>
+                
+              </SectionTitle>
             <Animated.FlatList
             data={challengeList}
             ref={challengeRef}
@@ -95,28 +132,62 @@ const CommunauteScreen = () => {
             keyExtractor={item => "card-"+item.id}
             horizontal
             scrollEventThrottle={32}
-            onMomentumScrollEnd={updateCurrentItemIndex}
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             renderItem={({item, index}) => {
                 return (<>
-                    <ChallengeCard
-                    key={"card-"+item.id}
-                    challengeObject={item}
-                    />
+                    <CardContainer>
+                      <ChallengeCard
+                      key={"card-"+item.id}
+                      challengeObject={item}
+                      />
+                    </CardContainer>
                 </>);
             }}
             />
-            </ChallengeSection>
-            <EvenementSection>
-
-            </EvenementSection>
-            <ClassementSection>
-
-            </ClassementSection>
-            <GroupesSection>
-
-            </GroupesSection>
+            </CommuSection>
+            <CommuSection>
+              <SectionTitle>
+                <SectionTitleText>
+                  Evenements
+                </SectionTitleText>
+                
+              </SectionTitle>
+            <Animated.FlatList
+            data={eventList}
+            ref={eventRef}
+            style={{flex: 1}}
+            keyExtractor={item => "card-"+item.id}
+            horizontal
+            scrollEventThrottle={32}
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            renderItem={({item, index}) => {
+                return (<>
+                    <CardContainer>
+                      <EventCard
+                      key={"card-"+item.id}
+                      eventObject={item}
+                      />
+                    </CardContainer>
+                </>);
+            }}
+            />
+            </CommuSection>
+            <CommuSection>
+              <SectionTitle>
+                <SectionTitleText>
+                  Classement
+                </SectionTitleText>
+              </SectionTitle>
+            </CommuSection>
+            <CommuSection>
+              <SectionTitle>
+                <SectionTitleText>
+                  Groupes
+                </SectionTitleText>
+              </SectionTitle>
+            </CommuSection>
             </ScrollView>
           </SafeAreaView>
         </Container>);

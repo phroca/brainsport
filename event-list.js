@@ -1,7 +1,7 @@
-[{
+export const eventList = [{
         "id": "evt-1",
         "title": "EVENT 1",
-        "image": "../assets/evenements/event.jpeg",
+        "image": require("./assets/evenements/event.jpeg"),
         "date": "2022-11-01",
         "objectif": "effectuer event 1",
         "regles": "Sed ut tellus at enim ullamcorper faucibus ac ac sem. Ut erat lacus, efficitur nec libero ut, molestie pretium arcu. Pellentesque elementum cursus hendrerit. Ut a magna ante.",
@@ -12,7 +12,7 @@
     {
         "id": "evt-2",
         "title": "EVENT 2",
-        "image": "../assets/evenements/event2.jpeg",
+        "image": require("./assets/evenements/event2.jpg"),
         "date": "2022-12-10",
         "objectif": "effectuer event 2",
         "regles": "Sed ut tellus at enim ullamcorper faucibus ac ac sem. Ut erat lacus, efficitur nec libero ut, molestie pretium arcu. Pellentesque elementum cursus hendrerit. Ut a magna ante.",

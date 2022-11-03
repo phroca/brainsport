@@ -48,7 +48,7 @@ const CardFooter = styled.View`
     width: ${widthContent}px;
     border-radius: 5px;
     height: 50px;
-    background: #FFFFFF55;
+    background: #000000AF;
     position: absolute;
     bottom: 5px;
     padding: 10px;
@@ -61,21 +61,15 @@ const CardTitle = styled.Text`
 `;
 
 
-const ChallengeCard = ({challengeObject}) => {
-    const calculateDate = (dateDebut, dateFin) =>{
+const EventCard = ({eventObject}) => {
+    const calculateDate = (dateEvent) =>{
         const dateNow = new Date();
-        const dateDepart = new Date(dateDebut)
-        const dateArrivee = new Date(dateFin)
-        if(dateNow > dateArrivee) return "challenge terminé";
-        if(dateNow < dateDepart) {
-            const diffTime = dateDepart.getTime() - dateNow.getTime();
+        const date = new Date(dateEvent);
+        if(dateNow > date) return "évènement terminé";
+        if(dateNow < date) {
+            const diffTime = date.getTime() - dateNow.getTime();
             const diffInDays = Math.trunc(diffTime / (1000 * 3600 * 24));
             return "commence dans " + diffInDays + "jours"
-        }
-        if(dateNow > dateDepart && dateNow < dateArrivee) {
-            const diffTime = dateArrivee.getTime() - dateNow.getTime();
-            const diffInDays = Math.trunc(diffTime / (1000 * 3600 * 24));
-            return "termine dans " + diffInDays + " jours"
         }
     }
 return(
@@ -83,13 +77,13 @@ return(
         <CardHeader>
             <CardPin>
                 <PinText>
-                    {calculateDate(challengeObject?.periode.debut, challengeObject?.periode.fin)}
+                    {calculateDate(eventObject?.date)}
                 </PinText>
             </CardPin>
-            <CardImage source={challengeObject.image}/>
+            <CardImage source={eventObject.image}/>
             <CardFooter>
                 <CardTitle>
-                    {challengeObject.title}
+                    {eventObject.title}
                 </CardTitle>
             </CardFooter>
         </CardHeader>
@@ -100,4 +94,4 @@ return(
 
 }
 
-export default ChallengeCard;
+export default EventCard;
