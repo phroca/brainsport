@@ -1,6 +1,8 @@
-import React from "react";
-import { SafeAreaView, ScrollView, StatusBar, Dimensions } from "react-native";
+import React, { useRef, useState } from "react";
+import { SafeAreaView, ScrollView, StatusBar, Dimensions, Animated } from "react-native";
 import styled from 'styled-components/native';
+import {challengeList} from "../challenge-list";
+import ChallengeCard from "../components/ChallengeCard";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -66,6 +68,14 @@ const GroupesSection = styled.View`
   align-items: center;
 `;
 const CommunauteScreen = () => {
+    const challengeRef = useRef(null);
+    const [currentItemIndex, setCurrentItemIndex] = useState(0);
+
+    const updateCurrentItemIndex = element => {
+      const contentOffsetX = element.nativeEvent.contentOffset.x;
+      const currentIndex = Math.round(contentOffsetX / screenWidth);
+      setCurrentItemIndex(currentIndex);
+  };
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
                     <SafeAreaView>
@@ -78,7 +88,25 @@ const CommunauteScreen = () => {
                 <LinkText>Se connecter aux membres</LinkText>
             </ConnecterSection>
             <ChallengeSection>
-
+            <Animated.FlatList
+            data={challengeList}
+            ref={challengeRef}
+            style={{flex: 1}}
+            keyExtractor={item => "card-"+item.id}
+            horizontal
+            scrollEventThrottle={32}
+            onMomentumScrollEnd={updateCurrentItemIndex}
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            renderItem={({item, index}) => {
+                return (<>
+                    <ChallengeCard
+                    key={"card-"+item.id}
+                    challengeObject={item}
+                    />
+                </>);
+            }}
+            />
             </ChallengeSection>
             <EvenementSection>
 
