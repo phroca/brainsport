@@ -7,7 +7,9 @@ import { Auth } from 'aws-amplify';
 import Loading from "../components/Loading";
 import CardService from "../services/Card.service";
 
-const screenHeight = Dimensions.get("window").height;
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const widthContent = screenWidth  - 80;
 
 const Container = styled.ImageBackground`
   width: 100%;
@@ -31,7 +33,7 @@ const BrainsportIconText = styled.Image`
 
 const TextInput = styled.TextInput`
   border: 1px solid #53565f;
-  width: 295px;
+  width: ${widthContent}px;
   height: 60px;
   border-radius: 10px;
   font-size: 17px;
@@ -67,7 +69,7 @@ const SubTitle = styled.Text`
 
 const ButtonView = styled.View`
   background: #FFFFFF;
-  width: 295px;
+  width: ${widthContent}px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -77,7 +79,7 @@ const ButtonView = styled.View`
 `;
 const ButtonViewSecondary = styled.View`
   background: #3c4560;
-  width: 295px;
+  width: ${widthContent}px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -98,7 +100,7 @@ const ButtonTextSecondary = styled.Text`
 
 const ButtonViewLink = styled.View`
   background: transparent;
-  width: 295px;
+  width: ${widthContent}px;
   justify-content: center;
   align-items: center;
   margin-top: 10px;
@@ -202,7 +204,7 @@ const SignInScreen = ({navigation}) => {
               <TextInput ref={refPassword} secureTextEntry={true} onChangeText={(p)=> setPassword(p)} />
           </InputContainer>
         </TouchableWithoutFeedback>
-        <TouchableOpacity onPress={()=> {}}>
+        <TouchableOpacity onPress={()=> navigation.navigate("Mdp Oublié")}>
             <ButtonViewLink>
               <ButtonTextLink>Mot de passe oublié ?</ButtonTextLink>
             </ButtonViewLink>

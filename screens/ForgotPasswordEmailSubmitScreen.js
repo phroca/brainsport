@@ -1,7 +1,11 @@
 import React, { useState, useRef } from "react";
-import { TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import { Dimensions,TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import styled from "styled-components/native";
 import { Auth } from 'aws-amplify';
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const widthContent = screenWidth  - 80;
 
 const Container = styled.View`
   position: absolute;
@@ -23,7 +27,7 @@ const ImageBG = styled.Image`
 
 const TextInput = styled.TextInput`
   border: 1px solid #dbdfea;
-  width: 295px;
+  width: ${widthContent}px;
   height: 44px;
   border-radius: 10px;
   font-size: 17px;
@@ -64,7 +68,7 @@ const SubTitle = styled.Text`
 
 const ButtonView = styled.View`
   background: #5263ff;
-  width: 295px;
+  width: ${widthContent}px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -75,7 +79,7 @@ const ButtonView = styled.View`
 
 const ButtonViewSecondary = styled.View`
   background: #131516;
-  width: 295px;
+  width: ${widthContent}px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -92,7 +96,7 @@ const ButtonText = styled.Text`
 
 const ButtonViewLink = styled.View`
   background: transparent;
-  width: 295px;
+  width: ${widthContent}px;
   justify-content: center;
   align-items: center;
   margin-top: 10px;

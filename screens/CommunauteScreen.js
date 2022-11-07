@@ -40,6 +40,7 @@ color: #FFFFFF;
 const ConnecterSection = styled.View`
   justify-content: center;
   align-items: center;
+  margin-bottom: 30px;
 `;
 
 const Mappemonde = styled.Image`

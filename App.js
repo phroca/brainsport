@@ -9,10 +9,12 @@ Amplify.configure(awsconfig);
 
 const App = () => {
   return (
+    <>
     <NavigationContainer>
       <AppNavigator />
-      <Toast />
     </NavigationContainer>
+    <Toast />
+    </>
   );
 }
 

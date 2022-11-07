@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Dimensions, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import { Auth } from 'aws-amplify';
+import Toast from 'react-native-toast-message';
 
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const widthContent = screenWidth  - 80;
 
 const Container = styled.View`
   position: absolute;
@@ -22,9 +28,13 @@ const ImageBG = styled.Image`
   height: 100%;
 `;
 
+const CloseButton = styled.View`
+  width: ${widthContent}px;
+  justify-content: flex-start;
+`;
 const TextInput = styled.TextInput`
   border: 1px solid #dbdfea;
-  width: 295px;
+  width: ${widthContent}px;
   height: 44px;
   border-radius: 10px;
   font-size: 17px;
@@ -46,6 +56,13 @@ const Logo = styled.Image`
   margin-top: 50px;
 `;
 
+const TitleBar = styled.View`
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+  margin-bottom: 30px;
+`;
+
 const Title = styled.Text`
   margin-top: 20px;
   font-size: 22px;
@@ -65,7 +82,7 @@ const SubTitle = styled.Text`
 
 const ButtonView = styled.View`
   background: white;
-  width: 295px;
+  width: ${widthContent}px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -76,7 +93,7 @@ const ButtonView = styled.View`
 
 const ButtonViewSecondary = styled.View`
   background: #131516;
-  width: 295px;
+  width: ${widthContent}px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -93,7 +110,7 @@ const ButtonText = styled.Text`
 
 const ButtonViewLink = styled.View`
   background: transparent;
-  width: 295px;
+  width: ${widthContent}px;
   justify-content: center;
   align-items: center;
   margin-top: 10px;
@@ -131,21 +148,60 @@ const ConfirmationSignUpScreen = ({route, navigation}) => {
     async function handleConfirmSignUp() {
         try {
           await Auth.confirmSignUp(email, code);
+          Toast.show({
+            type: 'success',
+            text1: 'Inscription Réussie',
+            text2:  "L'inscription est confirmée. Veuillez vous connecter."
+          });
           navigation.navigate("Signin");
         } catch (error) {
-            console.log('error confirming sign up', error);
+          Toast.show({
+            type: 'error',
+            text1: "Erreur de validation" ,
+            text2: "veuillez réessayer ultérieurement."
+          });
+          console.log('error confirming sign up', error);
         }
     }
-
+    const handleResendConfirmCode = async () =>{
+      try {
+        await Auth.resendSignUp(email);
+        Toast.show({
+          type: 'success',
+          text1: 'Code Renvoyé',
+          text2:  "Le code est renvoyé à l'adresse : "+ email
+        });
+        console.log('code renvoyé');
+      } catch (err) {
+          Toast.show({
+            type: 'error',
+            text1: "Erreur à l'envoi du code" ,
+            text2: "veuillez réessayer ultérieurement."
+          });
+          console.log('erreur de renvoi du code: ', err);
+      }
+    }
 return (
     <Container>
     <ImageBG source={require("../assets/brainsport-bg.png")} />
     <ConfirmationForm>
-      <Title>Code de confirmation</Title>
+      <TitleBar>
+        <CloseButton>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        </CloseButton>
+        <Title>Code de confirmation</Title>
+      </TitleBar>
       <InputContainer>
             <PreText>Code</PreText>
             <TextInput onChangeText={(e)=> setCode(e)}/>
         </InputContainer>
+        <TouchableOpacity onPress={()=> handleResendConfirmCode()}>
+            <ButtonView>
+              <ButtonText>Envoyer un nouveau code</ButtonText>
+            </ButtonView>
+        </TouchableOpacity>
       <TouchableOpacity onPress={()=> handleConfirmSignUp()}>
             <ButtonView>
               <ButtonText>Confirmer</ButtonText>

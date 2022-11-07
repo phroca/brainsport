@@ -1,11 +1,14 @@
 import Auth from "@aws-amplify/auth";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import { ScrollView, TouchableOpacity } from "react-native";
+import { Dimensions, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from 'styled-components/native';
 import Card from "../components/Card";
 import CardService from "../services/Card.service";
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const widthContent = screenWidth  - 80;
 
 const Container = styled.ImageBackground`
   flex:1;
@@ -36,7 +39,7 @@ color: #FFFFFF;
 
 const ButtonView = styled.View`
   background: #FFFFFF;
-  width: 295px;
+  width: ${widthContent}px;
   height: 50px;
   justify-content: center;
   align-items: center;

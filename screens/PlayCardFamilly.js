@@ -107,18 +107,26 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [ cardsPlay, setCardsPlay] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState("");
+    const [isFinished, setFinished] = useState(false);
     const ref = useRef(null);
     let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
     useEffect(()=> {
-        const int = setInterval(() => {
+        let int = null;
+        if(isFinished === false){
+            int = setInterval(() => {
                 setSec(sec=> sec + 1);
             }, 1000);
+        } else {
+            clearInterval(int);
+        } 
+        return () => clearInterval(int);
+    },[isFinished])
+
+    useEffect(() => {
         setCurrentQuestion(listChoose[0]);
         const shuffledArray = famillyToPlay.sort((a, b) => 0.5 - Math.random());
         setCardsPlay(shuffledArray);
-        return () => clearInterval(int);
-    },[])
-
+    }, [])
     const reset = () => {
         clearInterval(this.interval);
     }
@@ -147,7 +155,6 @@ const PlayCardFamilly = ({navigation, route}) => {
 
     const handleNextOnList = () => {
         let id = currentQuestionIndex;
-        console.log(id);
         //if(id === 0 || currentItemIndex !== 0) goNextItem();
         if(id === 3 ) {
             if(currentItemIndex !== cardsPlay.length -1){
@@ -171,7 +178,10 @@ const PlayCardFamilly = ({navigation, route}) => {
     };
 
     const stopChrono = () => {
-        navigation.navigate("Accueil");
+        setFinished(true);
+        CardService.saveProgressionTime({timeInSec: sec, famillyPlayed: famillyToPlay}).then(() => {
+            navigation.navigate("Accueil");
+        });
     }
 
     return(
@@ -214,11 +224,12 @@ const PlayCardFamilly = ({navigation, route}) => {
             <TitleChooseContainer>
                 <TitleChoose>{currentQuestion} ?</TitleChoose>
             </TitleChooseContainer>
+            { !(currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3) &&
             <ButtonContainer>
                 <TouchableBtnNext onPress={() => handleNextOnList()}>
                     <MaterialCommunityIcons name="arrow-right-thin-circle-outline" size={40} color="#FFFFFF" />
                 </TouchableBtnNext>
-            </ButtonContainer>
+            </ButtonContainer>}
             <ChronoButton>
             {currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3 &&
                 <TouchableBtnFinish onPress={()=> stopChrono()}>

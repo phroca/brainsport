@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Dimensions, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from "react-native";
 import styled from 'styled-components/native';
 import CardService from '../services/Card.service';
@@ -157,13 +157,31 @@ color: #FFFFFF;
   font-size: 25px;
   font-weight: bold;
 `;
+const ProgresNumberLittle = styled.Text`
+color: #FFFFFF;
+  font-size: 14px;
+  font-weight: bold;
+`;
 const ProgresLabel = styled.Text`
 color: #FFFFFF;
   font-size: 14px;
 `;
+const ProgresLabelCenter = styled.Text`
+color: #FFFFFF;
+  font-size: 14px;
+  text-align: center;
+`;
 
 const ProfilScreen = ({navigation}) => {
-
+  const [listProgress, setListProgress] = useState([]);
+  let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
+  useEffect(() => {
+    CardService.getProgressionTime().then((result) => {
+      if(result) {
+        setListProgress(result);
+      }
+    })
+  }, [])
   const handleReinit = () => {
     CardService.clearAll().then(()=> {
       Toast.show({
@@ -178,6 +196,13 @@ const ProfilScreen = ({navigation}) => {
     Auth.signOut().then(()=> {
       navigation.navigate("Signin");
     })
+  }
+
+  const getBestTime = (listProgress) => {
+    const array = [];
+    listProgress.forEach(item => array.push(item.time))
+    const arraySorted = array.sort((a, b) => {return b - a});
+    return arraySorted[arraySorted.length -1];
   }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
@@ -203,8 +228,16 @@ const ProfilScreen = ({navigation}) => {
                   </ProgresLabel>
                 </ProgresCard>
                 <ProgresCard>
+                  <ProgresNumberLittle>
+                  {padToTwo(Math.trunc(getBestTime(listProgress)/60))}: {padToTwo(getBestTime(listProgress)%60)}
+                  </ProgresNumberLittle>
+                  <ProgresLabelCenter>
+                    meilleur temps
+                  </ProgresLabelCenter>
+                </ProgresCard>
+                <ProgresCard>
                   <ProgresNumber>
-                      0
+                      {listProgress.length}
                   </ProgresNumber>
                   <ProgresLabel>
                     exos

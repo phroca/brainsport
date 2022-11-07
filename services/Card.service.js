@@ -164,6 +164,36 @@ const updateFamillyProgress = async(famillyProgressIn, famillyCard, flagFamillyR
     }
 }
 
+const saveProgressionTime = async({timeInSec, famillyPlayed}) => {
+    const progress = {
+        "time": timeInSec,
+        famillyPlayed
+    }
+    try {
+        const jsonValue = await AsyncStorage.getItem('@user_Timeprogress');
+        let listTimeProgress = []
+        if(jsonValue != null) {
+            listTimeProgress = JSON.parse(jsonValue);
+            listTimeProgress.push(progress);
+        } else {
+            listTimeProgress.push(progress);
+        }
+        const newJsonValue = JSON.stringify(listTimeProgress);
+        await AsyncStorage.setItem('@user_Timeprogress', newJsonValue);
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+const getProgressionTime = async() => {
+    try{
+        const jsonValue = await AsyncStorage.getItem('@user_Timeprogress');
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch(e){
+        console.log(e);
+    }
+}
+
 const clearAll = async () => {
     try {
       await AsyncStorage.clear()
@@ -180,6 +210,8 @@ const CardService ={
     initFamillyProgress,
     getFamillyProgress,
     updateFamillyProgress,
+    getProgressionTime,
+    saveProgressionTime,
     clearAll
 };
 

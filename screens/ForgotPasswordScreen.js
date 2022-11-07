@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, Dimensions } from "react-native";
 import styled from "styled-components/native";
 import Toast from 'react-native-toast-message';
 import { Auth } from 'aws-amplify';
+import { Ionicons } from "@expo/vector-icons";
 
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const widthContent = screenWidth  - 80;
 
 const Container = styled.View`
   position: absolute;
@@ -24,15 +28,15 @@ const ImageBG = styled.Image`
 `;
 
 const TextInput = styled.TextInput`
-  border: 1px solid #dbdfea;
-  width: 295px;
+  border: 1px solid #53565f;
+  width: ${widthContent}px;
   height: 44px;
   border-radius: 10px;
   font-size: 17px;
-  color: #3c4560;
+  color: #FFFFFF;
   padding-left: 120px;
   margin-top: 20px;
-  background: white;
+  background: #3c4560;
   z-index: 1;
 `;
 
@@ -47,12 +51,24 @@ const Logo = styled.Image`
   margin-top: 50px;
 `;
 
+const TitleBar = styled.View`
+  justify-content: center;
+  align-items: center;
+
+  margin-bottom: 30px;
+`;
+
+const CloseButton = styled.View`
+  width: ${widthContent}px;
+  justify-content: flex-start;
+`;
+
 const Title = styled.Text`
   margin-top: 20px;
   font-size: 22px;
   font-weight: bold;
   width: 275px;
-  color: #131516;
+  color: #FFFFFF;
   text-align: left;
 `;
 
@@ -65,8 +81,8 @@ const SubTitle = styled.Text`
 `;
 
 const ButtonView = styled.View`
-  background: #5263ff;
-  width: 295px;
+  background: white;
+  width: ${widthContent}px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -77,7 +93,7 @@ const ButtonView = styled.View`
 
 const ButtonViewSecondary = styled.View`
   background: #131516;
-  width: 295px;
+  width: ${widthContent}px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -87,14 +103,14 @@ const ButtonViewSecondary = styled.View`
 `;
 
 const ButtonText = styled.Text`
-  color: white;
+  color: #000000;
   font-weight: bold;
   font-size: 14px;
 `;
 
 const ButtonViewLink = styled.View`
   background: transparent;
-  width: 295px;
+  width: ${widthContent}px;
   justify-content: center;
   align-items: center;
   margin-top: 10px;
@@ -107,6 +123,7 @@ const ButtonTextLink = styled.Text`
 `;
 
 const PreText = styled.Text`
+color: #FFFFFF;
   width: 100px;
   height: 24px;
   font-weight: bold;
@@ -129,6 +146,11 @@ const ForgotPasswordScreen = ({navigation}) => {
     async function handleConfirmForgotPassword() {
         try {
           await Auth.forgotPassword(email);
+          Toast.show({
+            type: 'success',
+            text1: 'Envoi du code de confirmation',
+            text2:  "Un mail vous a été envoyé avec un code pour le mot de passe."
+          });
           navigation.navigate("Changement Mdp");
         } catch (error) {
             console.log('error confirming sign up', error);
@@ -139,7 +161,14 @@ return (
     <Container>
     <ImageBG source={require("../assets/brainsport-bg.png")} />
     <ConfirmationForm>
-      <Title>Oubli du mot de passe</Title>
+    <TitleBar>
+        <CloseButton>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+        </CloseButton>
+        <Title>Oubli du mot de passe</Title>
+      </TitleBar>
       <InputContainer>
             <PreText>adresse email</PreText>
             <TextInput onChangeText={(e)=> setEmail(e)}/>
