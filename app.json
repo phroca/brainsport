@@ -1,44 +1,44 @@
 {
-  "expo": {
-    "name": "brainsport",
-    "slug": "brainsport",
-    "version": "0.0.2",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "updates": {
-      "fallbackToCacheTimeout": 0
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.irocap.brainsport"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
-      },
-      "permissions": [
-        "android.permission.RECORD_AUDIO"
-      ],
-      "package": "com.irocap.brainsport"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
+    "expo": {
+        "name": "brainsport",
+        "slug": "brainsport",
+        "version": "0.0.3",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "light",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "updates": {
+            "fallbackToCacheTimeout": 0
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.irocap.brainsport"
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#FFFFFF"
+            },
+            "permissions": [
+                "android.permission.RECORD_AUDIO"
+            ],
+            "package": "com.irocap.brainsport"
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
 
-    "extra": {
-      "eas": {
-        "projectId": "77686e4a-6456-4620-b8ad-baf81be012d5"
-      }
+        "extra": {
+            "eas": {
+                "projectId": "77686e4a-6456-4620-b8ad-baf81be012d5"
+            }
+        }
     }
-  }
 }

@@ -103,7 +103,7 @@ const ButtonViewSecondary = styled.View`
 `;
 
 const ButtonText = styled.Text`
-  color: white;
+  color: #000000;
   font-weight: bold;
   font-size: 14px;
 `;
