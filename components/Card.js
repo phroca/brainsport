@@ -13,15 +13,16 @@ const CardContainer = styled.View`
 
 const ValueContainerHeader = styled.View`
     margin: 10px;
-    flex: .1;
+    height: 30px;
+    flex: .1; 
 `;
 
-const TextHeader = styled.Text`
-    font-size: 20px;
+const TextHeader = styled.View`
+    height: 30px;
     color: ${props => (props.couleur === "pique" || props.couleur === "trefle") ? "black" : "red"};
 `
-const TextFooter = styled.Text`
-    font-size: 20px;
+const TextFooter = styled.View`
+    height: 30px;
     color: ${props => (props.couleur === "pique" || props.couleur === "trefle") ? "black" : "red"};
 `
 
@@ -31,9 +32,14 @@ const ValueContainerFooter = styled.View`
     flex-direction: row-reverse;
 `;
 const ColorContainer = styled.View`
-    flex: .8;
+    flex: .8; 
     justify-content: center;
     align-items: center;
+`;
+const ColorText = styled.Text`
+    color: ${props => (props.couleur === "pique" || props.couleur === "trefle") ? "black" : "red"};
+    text-align: center;
+    font-size: 80px;
 `;
 
 const FoldColorContainer = styled.View`
@@ -52,16 +58,16 @@ const Card = ({valeur, couleur, isFold = false}) => {
 
     const namingColorCard = (couleur) => {
         if(couleur === "pique"){
-            return <MaterialCommunityIcons name="cards-spade" size={80} color="black" />;
+            return <MaterialCommunityIcons name="cards-spade" size={20} color="black" />;
         } 
         if(couleur === "carreau"){
-            return <MaterialCommunityIcons name="cards-diamond" size={80} color="red" />;
+            return <MaterialCommunityIcons name="cards-diamond" size={20} color="red" />;
         } 
         if(couleur === "coeur"){
-            return <MaterialCommunityIcons name="cards-heart" size={80} color="red" />;
+            return <MaterialCommunityIcons name="cards-heart" size={20} color="red" />;
         } 
         if(couleur === "trefle"){
-            return <MaterialCommunityIcons name="cards-club" size={80} color="black" />;
+            return <MaterialCommunityIcons name="cards-club" size={20} color="black" />;
         } 
     }
     return (
@@ -78,11 +84,13 @@ const Card = ({valeur, couleur, isFold = false}) => {
                         ) 
                     :   (<>
                             <ValueContainerHeader>
-                                <TextHeader couleur={couleur}>{valeur}</TextHeader>
+                                <TextHeader couleur={couleur}>{namingColorCard(couleur)}</TextHeader>
                             </ValueContainerHeader>
-                            <ColorContainer>{namingColorCard(couleur)}</ColorContainer>
+                            <ColorContainer>
+                                <ColorText couleur={couleur}>{valeur}</ColorText>
+                            </ColorContainer>
                             <ValueContainerFooter>
-                                <TextFooter couleur={couleur}>{valeur}</TextFooter>
+                                <TextFooter couleur={couleur}>{namingColorCard(couleur)}</TextFooter>
                             </ValueContainerFooter>
                         </>)
                      }
