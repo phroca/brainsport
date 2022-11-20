@@ -11,7 +11,7 @@ const screenHeight = Dimensions.get('window').height;
 const widthContent = screenWidth  - 50;
 
 const listChoose =[
-    "Personnage", "Verbe", "Action", "Lieu"
+    "Personnage", "Verbe", "Objet", "Lieu"
 ];
 
 const Container = styled.ImageBackground`
