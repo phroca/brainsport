@@ -159,7 +159,7 @@ const SignInScreen = ({navigation}) => {
             Toast.show({
               type: 'success',
               text1: 'Connexion réussie',
-              text2:  "Bienvenue sur E-Fusion."
+              text2:  "Bienvenue sur Brainsport."
             });
             navigation.navigate("Main");
           }).catch((error) => {
