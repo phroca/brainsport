@@ -10,35 +10,6 @@ const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const widthContent = screenWidth  - 50;
 
-
-const PROFIL_ACTIONS = [
-  {
-    "id": "pa1",
-    "title": "Mon avatar",
-    "routeName": "Avater"
-  },
-  {
-    "id": "pa2",
-    "title": "Ma bibliothèque",
-    "routeName": "Bibliothèque"
-  },
-  {
-    "id": "pa3",
-    "title": "Statistiques",
-    "routeName": "Statistiques"
-  },
-  {
-    "id": "pa4",
-    "title": "Amis",
-    "routeName": "Amis"
-  },
-  {
-    "id": "pa5",
-    "title": "Support",
-    "routeName": "Support"
-  },
-];
-
 const Container = styled.ImageBackground`
   flex:1;
   width: 100%;
@@ -175,12 +146,16 @@ color: #FFFFFF;
 const ProfilScreen = ({navigation}) => {
   const [listProgress, setListProgress] = useState([]);
   let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
+  const [currentUserDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
   useEffect(() => {
     CardService.getProgressionTime().then((result) => {
       if(result) {
         setListProgress(result);
       }
     })
+    CardService.getUserCardsMock().then((userCardsData)=> {
+      setCurrentUserDataCard(userCardsData);
+    });
   }, [])
   const handleReinit = () => {
     CardService.clearAll().then(()=> {
@@ -203,6 +178,17 @@ const ProfilScreen = ({navigation}) => {
     listProgress.forEach(item => array.push(item.time))
     const arraySorted = array.sort((a, b) => {return b - a});
     return arraySorted[arraySorted.length -1];
+  }
+  const handleAvatar = () => {
+    navigation.navigate("Avatar");
+  }
+  const handleLibrary = () => {
+    const currentUserDataCardElementInProgressFiltered = currentUserDataCard.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
+    const currentLibraryCard = {
+      "userId": currentUserDataCard.userId,
+       "cards": currentUserDataCardElementInProgressFiltered
+    }
+    navigation.navigate("Bibliothèque", {userCards: currentLibraryCard});
   }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
@@ -247,20 +233,57 @@ const ProfilScreen = ({navigation}) => {
               </ProgresSection>
             </TouchableOpacity>
             <ProfilActions>
-              {
-                PROFIL_ACTIONS.map((elt, index) => (
-                <TouchableOpacity key={elt.id} onPress={()=> navigation.navigate(elt.routeName)}>
+
+                <TouchableOpacity onPress={()=> handleAvatar()}>
                   <ProfilAction>
                     <ActionTitle>
-                      {elt.title}
+                    Mon avatar
                     </ActionTitle>
                     <ActionButton>
                       <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
                     </ActionButton>
                   </ProfilAction>
                 </TouchableOpacity>
-                ))
-              } 
+                <TouchableOpacity  onPress={()=> handleLibrary()}>
+                  <ProfilAction>
+                    <ActionTitle>
+                    Ma bibliothèque
+                    </ActionTitle>
+                    <ActionButton>
+                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                    </ActionButton>
+                  </ProfilAction>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> navigation.navigate("Statistiques")}>
+                  <ProfilAction>
+                    <ActionTitle>
+                    Statistiques
+                    </ActionTitle>
+                    <ActionButton>
+                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                    </ActionButton>
+                  </ProfilAction>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> navigation.navigate("Amis")}>
+                  <ProfilAction>
+                    <ActionTitle>
+                    Amis
+                    </ActionTitle>
+                    <ActionButton>
+                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                    </ActionButton>
+                  </ProfilAction>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=> navigation.navigate("Support")}>
+                  <ProfilAction>
+                    <ActionTitle>
+                    Support
+                    </ActionTitle>
+                    <ActionButton>
+                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                    </ActionButton>
+                  </ProfilAction>
+                </TouchableOpacity>
             </ProfilActions>       
           <ButtonAction>
             <TouchableOpacity onPress={()=> handleReinit()}>

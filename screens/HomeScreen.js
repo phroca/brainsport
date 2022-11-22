@@ -124,6 +124,7 @@ export default function HomeScreen({navigation}) {
         setCurrentUserDataCard(userCardsData);
       });
       CardService.getFamillyProgress().then((famillyProgressData) => {
+        console.log(famillyProgressData);
         setCurrentFamillyProgress(famillyProgressData);
       })
 
