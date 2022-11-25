@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 import { Auth } from 'aws-amplify';
 import Loading from "../components/Loading";
 import CardService from "../services/Card.service";
+import { Ionicons } from '@expo/vector-icons';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -40,6 +41,19 @@ const TextInput = styled.TextInput`
   color: #FFFFFF;
   padding-left: 120px;
   padding-right: 8px;
+  margin-top: 20px;
+  background: #3c4560;
+  z-index: 1;
+`;
+const TextInputPass = styled.TextInput`
+  border: 1px solid #53565f;
+  width: ${widthContent}px;
+  height: 60px;
+  border-radius: 10px;
+  font-size: 17px;
+  color: #FFFFFF;
+  padding-left: 120px;
+  padding-right: 40px;
   margin-top: 20px;
   background: #3c4560;
   z-index: 1;
@@ -122,6 +136,14 @@ color: #FFFFFF;
   left: 10px;
   z-index: 2;
 `;
+const PostIcon = styled.View`
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 40px;
+  right: 10px;
+  z-index: 2;
+`;
 
 const InputContainer = styled.View`
     position: relative;
@@ -137,7 +159,7 @@ const SignInScreen = ({navigation}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-
+    const [showPass, setShowPass] = useState(false)
 
     const refEmail = useRef(null);
     const handleFocusEmail = () => {
@@ -201,7 +223,13 @@ const SignInScreen = ({navigation}) => {
         <TouchableWithoutFeedback onPress={()=> handleFocusPassword()}>
           <InputContainer>
               <PreText>Mot de passe</PreText>
-              <TextInput ref={refPassword} secureTextEntry={true} onChangeText={(p)=> setPassword(p)} />
+              <TextInputPass ref={refPassword} secureTextEntry={!showPass} onChangeText={(p)=> setPassword(p)} />
+              <PostIcon>
+              <TouchableOpacity onPress={()=> setShowPass(pass => !pass)}>
+                {!showPass && <Ionicons name="eye-off-outline" size={16} color="#FFFFFF" />}
+                {showPass && <Ionicons name="eye-outline" size={16} color="#FFFFFF" />}
+                </TouchableOpacity>
+              </PostIcon>
           </InputContainer>
         </TouchableWithoutFeedback>
         <TouchableOpacity onPress={()=> navigation.navigate("Mdp Oublié")}>
