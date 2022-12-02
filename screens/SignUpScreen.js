@@ -121,6 +121,15 @@ const TextHint = styled.Text`
   font-size: 8px;
 `;
 
+const PostIcon = styled.View`
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 40px;
+  right: 10px;
+  z-index: 2;
+`;
+
 const SignUpScreen = ({navigation}) => {
 
     /* STATE */
@@ -137,6 +146,8 @@ const SignUpScreen = ({navigation}) => {
     const [confirmPasswordError, setConfirmPasswordError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccessful, setIsSuccessful] = useState(false);
+    const [showPass, setShowPass] = useState(false);
+    const [showConfirmPass, setShowConfirmPass] = useState(false);
 
     /* REFS */
     const refLastname = useRef(null);
@@ -262,7 +273,13 @@ return (
           <TouchableWithoutFeedback onPress={()=> handleFocusText(refPassword)}>
             <InputContainer>
                   <PreText>Mot de passe</PreText>
-                  <TextInput ref={refPassword}  isError={passwordError} secureTextEntry={true} onChangeText={(p)=> setPassword(p)}/>
+                  <TextInput ref={refPassword}  isError={passwordError} secureTextEntry={!pass} onChangeText={(p)=> setPassword(p)}/>
+                  <PostIcon>
+                    <TouchableOpacity onPress={()=> setShowPass(pass => !pass)}>
+                      {!showPass && <Ionicons name="eye-off-outline" size={16} color="#FFFFFF" />}
+                      {showPass && <Ionicons name="eye-outline" size={16} color="#FFFFFF" />}
+                    </TouchableOpacity>
+                  </PostIcon>
             </InputContainer>
           </TouchableWithoutFeedback>
           <HintContainer>
@@ -271,7 +288,13 @@ return (
           <TouchableWithoutFeedback onPress={()=> handleFocusText(refConfirmPassword)}>
             <InputContainer>
                   <PreText>Confirmation</PreText>
-                  <TextInput ref={refConfirmPassword} isError={confirmPasswordError} secureTextEntry={true} onChangeText={(p)=> setConfirmPassword(p)} />
+                  <TextInput ref={refConfirmPassword} isError={confirmPasswordError} secureTextEntry={!confirmPass} onChangeText={(p)=> setConfirmPassword(p)} />
+                  <PostIcon>
+                    <TouchableOpacity onPress={()=> setShowConfirmPass(confirmPass => !confirmPass)}>
+                      {!showConfirmPass && <Ionicons name="eye-off-outline" size={16} color="#FFFFFF" />}
+                      {showConfirmPass && <Ionicons name="eye-outline" size={16} color="#FFFFFF" />}
+                    </TouchableOpacity>
+                  </PostIcon>
             </InputContainer>
           </TouchableWithoutFeedback>
           <TouchableOpacity onPress={()=> handleSignUp()}>
