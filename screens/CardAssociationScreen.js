@@ -207,7 +207,7 @@ const CardAssociationScreen = ({route, navigation}) => {
         setPropertiesFromIndex(prevItemIndex);
     }
     const handleNextCard = () => {
-        if(checkElementNotEmpty()) {
+        if(checkElementNotEmpty() && checkCurrentElementNotEmpty()) {
             const nextItemIndex = currentItemIndex < userCards.cards.length - 1 ? currentItemIndex + 1 : userCards.cards.length - 1;
             const offset = nextItemIndex * width;
             ref?.current?.scrollToOffset({offset});      
@@ -226,6 +226,11 @@ const CardAssociationScreen = ({route, navigation}) => {
     const checkElementNotEmpty = () => {
         return personnage !== "" && verbe !== "" && objet !== "" && lieu !== "";
     }
+
+    const checkCurrentElementNotEmpty = () => {
+        return userCards.cards[currentItemIndex].personnage !== "" && userCards.cards[currentItemIndex].verbe !== "" && userCards.cards[currentItemIndex].objet !== "" && userCards.cards[currentItemIndex].lieu !== "";
+    }
+
     const checkFamillyCardDone = () => {
         const elementCarteRemplie = (element) => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu != "";
         const isListCardCoeurFamillyRemplie = userCards.cards.filter(element => element.couleur === "coeur").every(elementCarteRemplie);
