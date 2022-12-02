@@ -125,7 +125,7 @@ const PostIcon = styled.View`
   width: 20px;
   height: 20px;
   position: absolute;
-  top: 40px;
+  top: 35px;
   right: 10px;
   z-index: 2;
 `;
@@ -273,7 +273,7 @@ return (
           <TouchableWithoutFeedback onPress={()=> handleFocusText(refPassword)}>
             <InputContainer>
                   <PreText>Mot de passe</PreText>
-                  <TextInput ref={refPassword}  isError={passwordError} secureTextEntry={!pass} onChangeText={(p)=> setPassword(p)}/>
+                  <TextInput ref={refPassword}  isError={passwordError} secureTextEntry={!showPass} onChangeText={(p)=> setPassword(p)}/>
                   <PostIcon>
                     <TouchableOpacity onPress={()=> setShowPass(pass => !pass)}>
                       {!showPass && <Ionicons name="eye-off-outline" size={16} color="#FFFFFF" />}
@@ -288,7 +288,7 @@ return (
           <TouchableWithoutFeedback onPress={()=> handleFocusText(refConfirmPassword)}>
             <InputContainer>
                   <PreText>Confirmation</PreText>
-                  <TextInput ref={refConfirmPassword} isError={confirmPasswordError} secureTextEntry={!confirmPass} onChangeText={(p)=> setConfirmPassword(p)} />
+                  <TextInput ref={refConfirmPassword} isError={confirmPasswordError} secureTextEntry={!showConfirmPass} onChangeText={(p)=> setConfirmPassword(p)} />
                   <PostIcon>
                     <TouchableOpacity onPress={()=> setShowConfirmPass(confirmPass => !confirmPass)}>
                       {!showConfirmPass && <Ionicons name="eye-off-outline" size={16} color="#FFFFFF" />}
