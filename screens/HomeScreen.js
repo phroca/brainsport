@@ -1,14 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, ScrollView, TouchableOpacity, Animated, Easing, KeyboardAvoidingView, Dimensions } from 'react-native';
+import { Dimensions, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 // import Card from '../components/Card';
 // import Menu from '../components/menu/Menu';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
- import { NotificationIcon } from '../components/NotificationIcon';
- import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Avatar from '../components/Avatar';
-import Card from '../components/Card';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import Auth from "@aws-amplify/auth";
 import CardService from '../services/Card.service';
@@ -167,6 +163,7 @@ export default function HomeScreen({navigation}) {
             <TitleBar>
                 <Title>Bonjour {username} !</Title>
             </TitleBar>
+            {!(currentFamillyProgress?.carreau && currentFamillyProgress?.coeur && currentFamillyProgress?.trefle && currentFamillyProgress?.pique) &&<>
             <Subtitle >
                 Votre tableau n'est pas encore terminé ! Souhaitez-vous le continuer ?
             </Subtitle>
@@ -177,7 +174,7 @@ export default function HomeScreen({navigation}) {
                   <ButtonText>Continuer</ButtonText>
                 </ButtonView>
               </TouchableOpacity>
-            </ButtonFooter>
+            </ButtonFooter></>}
             <Subtitle >
                 Tu as la possibilité de jouer parmi les familles déja enregistrées
             </Subtitle>
