@@ -120,11 +120,10 @@ export default function HomeScreen({navigation}) {
         setCurrentUserDataCard(userCardsData);
       });
       CardService.getFamillyProgress().then((famillyProgressData) => {
-        console.log(famillyProgressData);
         setCurrentFamillyProgress(famillyProgressData);
       })
 
-    },[])
+    },[currentUSerDataCard]);
     
     const handleSelectFamilly = (couleur) => {
       const famillyFiltered = currentUSerDataCard.cards.filter(elt=> elt.couleur === couleur);
