@@ -103,11 +103,13 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [min, setMin] = useState(0);
     const [sec, setSec] = useState(0);
     const [intervalTime, setIntervalTime] = useState(null);
-    const { famillyToPlay } = route.params;
+    const { famillyToPlay, isRandom } = route.params;
     const [ cardsPlay, setCardsPlay] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState("");
     const [isFinished, setFinished] = useState(false);
+    const [currentListChoose, setCurrentListChoose] = useState(listChoose);
+
     const ref = useRef(null);
     let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
     useEffect(()=> {
@@ -123,16 +125,33 @@ const PlayCardFamilly = ({navigation, route}) => {
     },[isFinished])
 
     useEffect(() => {
-        setCurrentQuestion(listChoose[0]);
+        if(isRandom) {
+            setCurrentListChoose(shuffleList(listChoose));
+        }
+        setCurrentQuestion(currentListChoose[0]);
         const shuffledArray = famillyToPlay.sort((a, b) => 0.5 - Math.random());
         setCardsPlay(shuffledArray);
     }, [])
     const reset = () => {
         clearInterval(this.interval);
     }
-    const shuffleList = () =>{
-       const indexRandom = Math.round(Math.random()*listChoose.length);
-        return listChoose[indexRandom];
+
+    const shuffleList = (array) =>{
+        let currentIndex = array.length,  randomIndex;
+
+        // While there remain elements to shuffle.
+        while (currentIndex != 0) {
+      
+          // Pick a remaining element.
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+      
+          // And swap it with the current element.
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+      
+        return array;
     }
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const updateCurrentItemIndex = element => {
@@ -159,13 +178,16 @@ const PlayCardFamilly = ({navigation, route}) => {
         if(id === 3 ) {
             if(currentItemIndex !== cardsPlay.length -1){
                 setCurrentQuestionIndex(0);
-                setCurrentQuestion(listChoose[0]);
+                if(isRandom) {
+                    setCurrentListChoose(shuffleList(listChoose));
+                }
+                setCurrentQuestion(currentListChoose[0]);
                 goNextItem();
             }
         } else {
             id++;
             setCurrentQuestionIndex(id);
-            setCurrentQuestion(listChoose[id]); 
+            setCurrentQuestion(currentListChoose[id]); 
         }
         
     }

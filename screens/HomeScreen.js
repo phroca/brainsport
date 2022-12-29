@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import Auth from "@aws-amplify/auth";
 import CardService from '../services/Card.service';
+import CheckBox from '../components/CheckBox';
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const widthContent = screenWidth  - 50;
@@ -97,7 +98,7 @@ const Label = styled.Text`
 `;
 
 const LogoCard= styled.View`
-    flex-direction: row;
+  flex-direction: row;
   width: 140px;
   height: 32px;
   justify-content: flex-end;
@@ -106,10 +107,16 @@ const LogoCard= styled.View`
   right: 30px;
 `
 
+const RandomSection = styled.View`
+  flex-direction: column;
+  margin-top: 20px;
+  margin-bottom: 10px;
+`
 export default function HomeScreen({navigation}) {
     const [username, setUsername] = useState("");
     const [currentUSerDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
     const [currentFamillyProgress, setCurrentFamillyProgress] = useState({});
+    const [randomGame, setRandomGame] = useState(false);
 
     useEffect(()=> {
       (async() => {
@@ -127,7 +134,7 @@ export default function HomeScreen({navigation}) {
     
     const handleSelectFamilly = (couleur) => {
       const famillyFiltered = currentUSerDataCard.cards.filter(elt=> elt.couleur === couleur);
-      navigation.navigate("PlayFamilly", {famillyToPlay: famillyFiltered});
+      navigation.navigate("PlayFamilly", {famillyToPlay: famillyFiltered, isRandom: randomGame});
     }
 
   return !currentUSerDataCard ?( 
@@ -177,6 +184,9 @@ export default function HomeScreen({navigation}) {
             <Subtitle >
                 Tu as la possibilité de jouer parmi les familles déja enregistrées
             </Subtitle>
+            <RandomSection>
+              <CheckBox value={randomGame} label="Mode aléatoire" onPress={() => setRandomGame(val => !val)} />
+            </RandomSection>
             <ListPlayCard>
             {currentFamillyProgress?.carreau &&<TouchableOpacity onPress={() => handleSelectFamilly("carreau")}>
               <PlayCard >
