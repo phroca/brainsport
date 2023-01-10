@@ -66,6 +66,18 @@ const TitleChoose = styled.Text`
     font-weight: bold;
 `;
 
+const ResponseCardContainer = styled.View`
+    justify-content: center;
+    align-items: center;
+    bottom: 200px;
+`;
+
+const ResponseLabel =styled.Text`
+    color: #FFFFFF;
+    font-size: 30px;
+    font-weight: bold;
+`;
+
 const ChronoButton = styled.View`
     bottom: 100px;
     justify-content: center;
@@ -111,6 +123,7 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [isFinished, setFinished] = useState(false);
     const [currentListChoose, setCurrentListChoose] = useState(listChoose);
     const [results, setResults] = useState([]);
+    const [resultCurrentfromVoice, setResultCurrentfromVoice] = useState("");
 
     const ref = useRef(null);
     let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
@@ -154,16 +167,18 @@ const PlayCardFamilly = ({navigation, route}) => {
             const resultOut = results[results.length -1];
             const currentItem = cardsPlay[currentItemIndex];
             const currentQuestionLowercase = currentQuestion.toLowerCase();
+            setResultCurrentfromVoice(resultOut);
             console.log(resultOut);
             if(resultOut === currentItem[currentQuestionLowercase]){
                 console.log("REUSSI PASSAGE AU SUIVANT");
             }
+            setResults([]);
         }
         Voice.onSpeechStart = onSpeechStart;
         Voice.onSpeechError = onSpeechError;
         Voice.onSpeechResults = onSpeechResults;
         Voice.onSpeechVolumeChanged = onSpeechVolumeChanged;
-    
+        handleStartSpeech();
         return () => {
             Voice.destroy().then(Voice.removeAllListeners);
             setResults([]);
@@ -244,11 +259,23 @@ const PlayCardFamilly = ({navigation, route}) => {
 
     const stopChrono = () => {
         setFinished(true);
+        handleStopSpeech();
         CardService.saveProgressionTime({timeInSec: sec, famillyPlayed: famillyToPlay}).then(() => {
             navigation.navigate("Accueil");
         });
     }
 
+    const handleStartSpeech = async () => {
+        try {
+            await Voice.start("fr-FR");
+        } catch (e){
+            console.error(e);
+        }
+    }
+
+    const handleStopSpeech = async () => {
+        await Voice.stop();
+    }
     return(
     <Container source={require("../assets/brainsport-bg.png")}>
         <StatusBar style="auto" />
@@ -289,6 +316,9 @@ const PlayCardFamilly = ({navigation, route}) => {
             <TitleChooseContainer>
                 <TitleChoose>{currentQuestion} ?</TitleChoose>
             </TitleChooseContainer>
+            <ResponseCardContainer>
+            <ResponseLabel>{resultCurrentfromVoice}</ResponseLabel>
+            </ResponseCardContainer>
             { !(currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3) &&
             <ButtonContainer>
                 <TouchableBtnNext onPress={() => handleNextOnList()}>
