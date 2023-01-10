@@ -151,7 +151,16 @@ const PlayCardFamilly = ({navigation, route}) => {
     useEffect(()=> {
         const onSpeechResults = (result) => {
             console.log("result =>",result.value);
-            //setResults(result.value ?? []);
+            setResults(result.value ?? []);
+            const resultOut = results[results.length -1];
+            const currentItem = cardsPlay[currentItemIndex];
+            const currentQuestionLowercase = currentQuestion.toLowerCase();
+            setResultCurrentfromVoice(resultOut);
+            console.log(resultOut);
+            if(resultOut === currentItem[currentQuestionLowercase]){
+                console.log("REUSSI PASSAGE AU SUIVANT");
+                setResults([]);
+            }
         };
         const onSpeechStart = (data) => {
             console.log("start =>", data);
@@ -161,23 +170,9 @@ const PlayCardFamilly = ({navigation, route}) => {
         console.log(error);
         };
         
-        const onSpeechVolumeChanged = (result) => {
-            //console.log("result =>",result.value);
-            setResults(result.value ?? []);
-            const resultOut = results[results.length -1];
-            const currentItem = cardsPlay[currentItemIndex];
-            const currentQuestionLowercase = currentQuestion.toLowerCase();
-            setResultCurrentfromVoice(resultOut);
-            console.log(resultOut);
-            if(resultOut === currentItem[currentQuestionLowercase]){
-                console.log("REUSSI PASSAGE AU SUIVANT");
-            }
-            setResults([]);
-        }
         Voice.onSpeechStart = onSpeechStart;
         Voice.onSpeechError = onSpeechError;
         Voice.onSpeechResults = onSpeechResults;
-        Voice.onSpeechVolumeChanged = onSpeechVolumeChanged;
         handleStartSpeech();
         return () => {
             Voice.destroy().then(Voice.removeAllListeners);
