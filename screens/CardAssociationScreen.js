@@ -114,7 +114,10 @@ const ViewSpace = styled.View`
 `;
 
 const CardAssociationScreen = ({route, navigation}) => {
-    const [recordStarted, setRecordStarted] = useState(false);
+    const [recordPersonnageStarted, setRecordPersonnageStarted] = useState(false);
+    const [recordVerbeStarted, setRecordVerbeStarted] = useState(false);
+    const [recordLieuStarted, setRecordLieuStarted] = useState(false);
+    const [recordObjetStarted, setRecordObjetStarted] = useState(false);
     const [results, setResults] = useState([]);
     const [personnage, setPersonnage] = useState("");
     const [verbe, setVerbe] = useState("");
@@ -275,7 +278,7 @@ const CardAssociationScreen = ({route, navigation}) => {
     const handleStartSpeechForPersonnage = async () => {
         try {
             await Voice.start("fr-FR");
-            setRecordStarted(true);
+            setRecordPersonnageStarted(true);
         } catch (e){
             console.error(e);
         }
@@ -284,52 +287,52 @@ const CardAssociationScreen = ({route, navigation}) => {
     const handleStopSpeechForPersonnage = async () => {
         await Voice.stop();
         setPersonnage(results[results.length -1]);
-        setRecordStarted(false);
+        setRecordPersonnageStarted(false);
     }
 
     const handleStartSpeechForVerbe = async () => {
-        /*try {
+        try {
             await Voice.start("fr-FR");
-            setRecordStarted(true);
+            setRecordVerbeStarted(true);
         } catch (e){
             console.error(e);
-        }  */
+        } 
     }
 
     const handleStopSpeechForVerbe = async () => {
-        /*await Voice.stop();
-        setPersonnage(results.join(" "));
-        setRecordStarted(false);*/
+        await Voice.stop();
+        setVerbe(results[results.length -1]);
+        setRecordVerbeStarted(false);
     }
 
     const handleStartSpeechForObjet = async () => {
-        /*try {
+        try {
             await Voice.start("fr-FR");
-            setRecordStarted(true);
+            setRecordObjetStarted(true);
         } catch (e){
             console.error(e);
-        }  */
+        }  
     }
 
     const handleStopSpeechForObjet = async () => {
-        /*await Voice.stop();
-        setPersonnage(results.join(" "));
-        setRecordStarted(false);*/
+        await Voice.stop();
+        setObjet(results[results.length -1]);
+        setRecordObjetStarted(false);
     }
 
     const handleStartSpeechForLieu = async () => {
-        /*try {
+        try {
             await Voice.start("fr-FR");
-            setRecordStarted(true);
+            setRecordLieuStarted(true);
         } catch (e){
             console.error(e);
-        }  */
+        }
     }
 
     const handleStopSpeechForLieu = async () => {
-        /*await Voice.stop();
-        setPersonnage(results.join(" "));
-        setRecordStarted(false);*/
+        await Voice.stop();
+        setLieu(results[results.length -1]);
+        setRecordLieuStarted(false);
     }
 
 
@@ -367,10 +370,10 @@ const CardAssociationScreen = ({route, navigation}) => {
                             <PreText>Personnage</PreText>
                             <TextInput ref={refPersonnage} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
                             <PostText>
-                            {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForPersonnage()}>
+                            {!recordPersonnageStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForPersonnage()}>
                                     <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
                                 </TouchableOpacity> }
-                            {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForPersonnage()}>
+                            {recordPersonnageStarted && <TouchableOpacity onPress={()=> handleStopSpeechForPersonnage()}>
                                 <MaterialCommunityIcons name="record" size={20} color="red" />
                                 </TouchableOpacity> }
 
@@ -382,10 +385,10 @@ const CardAssociationScreen = ({route, navigation}) => {
                             <PreText>Verbe</PreText>
                             <TextInput ref={refVerbe} value={verbe} onChangeText={(e)=> setVerbe(e)} />
                             <PostText>
-                            {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForVerbe()}>
+                            {!recordVerbeStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForVerbe()}>
                                     <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
                                 </TouchableOpacity> }
-                            {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForVerbe()}>
+                            {recordVerbeStarted && <TouchableOpacity onPress={()=> handleStopSpeechForVerbe()}>
                                 <MaterialCommunityIcons name="record" size={20} color="red" />
                                 </TouchableOpacity> }
 
@@ -397,10 +400,10 @@ const CardAssociationScreen = ({route, navigation}) => {
                             <PreText>Objet</PreText>
                             <TextInput ref={refObjet} value={objet} onChangeText={(e)=> setObjet(e)} />
                             <PostText>
-                            {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForObjet()}>
+                            {!recordObjetStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForObjet()}>
                                     <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
                                 </TouchableOpacity> }
-                            {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForObjet()}>
+                            {recordObjetStarted && <TouchableOpacity onPress={()=> handleStopSpeechForObjet()}>
                                 <MaterialCommunityIcons name="record" size={20} color="red" />
                                 </TouchableOpacity> }
 
@@ -412,10 +415,10 @@ const CardAssociationScreen = ({route, navigation}) => {
                             <PreText>Lieu</PreText>
                             <TextInput ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
                             <PostText>
-                            {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForLieu()}>
+                            {!recordLieuStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForLieu()}>
                                     <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
                                 </TouchableOpacity> }
-                            {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForLieu()}>
+                            {recordLieuStarted && <TouchableOpacity onPress={()=> handleStopSpeechForLieu()}>
                                 <MaterialCommunityIcons name="record" size={20} color="red" />
                                 </TouchableOpacity> }
 

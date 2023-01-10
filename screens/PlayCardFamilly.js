@@ -5,6 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
 import CardService from "../services/Card.service";
+import Voice from '@react-native-voice/voice';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -109,6 +110,7 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [currentQuestion, setCurrentQuestion] = useState("");
     const [isFinished, setFinished] = useState(false);
     const [currentListChoose, setCurrentListChoose] = useState(listChoose);
+    const [results, setResults] = useState([]);
 
     const ref = useRef(null);
     let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
@@ -132,6 +134,42 @@ const PlayCardFamilly = ({navigation, route}) => {
         const shuffledArray = famillyToPlay.sort((a, b) => 0.5 - Math.random());
         setCardsPlay(shuffledArray);
     }, [])
+
+    useEffect(()=> {
+        const onSpeechResults = (result) => {
+            console.log("result =>",result.value);
+            //setResults(result.value ?? []);
+        };
+        const onSpeechStart = (data) => {
+            console.log("start =>", data);
+        };
+        
+        const onSpeechError = (error) => {
+        console.log(error);
+        };
+        
+        const onSpeechVolumeChanged = (result) => {
+            //console.log("result =>",result.value);
+            setResults(result.value ?? []);
+            const resultOut = results[results.length -1];
+            const currentItem = cardsPlay[currentItemIndex];
+            const currentQuestionLowercase = currentQuestion.toLowerCase();
+            console.log(resultOut);
+            if(resultOut === currentItem[currentQuestionLowercase]){
+                console.log("REUSSI PASSAGE AU SUIVANT");
+            }
+        }
+        Voice.onSpeechStart = onSpeechStart;
+        Voice.onSpeechError = onSpeechError;
+        Voice.onSpeechResults = onSpeechResults;
+        Voice.onSpeechVolumeChanged = onSpeechVolumeChanged;
+    
+        return () => {
+            Voice.destroy().then(Voice.removeAllListeners);
+            setResults([]);
+        }
+    }, [])
+
     const reset = () => {
         clearInterval(this.interval);
     }
@@ -175,6 +213,11 @@ const PlayCardFamilly = ({navigation, route}) => {
     const handleNextOnList = () => {
         let id = currentQuestionIndex;
         //if(id === 0 || currentItemIndex !== 0) goNextItem();
+        const currentItem = cardsPlay[currentItemIndex];
+        const currentQuestionLowercase = currentQuestion.toLowerCase();
+        
+        console.log("VALEUR DE " + currentQuestionLowercase + " => " + currentItem[currentQuestionLowercase]);
+        
         if(id === 3 ) {
             if(currentItemIndex !== cardsPlay.length -1){
                 setCurrentQuestionIndex(0);
