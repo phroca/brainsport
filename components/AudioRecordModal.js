@@ -108,9 +108,9 @@ const AudioRecordModal = (props) => {
     useEffect(()=> {
         if(props?.resultAudio){
             setContenuAudio(props?.resultAudio);
-            /*setTimeout(() => {
+            setTimeout(() => {
                 dispatch(closeAudio());
-            }, 1000);*/
+            }, 1000);
         } else {
             setContenuAudio("Dites quelque chose");
         }

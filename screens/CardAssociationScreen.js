@@ -166,10 +166,12 @@ const CardAssociationScreen = ({route, navigation}) => {
 
     useEffect(()=> {
         if(results.length > 0) {
+            setResultAudio(results[results.length -1]);
             if(recordPersonnageStarted) setPersonnage(results[results.length -1]);
             if(recordVerbeStarted) setVerbe(results[results.length -1]);
             if(recordObjetStarted) setObjet(results[results.length -1]);
             if(recordLieuStarted) setLieu(results[results.length -1]);
+            dispatch(closeAudio());
             reinitRecords();
         }
     }, [results]);
