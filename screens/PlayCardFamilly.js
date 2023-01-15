@@ -124,6 +124,7 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [currentListChoose, setCurrentListChoose] = useState(listChoose);
     const [results, setResults] = useState([]);
     const [resultCurrentfromVoice, setResultCurrentfromVoice] = useState("");
+    const [currentItemIndex, setCurrentItemIndex] = useState(0);
 
     const ref = useRef(null);
     let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
@@ -152,15 +153,6 @@ const PlayCardFamilly = ({navigation, route}) => {
         const onSpeechResults = (result) => {
             console.log("result =>",result.value);
             setResults(result.value ?? []);
-            const resultOut = results[results.length -1];
-            const currentItem = cardsPlay[currentItemIndex];
-            const currentQuestionLowercase = currentQuestion.toLowerCase();
-            setResultCurrentfromVoice(resultOut);
-            console.log(resultOut);
-            if(resultOut === currentItem[currentQuestionLowercase]){
-                console.log("REUSSI PASSAGE AU SUIVANT");
-                setResults([]);
-            }
         };
         const onSpeechStart = (data) => {
             console.log("start =>", data);
@@ -168,6 +160,7 @@ const PlayCardFamilly = ({navigation, route}) => {
         
         const onSpeechError = (error) => {
         console.log(error);
+        handleStartSpeech();
         };
         
         Voice.onSpeechStart = onSpeechStart;
@@ -179,6 +172,21 @@ const PlayCardFamilly = ({navigation, route}) => {
             setResults([]);
         }
     }, [])
+
+    useEffect(() => {
+        if(results.length > 0 && cardsPlay !== null) {
+            const resultOut = results[results.length -1].toLowerCase();
+            const currentItem = cardsPlay[currentItemIndex];
+            const currentQuestionLowercase = currentQuestion.toLowerCase();
+            setResultCurrentfromVoice(resultOut);
+            if(resultOut === currentItem[currentQuestionLowercase].toLowerCase()) {
+                console.log("REUSSI PASSAGE AU SUIVANT");
+                handleNextOnList();
+                setResults([]);
+            }
+        }
+        
+    },[results]);
 
     const reset = () => {
         clearInterval(this.interval);
@@ -201,7 +209,7 @@ const PlayCardFamilly = ({navigation, route}) => {
       
         return array;
     }
-    const [currentItemIndex, setCurrentItemIndex] = useState(0);
+
     const updateCurrentItemIndex = element => {
         const contentOffsetX = element.nativeEvent.contentOffset.x;
         const currentIndex = Math.round(contentOffsetX / screenWidth);
@@ -242,7 +250,7 @@ const PlayCardFamilly = ({navigation, route}) => {
             setCurrentQuestionIndex(id);
             setCurrentQuestion(currentListChoose[id]); 
         }
-        
+        handleStartSpeech();
     }
 
     const goNextItem = () => {

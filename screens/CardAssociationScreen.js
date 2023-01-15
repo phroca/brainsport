@@ -7,6 +7,9 @@ import styled from 'styled-components/native';
 import Card from "../components/Card";
 import CardService from "../services/Card.service";
 import Voice from '@react-native-voice/voice';
+import AudioRecordModal from "../components/AudioRecordModal";
+import { useDispatch, useSelector } from "react-redux";
+import { closeAudio, openAudio } from "../slices/audioSlice";
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -126,6 +129,9 @@ const CardAssociationScreen = ({route, navigation}) => {
     const [loadingSaveCard, setloadingSaveCard] = useState(false);
     const { userCards, famillyProgress } = route.params;
     const ref = useRef(null);
+    const audio = useSelector(state => state.audio.value)
+    const dispatch = useDispatch();
+    const [resultAudio, setResultAudio] = useState("");
     useEffect(()=> {
         setPropertiesFromIndex(0);
     },[]);
@@ -151,6 +157,22 @@ const CardAssociationScreen = ({route, navigation}) => {
             setResults([]);
         }
     },[]);
+
+    useEffect(()=> {
+        if(audio === "retryRecordAudio") {
+            handleStartSpeech();
+        }
+    });
+
+    useEffect(()=> {
+        if(results.length > 0) {
+            if(recordPersonnageStarted) setPersonnage(results[results.length -1]);
+            if(recordVerbeStarted) setVerbe(results[results.length -1]);
+            if(recordObjetStarted) setObjet(results[results.length -1]);
+            if(recordLieuStarted) setLieu(results[results.length -1]);
+            reinitRecords();
+        }
+    }, [results]);
 
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const updateCurrentItemIndex = element => {
@@ -275,13 +297,52 @@ const CardAssociationScreen = ({route, navigation}) => {
         */
     }
 
-    const handleStartSpeechForPersonnage = async () => {
+    const openStartSpeech = (input) => {
+        dispatch(openAudio());
+        switch (input) {
+            case "personnage":
+                setRecordPersonnageStarted(true);
+                break;
+            case "verbe":
+                setRecordVerbeStarted(true);
+                break;
+            case "objet":
+                setRecordObjetStarted(true);
+            break;         
+            case "lieu":
+                setRecordLieuStarted(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    const handleStartSpeech = async (input) => {
         try {
             await Voice.start("fr-FR");
-            setRecordPersonnageStarted(true);
+            if(input){
+                openStartSpeech(input);
+            }
         } catch (e){
             console.error(e);
         }
+    }
+
+    const reinitRecords = () =>{
+        setRecordPersonnageStarted(false);
+        setRecordVerbeStarted(false);
+        setRecordObjetStarted(false);
+        setRecordLieuStarted(false);
+    }
+
+    const handleStartSpeechForPersonnage = async () => {
+        handleStartSpeech("personnage");
+        // try {
+        //     await Voice.start("fr-FR");
+        //     setRecordPersonnageStarted(true);
+        // } catch (e){
+        //     console.error(e);
+        // }
     }
 
     const handleStopSpeechForPersonnage = async () => {
@@ -291,12 +352,13 @@ const CardAssociationScreen = ({route, navigation}) => {
     }
 
     const handleStartSpeechForVerbe = async () => {
-        try {
-            await Voice.start("fr-FR");
-            setRecordVerbeStarted(true);
-        } catch (e){
-            console.error(e);
-        } 
+        handleStartSpeech("verbe");
+        // try {
+        //     await Voice.start("fr-FR");
+        //     setRecordVerbeStarted(true);
+        // } catch (e){
+        //     console.error(e);
+        // } 
     }
 
     const handleStopSpeechForVerbe = async () => {
@@ -306,12 +368,13 @@ const CardAssociationScreen = ({route, navigation}) => {
     }
 
     const handleStartSpeechForObjet = async () => {
-        try {
-            await Voice.start("fr-FR");
-            setRecordObjetStarted(true);
-        } catch (e){
-            console.error(e);
-        }  
+        handleStartSpeech("objet");
+        // try {
+        //     await Voice.start("fr-FR");
+        //     setRecordObjetStarted(true);
+        // } catch (e){
+        //     console.error(e);
+        // }  
     }
 
     const handleStopSpeechForObjet = async () => {
@@ -321,12 +384,13 @@ const CardAssociationScreen = ({route, navigation}) => {
     }
 
     const handleStartSpeechForLieu = async () => {
-        try {
-            await Voice.start("fr-FR");
-            setRecordLieuStarted(true);
-        } catch (e){
-            console.error(e);
-        }
+        handleStartSpeech("lieu");
+        // try {
+        //     await Voice.start("fr-FR");
+        //     setRecordLieuStarted(true);
+        // } catch (e){
+        //     console.error(e);
+        // }
     }
 
     const handleStopSpeechForLieu = async () => {
@@ -449,6 +513,7 @@ const CardAssociationScreen = ({route, navigation}) => {
                     </CardForm>
                 </KeyboardAvoidingView>
             </SafeAreaView>
+            <AudioRecordModal resultAudio={resultAudio} restartSpeech={handleStartSpeech}/>
         </Container>);
 }
 
