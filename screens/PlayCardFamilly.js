@@ -16,13 +16,17 @@ const listChoose =[
 ];
 
 const Container = styled.ImageBackground`
-  flex:1;
+    align-items: center;
+    justify-content: center;
   width: 100%;
   height: 100%;
 `;
 
 const Header = styled.View`
-    justify-content: center;
+    width: ${widthContent};
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     margin-top: 50px;
     margin-bottom: 30px;
@@ -30,14 +34,12 @@ const Header = styled.View`
 `;
 
 const CloseButton = styled.View`
-  width: ${widthContent/2}px;
-  justify-content: flex-end;
-  background: red;
+  width: ${widthContent/8}px;
+  align-items: flex-end;;
 `;
 
 const ChronoContainer = styled.View`
-    width: ${widthContent/2}px;
-    justify-content: flex-start;
+    width: ${widthContent/8}px;
     flex-direction: row;
 `;
 
@@ -49,15 +51,15 @@ const ChronoText = styled.Text`
 const FlatView = styled.View`
     width: ${screenWidth}px;    
     align-items: center;
-    margin-top: 50px;
+    margin-top: 10px;
     padding-right: 30px;
     padding-left: 30px;
 `;
 
 const TitleChooseContainer = styled.View`
-    justify-content: center;
+height: 40px;
     align-items: center;
-    bottom: 200px;
+    bottom: 150px;
 `;
 
 const TitleChoose = styled.Text`
@@ -69,7 +71,7 @@ const TitleChoose = styled.Text`
 const ResponseCardContainer = styled.View`
     justify-content: center;
     align-items: center;
-    bottom: 200px;
+    bottom: 120px;
 `;
 
 const ResponseLabel =styled.Text`
@@ -87,7 +89,7 @@ const ChronoButton = styled.View`
 const ButtonContainer = styled.View`
     justify-content: center;
     align-items: center;
-    bottom: 150px;
+    bottom: 100px;
 `;
 
 const TouchableBtnFinish = styled.TouchableOpacity`
@@ -182,6 +184,7 @@ const PlayCardFamilly = ({navigation, route}) => {
             if(resultOut === currentItem[currentQuestionLowercase].toLowerCase()) {
                 console.log("REUSSI PASSAGE AU SUIVANT");
                 handleNextOnList();
+                setResultCurrentfromVoice("");
                 setResults([]);
             }
         }
@@ -289,30 +292,28 @@ const PlayCardFamilly = ({navigation, route}) => {
                 <ChronoText>{padToTwo(sec%60)}</ChronoText>
             </ChronoContainer>
             <CloseButton>
-                <TouchableOpacity style={{position: "absolute", right:0}} onPress={() => navigation.goBack()}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                     <MaterialCommunityIcons name="close-circle-outline" size={24} color="#ffffff7b"  />
                 </TouchableOpacity>
             </CloseButton>
         </Header>
-        <Animated.FlatList
-            data={cardsPlay}
-            ref={ref}
-            style={{flex: 1}}
-            keyExtractor={item => "card-"+item.couleur+"-"+item.valeur}
-            horizontal
-            scrollEventThrottle={32}
-            onMomentumScrollEnd={updateCurrentItemIndex}
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            renderItem={({item, index}) => {
-                return (<><FlatView>
-                    <Card
-                    key={"card-"+item.couleur+"-"+item.valeur}
-                    couleur={item.couleur}
-                    valeur={item.valeur}
-                    />
-                </FlatView>
-                
+            <Animated.FlatList
+                data={cardsPlay}
+                ref={ref}
+                keyExtractor={item => "card-"+item.couleur+"-"+item.valeur}
+                horizontal
+                scrollEventThrottle={32}
+                onMomentumScrollEnd={updateCurrentItemIndex}
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                renderItem={({item, index}) => {
+                    return (<><FlatView>
+                        <Card
+                        key={"card-"+item.couleur+"-"+item.valeur}
+                        couleur={item.couleur}
+                        valeur={item.valeur}
+                        />
+                        </FlatView>
                 </>);
             }}
             />
@@ -334,6 +335,7 @@ const PlayCardFamilly = ({navigation, route}) => {
                     <TextFinish>Terminer</TextFinish>
                 </TouchableBtnFinish>}
             </ChronoButton>
+
     </Container>)
 }
 
