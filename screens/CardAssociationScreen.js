@@ -171,7 +171,6 @@ const CardAssociationScreen = ({route, navigation}) => {
             if(recordVerbeStarted) setVerbe(results[results.length -1]);
             if(recordObjetStarted) setObjet(results[results.length -1]);
             if(recordLieuStarted) setLieu(results[results.length -1]);
-            dispatch(closeAudio());
             reinitRecords();
         }
     }, [results]);
@@ -321,6 +320,7 @@ const CardAssociationScreen = ({route, navigation}) => {
 
     const handleStartSpeech = async (input) => {
         try {
+            setResultAudio("");
             await Voice.start("fr-FR");
             if(input){
                 openStartSpeech(input);
