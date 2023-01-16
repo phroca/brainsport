@@ -130,7 +130,7 @@ export default function HomeScreen({navigation}) {
         setCurrentFamillyProgress(famillyProgressData);
       })
 
-    },[currentUSerDataCard]);
+    },[currentUSerDataCard, currentFamillyProgress, username]);
     
     const handleSelectFamilly = (couleur) => {
       const famillyFiltered = currentUSerDataCard.cards.filter(elt=> elt.couleur === couleur);
