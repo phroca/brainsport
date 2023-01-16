@@ -135,11 +135,11 @@ const AudioRecordModal = (props) => {
             </ContainerVoice>
             
             <Text>{contenuAudio}</Text>
-            {props?.resultAudio &&<TouchableOpacity onPress={handleRetrySpeech}>
+            {/*<TouchableOpacity onPress={handleRetrySpeech}>
                 <ButtonViewSquared>
                   <ButtonText>Réessayer</ButtonText>
                 </ButtonViewSquared>
-            </TouchableOpacity>}
+            </TouchableOpacity> */}
         </Modal>
       </Container>
     )

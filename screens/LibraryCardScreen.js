@@ -6,7 +6,9 @@ import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
 import CardService from "../services/Card.service";
-//import Voice from '@react-native-voice/voice';
+import AudioRecordModal from "../components/AudioRecordModal";
+import { useDispatch, useSelector } from "react-redux";
+import Voice from '@react-native-voice/voice';
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -113,8 +115,11 @@ const ViewSpace = styled.View`
     width: 20px;
 `;
 
-const LibraryCardScreen = ({route}) => {
-    const [recordStarted, setRecordStarted] = useState(false);
+const LibraryCardScreen = ({route, navigation}) => {
+    const [recordPersonnageStarted, setRecordPersonnageStarted] = useState(false);
+    const [recordVerbeStarted, setRecordVerbeStarted] = useState(false);
+    const [recordLieuStarted, setRecordLieuStarted] = useState(false);
+    const [recordObjetStarted, setRecordObjetStarted] = useState(false);
     const [results, setResults] = useState([]);
     const [personnage, setPersonnage] = useState("");
     const [verbe, setVerbe] = useState("");
@@ -123,11 +128,14 @@ const LibraryCardScreen = ({route}) => {
     const [loadingSaveCard, setloadingSaveCard] = useState(false);
     const { userCards } = route.params;
     const ref = useRef(null);
+    const audio = useSelector(state => state.audio.value)
+    const dispatch = useDispatch();
+    const [resultAudio, setResultAudio] = useState("");
     useEffect(()=> {
         setPropertiesFromIndex(0);
     },[]);
 
-    /*useEffect(()=> {
+    useEffect(()=> {
         const onSpeechResults = (result) => {
             console.log("result =>",result.value);
             setResults(result.value ?? []);
@@ -145,8 +153,26 @@ const LibraryCardScreen = ({route}) => {
         Voice.onSpeechResults = onSpeechResults;
         return () => {
             Voice.destroy().then(Voice.removeAllListeners);
+            setResults([]);
         }
-    },[]);*/
+    },[]);
+
+    useEffect(()=> {
+        if(audio === "retryRecordAudio") {
+            handleStartSpeech();
+        }
+    });
+
+    useEffect(()=> {
+        if(results.length > 0) {
+            setResultAudio(results[results.length -1]);
+            if(recordPersonnageStarted) setPersonnage(results[results.length -1]);
+            if(recordVerbeStarted) setVerbe(results[results.length -1]);
+            if(recordObjetStarted) setObjet(results[results.length -1]);
+            if(recordLieuStarted) setLieu(results[results.length -1]);
+            reinitRecords();
+        }
+    }, [results]);
 
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const updateCurrentItemIndex = element => {
@@ -206,71 +232,104 @@ const LibraryCardScreen = ({route}) => {
         setPropertiesFromIndex(prevItemIndex);
     }
     const handleNextCard = () => {
-        const nextItemIndex = currentItemIndex < userCards.cards.length - 1 ? currentItemIndex + 1 : userCards.cards.length - 1;
-        const offset = nextItemIndex * width;
-        ref?.current?.scrollToOffset({offset});      
-        setPropertiesFromIndex(nextItemIndex);
-        setCurrentItemIndex(nextItemIndex);
+        if(checkElementNotEmpty() && checkCurrentElementNotEmpty()) {
+            const nextItemIndex = currentItemIndex < userCards.cards.length - 1 ? currentItemIndex + 1 : userCards.cards.length - 1;
+            const offset = nextItemIndex * width;
+            ref?.current?.scrollToOffset({offset});      
+            setPropertiesFromIndex(nextItemIndex);
+            setCurrentItemIndex(nextItemIndex);
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: "Erreur à l'enregistrement de la carte" ,
+                text2: "veuillez compléter les éléments de la carte."
+              });
+        }
     }
 
-    const handleStartSpeechForPersonnage = async () => {
-        /*try {
+    const checkElementNotEmpty = () => {
+        return personnage !== "" && verbe !== "" && objet !== "" && lieu !== "";
+    }
+
+    const checkCurrentElementNotEmpty = () => {
+        return userCards.cards[currentItemIndex].personnage !== "" && userCards.cards[currentItemIndex].verbe !== "" && userCards.cards[currentItemIndex].objet !== "" && userCards.cards[currentItemIndex].lieu !== "";
+    }
+    const openStartSpeech = (input) => {
+        dispatch(openAudio());
+        switch (input) {
+            case "personnage":
+                setRecordPersonnageStarted(true);
+                break;
+            case "verbe":
+                setRecordVerbeStarted(true);
+                break;
+            case "objet":
+                setRecordObjetStarted(true);
+            break;         
+            case "lieu":
+                setRecordLieuStarted(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+    const handleStartSpeech = async (input) => {
+        try {
+            setResultAudio("");
             await Voice.start("fr-FR");
-            setRecordStarted(true);
+            if(input){
+                openStartSpeech(input);
+            }
         } catch (e){
             console.error(e);
-        }  */
+        }
+    }
+
+    const reinitRecords = () =>{
+        setRecordPersonnageStarted(false);
+        setRecordVerbeStarted(false);
+        setRecordObjetStarted(false);
+        setRecordLieuStarted(false);
+    }
+    const handleStartSpeechForPersonnage = async () => {
+        handleStartSpeech("personnage");
     }
 
     const handleStopSpeechForPersonnage = async () => {
-        /*await Voice.stop();
-        setPersonnage(results.join(" "));
-        setRecordStarted(false);*/
+        await Voice.stop();
+        setPersonnage(results[results.length -1]);
+        setRecordPersonnageStarted(false);
     }
 
     const handleStartSpeechForVerbe = async () => {
-        /*try {
-            await Voice.start("fr-FR");
-            setRecordStarted(true);
-        } catch (e){
-            console.error(e);
-        }  */
+        handleStartSpeech("verbe");
     }
 
     const handleStopSpeechForVerbe = async () => {
-        /*await Voice.stop();
-        setPersonnage(results.join(" "));
-        setRecordStarted(false);*/
+        await Voice.stop();
+        setVerbe(results[results.length -1]);
+        setRecordVerbeStarted(false);
     }
 
     const handleStartSpeechForObjet = async () => {
-        /*try {
-            await Voice.start("fr-FR");
-            setRecordStarted(true);
-        } catch (e){
-            console.error(e);
-        }  */
+        handleStartSpeech("objet");
     }
 
     const handleStopSpeechForObjet = async () => {
-        /*await Voice.stop();
-        setPersonnage(results.join(" "));
-        setRecordStarted(false);*/
+        await Voice.stop();
+        setObjet(results[results.length -1]);
+        setRecordObjetStarted(false);
     }
 
     const handleStartSpeechForLieu = async () => {
-        /*try {
-            await Voice.start("fr-FR");
-            setRecordStarted(true);
-        } catch (e){
-            console.error(e);
-        }  */
+        handleStartSpeech("lieu");
     }
 
     const handleStopSpeechForLieu = async () => {
-        /*await Voice.stop();
-        setPersonnage(results.join(" "));
-        setRecordStarted(false);*/
+        await Voice.stop();
+        setLieu(results[results.length -1]);
+        setRecordLieuStarted(false);
     }
 
 
@@ -306,10 +365,10 @@ const LibraryCardScreen = ({route}) => {
                     <PreText>Personnage</PreText>
                     <TextInput ref={refPersonnage} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
                     <PostText>
-                    {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForPersonnage()}>
+                    {!recordPersonnageStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForPersonnage()}>
                             <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
                         </TouchableOpacity> }
-                    {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForPersonnage()}>
+                    {recordPersonnageStarted && <TouchableOpacity onPress={()=> handleStopSpeechForPersonnage()}>
                         <MaterialCommunityIcons name="record" size={20} color="red" />
                         </TouchableOpacity> }
 
@@ -321,10 +380,10 @@ const LibraryCardScreen = ({route}) => {
                     <PreText>Verbe</PreText>
                     <TextInput ref={refVerbe} value={verbe} onChangeText={(e)=> setVerbe(e)} />
                     <PostText>
-                    {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForVerbe()}>
+                    {!recordVerbeStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForVerbe()}>
                             <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
                         </TouchableOpacity> }
-                    {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForVerbe()}>
+                    {recordVerbeStarted && <TouchableOpacity onPress={()=> handleStopSpeechForVerbe()}>
                         <MaterialCommunityIcons name="record" size={20} color="red" />
                         </TouchableOpacity> }
 
@@ -336,10 +395,10 @@ const LibraryCardScreen = ({route}) => {
                     <PreText>Objet</PreText>
                     <TextInput ref={refObjet} value={objet} onChangeText={(e)=> setObjet(e)} />
                     <PostText>
-                    {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForObjet()}>
+                    {!recordObjetStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForObjet()}>
                             <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
                         </TouchableOpacity> }
-                    {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForObjet()}>
+                    {recordObjetStarted && <TouchableOpacity onPress={()=> handleStopSpeechForObjet()}>
                         <MaterialCommunityIcons name="record" size={20} color="red" />
                         </TouchableOpacity> }
 
@@ -351,10 +410,10 @@ const LibraryCardScreen = ({route}) => {
                     <PreText>Lieu</PreText>
                     <TextInput ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
                     <PostText>
-                    {!recordStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForLieu()}>
+                    {!recordLieuStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForLieu()}>
                             <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
                         </TouchableOpacity> }
-                    {recordStarted && <TouchableOpacity onPress={()=> handleStopSpeechForLieu()}>
+                    {recordLieuStarted && <TouchableOpacity onPress={()=> handleStopSpeechForLieu()}>
                         <MaterialCommunityIcons name="record" size={20} color="red" />
                         </TouchableOpacity> }
 
@@ -383,6 +442,7 @@ const LibraryCardScreen = ({route}) => {
                     </TouchableOpacity>
                 </SigninButton>
             </CardForm>
+            <AudioRecordModal resultAudio={resultAudio} restartSpeech={handleStartSpeech}/>
         </Container>);
 }
 

@@ -339,12 +339,6 @@ const CardAssociationScreen = ({route, navigation}) => {
 
     const handleStartSpeechForPersonnage = async () => {
         handleStartSpeech("personnage");
-        // try {
-        //     await Voice.start("fr-FR");
-        //     setRecordPersonnageStarted(true);
-        // } catch (e){
-        //     console.error(e);
-        // }
     }
 
     const handleStopSpeechForPersonnage = async () => {
@@ -355,12 +349,6 @@ const CardAssociationScreen = ({route, navigation}) => {
 
     const handleStartSpeechForVerbe = async () => {
         handleStartSpeech("verbe");
-        // try {
-        //     await Voice.start("fr-FR");
-        //     setRecordVerbeStarted(true);
-        // } catch (e){
-        //     console.error(e);
-        // } 
     }
 
     const handleStopSpeechForVerbe = async () => {
@@ -371,12 +359,6 @@ const CardAssociationScreen = ({route, navigation}) => {
 
     const handleStartSpeechForObjet = async () => {
         handleStartSpeech("objet");
-        // try {
-        //     await Voice.start("fr-FR");
-        //     setRecordObjetStarted(true);
-        // } catch (e){
-        //     console.error(e);
-        // }  
     }
 
     const handleStopSpeechForObjet = async () => {
@@ -387,12 +369,6 @@ const CardAssociationScreen = ({route, navigation}) => {
 
     const handleStartSpeechForLieu = async () => {
         handleStartSpeech("lieu");
-        // try {
-        //     await Voice.start("fr-FR");
-        //     setRecordLieuStarted(true);
-        // } catch (e){
-        //     console.error(e);
-        // }
     }
 
     const handleStopSpeechForLieu = async () => {

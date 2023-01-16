@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Animated, ScrollView, TouchableOpacity, Dimensions } from "react-native";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
 import CardService from "../services/Card.service";
@@ -76,7 +76,7 @@ const ResponseCardContainer = styled.View`
 
 const ResponseLabel =styled.Text`
     color: #FFFFFF;
-    font-size: 30px;
+    font-size: 20px;
     font-weight: bold;
 `;
 
@@ -91,6 +91,23 @@ const ButtonContainer = styled.View`
     align-items: center;
     bottom: 100px;
 `;
+
+const ContainerNoResult = styled.View`
+    justify-content: center;
+    align-items: center;
+    width: ${widthContent}px;
+    flex-direction: row;
+`;
+
+const ContainerVoice = styled.View`
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+    background-color: #FFFFFF;
+    margin: 0 10px;
+`
 
 const TouchableBtnFinish = styled.TouchableOpacity`
     width: ${widthContent}px;
@@ -321,7 +338,15 @@ const PlayCardFamilly = ({navigation, route}) => {
                 <TitleChoose>{currentQuestion} ?</TitleChoose>
             </TitleChooseContainer>
             <ResponseCardContainer>
-            <ResponseLabel>{resultCurrentfromVoice}</ResponseLabel>
+            { resultCurrentfromVoice === "" && 
+            <ContainerNoResult>
+                <ContainerVoice>
+                    <Ionicons name="mic" size={24} color="#A138F2" /> 
+                </ContainerVoice>
+            <ResponseLabel>Je vous écoute...</ResponseLabel>
+            </ContainerNoResult>
+            }
+            { resultCurrentfromVoice !== "" && <ResponseLabel>{resultCurrentfromVoice}</ResponseLabel>}
             </ResponseCardContainer>
             { !(currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3) &&
             <ButtonContainer>
