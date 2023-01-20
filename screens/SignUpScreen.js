@@ -43,8 +43,8 @@ const Logo = styled.Image`
 const TitleBar = styled.View`
   justify-content: center;
   align-items: center;
-  margin-top: 50px;
-  margin-bottom: 30px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 `;
 
 const Title = styled.Text`
@@ -170,7 +170,6 @@ const SignUpScreen = ({navigation}) => {
     }
 
     const validateConfirmPassword = (pass, confirm) =>{
-      console.log("PASS : " + pass + "CONFIRM : " + confirm);
       return (pass !== "" && pass === confirm);
     }
     const reinitErrorAttributes = () =>{

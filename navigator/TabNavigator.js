@@ -15,36 +15,7 @@ const activeColor = "#A138F2";
 const inactiveColor = "#FFFFFF";
 
 const Tab = createBottomTabNavigator();
-const ProfileStack = createNativeStackNavigator();
 
-const ProfilLogo = ()=> {
-    return (
-        <View>
-        </View>
-    )
-}
-
-const ProfileStackScreen = ({navigation}) => {
-    return(
-        <ProfileStack.Navigator screenOptions={{
-            headerTransparent: true,
-        }}>
-            <ProfileStack.Screen
-            name="Profil Main"
-            component={ProfilNavigator}
-            options={{
-                headerTitle: (props) => <ProfilLogo {...props} />,
-                headerRight: () => (
-                    <TouchableOpacity onPress={()=> navigation.navigate("Rules")}>
-                      <MaterialCommunityIcons name="cog-outline" size={24} color="white" />
-                    </TouchableOpacity>
-                ) 
-            }}
-            
-            />
-        </ProfileStack.Navigator>
-    )
-}
 const TabNavigator = () => {
     return(  
             <Tab.Navigator 
@@ -86,7 +57,7 @@ const TabNavigator = () => {
                 <Tab.Screen name="Formation" component={FormationScreen} />
                 <Tab.Screen name="Communauté" component={CommunauteScreen} />
                 <Tab.Screen name="Home" component={HomeNavigator} />
-                <Tab.Screen name="Profil" component={ProfileStackScreen} /> 
+                <Tab.Screen name="Profil" component={ProfilNavigator} /> 
             </Tab.Navigator> 
     );
 }

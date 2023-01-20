@@ -3,7 +3,7 @@ import { DataStore } from '@aws-amplify/datastore';
 import { Card } from '../src/models';
 import { PackCard } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import tabCardPreplay from "../tabCardPreplay.json"
 /**
  * 
  * @param {*} userId 
@@ -64,7 +64,37 @@ const initCardCreationMock = async(userId) => {
     } catch(e){
         console.log(e);
     }
-    
+}
+
+/**
+ * 
+ * @param {*} userId 
+ */
+const initPreplayCardCreation = async(userId) => {
+    const userCards = {userId: userId, cards: []};
+    tabCardPreplay.forEach((cardIN) => {
+        const card = {
+            "valeur": cardIN.valeur,
+            "couleur": cardIN.couleur,
+            "personnage": cardIN.personnage,
+            "verbe": cardIN.verbe,
+            "objet": cardIN.objet,
+            "lieu": cardIN.lieu,
+            "conditions": cardIN.conditions
+        }
+        userCards.cards.push(card);
+    })
+    try{
+        getPreplayUserDataCard().then((data) => {
+            if(!data){
+                const jsonValue = JSON.stringify(userCards);
+                AsyncStorage.setItem('@user_PreplayCards', jsonValue);
+            }
+        })
+        return userCards;
+    } catch(e){
+        console.log(e);
+    }
 }
 /**
  * 
@@ -79,6 +109,59 @@ const getUserCardsMock = async() => {
     }
 }
 
+/**
+ * 
+ * @returns 
+ */
+const getPreplayUserDataCard = async() => {
+    try{
+        const jsonValue = await AsyncStorage.getItem('@user_PreplayCards')
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch(e){
+        console.log(e);
+    }
+}
+/**
+ * 
+ */
+const initPrePlayData = async() => {
+    try{
+        const data = await getPrePlayData();
+        if(data === null || data === false){
+            const jsonValue = JSON.stringify(true);
+            AsyncStorage.setItem('@user_PrePlayData', jsonValue)
+        }
+        return true;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+/**
+ * 
+ * @returns 
+ */
+const getPrePlayData = async() => {
+    try{
+        const jsonValue = await AsyncStorage.getItem('@user_PrePlayData')
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+const terminatePreplayData = async() => {
+    try{
+        const data = await getPrePlayData();
+        if(data !== null){
+            const jsonValue = JSON.stringify(false);
+            AsyncStorage.setItem('@user_PrePlayData', jsonValue)
+        }
+        return false;
+    } catch(e){
+        console.log(e);
+    }
+}
 /**
  * 
  * @param {*} userCardsIn 
@@ -127,6 +210,40 @@ const initFamillyProgress = async() => {
  * 
  * @returns 
  */
+const getPreplayFamillyProgress = async() => {
+    try{
+        const jsonValue = await AsyncStorage.getItem('@user_PreplayFamilyprogress')
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+/**
+ * 
+ */
+const initPreplayFamillyProgress = async() => {
+    try{
+        const famillyProgress = 
+            {   
+                "carreau": true,
+                "coeur": true,
+                "trefle": true,          
+                "pique": true,
+            };
+        
+        const jsonValue = JSON.stringify(famillyProgress);
+        await AsyncStorage.setItem('@user_PreplayFamilyprogress', jsonValue);
+        return famillyProgress;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+/**
+ * 
+ * @returns 
+ */
 const getFamillyProgress = async() => {
     try{
         const jsonValue = await AsyncStorage.getItem('@user_Familyprogress')
@@ -158,6 +275,34 @@ const updateFamillyProgress = async(famillyProgressIn, famillyCard, flagFamillyR
         }
         const jsonValue = JSON.stringify(famillyProgress);
         await AsyncStorage.setItem('@user_Familyprogress', jsonValue);
+        return famillyProgress;
+    } catch(e){
+        console.log(e);
+    }
+}
+/**
+ * 
+ * @param {*} famillyProgressIn 
+ * @param {*} famillyCard 
+ * @param {*} flagFamillyRemplie 
+ */
+const updatePreplayFamillyProgress = async(famillyProgressIn, famillyCard, flagFamillyRemplie) => {
+    try{
+        let famillyProgress = {...famillyProgressIn};
+        if(famillyCard === "carreau") {
+            famillyProgress.carreau = flagFamillyRemplie;
+        }
+        if(famillyCard === "coeur") {
+            famillyProgress.coeur = flagFamillyRemplie;
+        }
+        if(famillyCard === "trefle") {
+            famillyProgress.trefle = flagFamillyRemplie;
+        }
+        if(famillyCard === "pique") {
+            famillyProgress.pique = flagFamillyRemplie;
+        }
+        const jsonValue = JSON.stringify(famillyProgress);
+        await AsyncStorage.setItem('@user_PreplayFamilyprogress', jsonValue);
         return famillyProgress;
     } catch(e){
         console.log(e);
@@ -202,16 +347,37 @@ const clearAll = async () => {
     }
     console.log('Clear Done.')
   }
+
+const clearPregameData = async() => {
+    try {
+        await AsyncStorage.removeItem("@user_PreplayFamilyprogress");
+        await AsyncStorage.removeItem("@user_PreplayCards");
+        await AsyncStorage.removeItem("@user_PrePlayData");
+    } catch (error) {
+        
+    }
+
+    console.log('Clear Done.')
+}
 const CardService ={
     initCardCreation,
     initCardCreationMock,
     getUserCardsMock,
+    getPrePlayData,
+    initPrePlayData,
+    terminatePreplayData,
     saveCard,
     initFamillyProgress,
     getFamillyProgress,
     updateFamillyProgress,
+    initPreplayCardCreation,
+    getPreplayUserDataCard,
+    getPreplayFamillyProgress,
+    initPreplayFamillyProgress,
+    updatePreplayFamillyProgress,
     getProgressionTime,
     saveProgressionTime,
+    clearPregameData,
     clearAll
 };
 

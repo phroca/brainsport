@@ -22,7 +22,7 @@ const Container = styled.ImageBackground`
 
 const TitleBar = styled.View`
   width: 100%;
-  margin-top: 100px;
+  margin-top: 30px;
   margin-bottom: 30px;
 `;
 
@@ -130,7 +130,7 @@ export default function HomeScreen({navigation}) {
         setCurrentFamillyProgress(famillyProgressData);
       })
 
-    },[currentUSerDataCard, currentFamillyProgress, username]);
+    },[currentUSerDataCard]);
     
     const handleSelectFamilly = (couleur) => {
       const famillyFiltered = currentUSerDataCard.cards.filter(elt=> elt.couleur === couleur);

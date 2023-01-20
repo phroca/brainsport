@@ -5,6 +5,7 @@ import CardService from '../services/Card.service';
 import Toast from 'react-native-toast-message';
 import { Auth } from 'aws-amplify';
 import { Ionicons } from '@expo/vector-icons';
+import CheckBox from "../components/CheckBox";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -17,7 +18,7 @@ const Container = styled.ImageBackground`
 `;
 const TitleBar = styled.View`
   width: 100%;
-  margin-top: 100px;
+  margin-top: 30px;
   margin-bottom: 30px;
 `;
 
@@ -143,8 +144,15 @@ color: #FFFFFF;
   text-align: center;
 `;
 
+const PrePlaySection = styled.View`
+  flex-direction: column;
+  margin-top: 20px;
+  margin-bottom: 10px;
+`
+
 const ProfilScreen = ({navigation}) => {
   const [listProgress, setListProgress] = useState([]);
+  const [prePlayDataIn, setPrePlayDataIn] = useState(null);
   let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
   const [currentUserDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
   useEffect(() => {
@@ -164,8 +172,15 @@ const ProfilScreen = ({navigation}) => {
         text1: 'Réinitalisation réussie',
         text2:  "Les données utilisateurs sont bien réinitialisées."
       });
-    })
+    });
   };
+
+
+  useEffect(() => {
+    CardService.getPrePlayData().then((preplayData) => {
+      setPrePlayDataIn(preplayData);
+    })
+  }, [prePlayDataIn]);
 
   const disconnect = async() => {
     Auth.signOut().then(()=> {
@@ -189,6 +204,31 @@ const ProfilScreen = ({navigation}) => {
        "cards": currentUserDataCardElementInProgressFiltered
     }
     navigation.navigate("Bibliothèque", {userCards: currentLibraryCard});
+  }
+
+  const handleTogglePregame = async() => {
+    console.log("PREPLAY DATA => ", prePlayDataIn);
+    if(prePlayDataIn == true){
+      CardService.terminatePreplayData().then(() => {
+        setPrePlayDataIn(false);
+        disconnect();
+      });
+    } else {
+      CardService.initPrePlayData().then(() => {
+        setPrePlayDataIn(true);
+        disconnect();
+      });
+    }
+  }
+
+  const handleReinitPregame = () => {
+    CardService.clearPregameData().then(()=> {
+      Toast.show({
+        type: 'success',
+        text1: 'Réinitalisation réussie',
+        text2:  "Les données utilisateurs sont bien réinitialisées."
+      });
+    });
   }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
@@ -233,62 +273,69 @@ const ProfilScreen = ({navigation}) => {
               </ProgresSection>
             </TouchableOpacity>
             <ProfilActions>
-
-                <TouchableOpacity onPress={()=> handleAvatar()}>
-                  <ProfilAction>
-                    <ActionTitle>
+              <TouchableOpacity onPress={()=> handleAvatar()}>
+                <ProfilAction>
+                  <ActionTitle>
                     Mon avatar
-                    </ActionTitle>
-                    <ActionButton>
-                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                    </ActionButton>
-                  </ProfilAction>
-                </TouchableOpacity>
-                <TouchableOpacity  onPress={()=> handleLibrary()}>
-                  <ProfilAction>
-                    <ActionTitle>
+                  </ActionTitle>
+                  <ActionButton>
+                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                  </ActionButton>
+                </ProfilAction>
+              </TouchableOpacity>
+              <TouchableOpacity  onPress={()=> handleLibrary()}>
+                <ProfilAction>
+                  <ActionTitle>
                     Ma bibliothèque
-                    </ActionTitle>
-                    <ActionButton>
-                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                    </ActionButton>
-                  </ProfilAction>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=> navigation.navigate("Statistiques")}>
-                  <ProfilAction>
-                    <ActionTitle>
+                  </ActionTitle>
+                  <ActionButton>
+                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                  </ActionButton>
+                </ProfilAction>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=> navigation.navigate("Statistiques")}>
+                <ProfilAction>
+                  <ActionTitle>
                     Statistiques
-                    </ActionTitle>
-                    <ActionButton>
-                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                    </ActionButton>
-                  </ProfilAction>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=> navigation.navigate("Amis")}>
-                  <ProfilAction>
-                    <ActionTitle>
+                  </ActionTitle>
+                  <ActionButton>
+                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                  </ActionButton>
+                </ProfilAction>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=> navigation.navigate("Amis")}>
+                <ProfilAction>
+                  <ActionTitle>
                     Amis
-                    </ActionTitle>
-                    <ActionButton>
-                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                    </ActionButton>
-                  </ProfilAction>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=> navigation.navigate("Support")}>
-                  <ProfilAction>
-                    <ActionTitle>
+                  </ActionTitle>
+                  <ActionButton>
+                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                  </ActionButton>
+                </ProfilAction>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=> navigation.navigate("Support")}>
+                <ProfilAction>
+                  <ActionTitle>
                     Support
-                    </ActionTitle>
-                    <ActionButton>
-                      <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                    </ActionButton>
-                  </ProfilAction>
-                </TouchableOpacity>
+                  </ActionTitle>
+                  <ActionButton>
+                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                  </ActionButton>
+                </ProfilAction>
+              </TouchableOpacity>
             </ProfilActions>       
           <ButtonAction>
+            <PrePlaySection>
+              <CheckBox value={prePlayDataIn} label="Activer le préGame (nécessite un déconnexion)" onPress={() => handleTogglePregame()} />
+            </PrePlaySection>
+            <TouchableOpacity onPress={()=> handleReinitPregame()}>
+              <ButtonView>
+                <ButtonText>Réinitialiser les données Pregame</ButtonText>
+              </ButtonView>
+            </TouchableOpacity>
             <TouchableOpacity onPress={()=> handleReinit()}>
               <ButtonView>
-                <ButtonText>Reinitialiser</ButtonText>
+                <ButtonText>Tout Reinitialiser</ButtonText>
               </ButtonView>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=> disconnect()}>

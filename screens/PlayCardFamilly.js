@@ -23,7 +23,7 @@ const Container = styled.ImageBackground`
 `;
 
 const Header = styled.View`
-    width: ${widthContent};
+    width: ${widthContent}px;
     height: 50px;
     display: flex;
     justify-content: space-between;

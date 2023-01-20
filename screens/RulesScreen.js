@@ -18,7 +18,7 @@ const Container = styled.ImageBackground`
 
 const TitleBar = styled.View`
   width: 100%;
-  margin-top: 100px;
+  margin-top: 30px;
   margin-bottom: 30px;
 `;
 

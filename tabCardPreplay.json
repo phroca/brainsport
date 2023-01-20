@@ -1,0 +1,626 @@
+[{
+        "id": "tcarr1",
+        "valeur": "1",
+        "couleur": "carreau",
+        "personnage": "Daft Punk",
+        "verbe": "mixer",
+        "objet": "platine",
+        "lieu": "France",
+        "conditions": [
+            "D", "T"
+        ]
+    },
+    {
+        "id": "tcarr2",
+        "valeur": "2",
+        "couleur": "carreau",
+        "personnage": "Niel",
+        "verbe": "dessiner",
+        "objet": "téléphone",
+        "lieu": "jardin",
+        "conditions": [
+            "N"
+        ]
+    },
+    {
+        "id": "tcarr3",
+        "valeur": "3",
+        "couleur": "carreau",
+        "personnage": "Madonna",
+        "verbe": "crier",
+        "objet": "tableau",
+        "lieu": "église",
+        "conditions": [
+            "M"
+        ]
+    },
+    {
+        "id": "tcarr4",
+        "valeur": "4",
+        "couleur": "carreau",
+        "personnage": "Ronaldo",
+        "verbe": "marcher",
+        "objet": "chaussure",
+        "lieu": "Louvre",
+        "conditions": [
+            "R"
+        ]
+    },
+    {
+        "id": "tcarr5",
+        "valeur": "5",
+        "couleur": "carreau",
+        "personnage": "Lady Gaga",
+        "verbe": "tirer",
+        "objet": "voiture",
+        "lieu": "New York",
+        "conditions": [
+            "L"
+        ]
+    },
+    {
+        "id": "tcarr6",
+        "valeur": "6",
+        "couleur": "carreau",
+        "personnage": "Jamiroquai",
+        "verbe": "chanter",
+        "objet": "canapé",
+        "lieu": "salon",
+        "conditions": [
+            "CH", "G", "J"
+        ]
+    },
+    {
+        "id": "tcarr7",
+        "valeur": "7",
+        "couleur": "carreau",
+        "personnage": "Karl Lagerfeld",
+        "verbe": "sauter",
+        "objet": "ballon",
+        "lieu": "Angleterre",
+        "conditions": [
+            "K", "QU", "GU"
+        ]
+    },
+    {
+        "id": "tcarr8",
+        "valeur": "8",
+        "couleur": "carreau",
+        "personnage": "Federer",
+        "verbe": "courir",
+        "objet": "raquette",
+        "lieu": "Australie",
+        "conditions": [
+            "F", "V"
+        ]
+    },
+    {
+        "id": "tcarr9",
+        "valeur": "9",
+        "couleur": "carreau",
+        "personnage": "Pogba",
+        "verbe": "danser",
+        "objet": "poteau",
+        "lieu": "stade de foot",
+        "conditions": [
+            "B", "P"
+        ]
+    },
+    {
+        "id": "tcarr10",
+        "valeur": "10",
+        "couleur": "carreau",
+        "personnage": "Beyoncé",
+        "verbe": "donner",
+        "objet": "lunettes",
+        "lieu": "Los Angeles",
+        "conditions": {
+            "couple": "V"
+        }
+    },
+    {
+        "id": "tcarr11",
+        "valeur": "V",
+        "couleur": "carreau",
+        "personnage": "Jay-Z",
+        "verbe": "rapper",
+        "objet": "fromage",
+        "lieu": "villa",
+        "conditions": {
+            "couple": "10"
+        }
+    },
+    {
+        "id": "tcarr12",
+        "valeur": "D",
+        "couleur": "carreau",
+        "personnage": "Michelle Obama",
+        "verbe": "écrire",
+        "objet": "livre",
+        "lieu": "salle de bain",
+        "conditions": {
+            "couple": "R"
+        }
+    },
+    {
+        "id": "tcarr13",
+        "valeur": "R",
+        "couleur": "carreau",
+        "personnage": "Barack Obama",
+        "verbe": "construire",
+        "objet": "maison",
+        "lieu": "États-Unis",
+        "conditions": {
+            "couple": "D"
+        }
+    },
+    {
+        "id": "ttre1",
+        "valeur": "1",
+        "couleur": "trefle",
+        "personnage": "Thor",
+        "verbe": "Construire",
+        "objet": "Marteau",
+        "lieu": "Asgard",
+        "conditions": [
+            "D", "T"
+        ]
+    },
+    {
+        "id": "ttre2",
+        "valeur": "2",
+        "couleur": "trefle",
+        "personnage": "Neptune",
+        "verbe": "Nager",
+        "objet": "Palmes",
+        "lieu": "Atlantique",
+        "conditions": [
+            "N"
+        ]
+    },
+    {
+        "id": "ttre3",
+        "valeur": "3",
+        "couleur": "trefle",
+        "personnage": "Menelas",
+        "verbe": "Planifier",
+        "objet": "Cheval",
+        "lieu": "Troie",
+        "conditions": [
+            "M"
+        ]
+    },
+    {
+        "id": "ttre4",
+        "valeur": "4",
+        "couleur": "trefle",
+        "personnage": "Ragnar",
+        "verbe": "Compter",
+        "objet": "Raisins",
+        "lieu": "Danemark",
+        "conditions": [
+            "R"
+        ]
+    },
+    {
+        "id": "ttre5",
+        "valeur": "5",
+        "couleur": "trefle",
+        "personnage": "Loki",
+        "verbe": "Diffuser",
+        "objet": "Filet",
+        "lieu": "Norvege",
+        "conditions": [
+            "L"
+        ]
+    },
+    {
+        "id": "ttre6",
+        "valeur": "6",
+        "couleur": "trefle",
+        "personnage": "Jupiter",
+        "verbe": "Cracher",
+        "objet": "Olives",
+        "lieu": "Rome",
+
+        "conditions": [
+            "CH", "G", "J"
+        ]
+    },
+    {
+        "id": "ttre7",
+        "valeur": "7",
+        "couleur": "trefle",
+        "personnage": "Kratos",
+        "verbe": "Combattre",
+        "objet": "Hache",
+        "lieu": "Sparte",
+        "conditions": [
+            "K", "QU", "GU"
+        ]
+    },
+    {
+        "id": "ttre8",
+        "valeur": "8",
+        "couleur": "trefle",
+        "personnage": "Venus",
+        "verbe": "Embrasse",
+        "objet": "Miroir",
+        "lieu": "Musee",
+        "conditions": [
+            "F", "V"
+        ]
+    },
+    {
+        "id": "ttre9",
+        "valeur": "9",
+        "couleur": "trefle",
+        "personnage": "Poseidon",
+        "verbe": "Planter",
+        "objet": "Fourche",
+        "lieu": "Mer Egee",
+        "conditions": [
+            "B", "P"
+        ]
+    },
+    {
+        "id": "ttre10",
+        "valeur": "10",
+        "couleur": "trefle",
+        "personnage": "Isis",
+        "verbe": "Rescusciter",
+        "objet": "Cœur",
+        "lieu": "Caire",
+        "conditions": {
+            "couple": "V"
+        }
+    },
+    {
+        "id": "ttre11",
+        "valeur": "V",
+        "couleur": "trefle",
+        "personnage": "Osiris",
+        "verbe": "Melanger",
+        "objet": "Fruits",
+        "lieu": "Nil",
+        "conditions": {
+            "couple": "10"
+        }
+    },
+    {
+        "id": "ttre12",
+        "valeur": "D",
+        "couleur": "trefle",
+        "personnage": "Hera",
+        "verbe": "Organiser",
+        "objet": "Robe",
+        "lieu": "Athenes",
+        "conditions": {
+            "couple": "R"
+        }
+    },
+    {
+        "id": "ttre13",
+        "valeur": "R",
+        "couleur": "trefle",
+        "personnage": "Zeus",
+        "verbe": "Créer",
+        "objet": "Foudre",
+        "lieu": "Olympe",
+        "conditions": {
+            "couple": "D"
+        }
+    },
+    {
+        "id": "tcoe1",
+        "valeur": "1",
+        "couleur": "coeur",
+        "personnage": "Deadpool",
+        "verbe": "Se laver",
+        "objet": "Épée",
+        "lieu": "Toilettes",
+        "conditions": [
+            "D", "T"
+        ]
+    },
+    {
+        "id": "tcoe2",
+        "valeur": "2",
+        "couleur": "coeur",
+        "personnage": "Naruto",
+        "verbe": "Lancer",
+        "objet": "Shuriken",
+        "lieu": "Konoha",
+        "conditions": [
+            "N"
+        ]
+    },
+    {
+        "id": "tcoe3",
+        "valeur": "3",
+        "couleur": "coeur",
+        "personnage": "Marsupilami",
+        "verbe": "Grimper",
+        "objet": "Arbre",
+        "lieu": "Foret",
+        "conditions": [
+            "M"
+        ]
+    },
+    {
+        "id": "tcoe4",
+        "valeur": "4",
+        "couleur": "coeur",
+        "personnage": "Rayman",
+        "verbe": "Sculpter",
+        "objet": "Patate",
+        "lieu": "Montagne",
+        "conditions": [
+            "R"
+        ]
+    },
+    {
+        "id": "tcoe5",
+        "valeur": "5",
+        "couleur": "coeur",
+        "personnage": "Luffy",
+        "verbe": "Jouer",
+        "objet": "Chapeau",
+        "lieu": "Bateau",
+        "conditions": [
+            "L"
+        ]
+    },
+    {
+        "id": "tcoe6",
+        "valeur": "6",
+        "couleur": "coeur",
+        "personnage": "Gandalf",
+        "verbe": "Invoquer",
+        "objet": "Baton",
+        "lieu": "Plaines",
+        "conditions": [
+            "CH", "G", "J"
+        ]
+    },
+    {
+        "id": "tcoe7",
+        "valeur": "7",
+        "couleur": "coeur",
+        "personnage": "Kirikou",
+        "verbe": "Creuser",
+        "objet": "Pelle",
+        "lieu": "Afrique",
+        "conditions": [
+            "K", "QU", "GU"
+        ]
+    },
+    {
+        "id": "tcoe8",
+        "valeur": "8",
+        "couleur": "coeur",
+        "personnage": "Vegeta",
+        "verbe": "Obtenir",
+        "objet": "Medaille",
+        "lieu": "Namek",
+        "conditions": [
+            "F", "V"
+        ]
+    },
+    {
+        "id": "tcoe9",
+        "valeur": "9",
+        "couleur": "coeur",
+        "personnage": "Batman",
+        "verbe": "Conduire",
+        "objet": "Voiture",
+        "lieu": "Gotham",
+        "conditions": [
+            "B", "P"
+        ]
+    },
+    {
+        "id": "tcoe10",
+        "valeur": "10",
+        "couleur": "coeur",
+        "personnage": "minnie",
+        "verbe": "Nettoyer",
+        "objet": "Serviette",
+        "lieu": "Cuisine",
+        "conditions": {
+            "couple": "V"
+        }
+    },
+    {
+        "id": "tcoe11",
+        "valeur": "V",
+        "couleur": "coeur",
+        "personnage": "mickey",
+        "verbe": "Discuter",
+        "objet": "Fromage",
+        "lieu": "Chambre",
+        "conditions": {
+            "couple": "10"
+        }
+    },
+    {
+        "id": "tcoe12",
+        "valeur": "D",
+        "couleur": "coeur",
+        "personnage": "Wonder Woman",
+        "verbe": "Attacher",
+        "objet": "Avion",
+        "lieu": "Ile",
+        "conditions": {
+            "couple": "R"
+        }
+    },
+    {
+        "id": "tcoe13",
+        "valeur": "R",
+        "couleur": "coeur",
+        "personnage": "superman",
+        "verbe": "Soulever",
+        "objet": "Tank",
+        "lieu": "Mars",
+        "conditions": {
+            "couple": "D"
+        }
+    },
+    {
+        "id": "tpiq1",
+        "valeur": "1",
+        "couleur": "pique",
+        "personnage": "Dark Vador",
+        "verbe": "Brûler",
+        "objet": "Robot",
+        "lieu": "Planete Noire",
+        "conditions": [
+            "D", "T"
+        ]
+    },
+    {
+        "id": "tpiq2",
+        "valeur": "2",
+        "couleur": "pique",
+        "personnage": "Nemesis",
+        "verbe": "Manger",
+        "objet": "Bras",
+        "lieu": "Maison Hantee",
+        "conditions": [
+            "N"
+        ]
+    },
+    {
+        "id": "tpiq3",
+        "valeur": "3",
+        "couleur": "pique",
+        "personnage": "Medusa",
+        "verbe": "Effrayer",
+        "objet": "Tentacules",
+        "lieu": "Mer",
+        "conditions": [
+            "M"
+        ]
+    },
+    {
+        "id": "tpiq4",
+        "valeur": "4",
+        "couleur": "pique",
+        "personnage": "Robotnik",
+        "verbe": "Voler",
+        "objet": "Vaisseau",
+        "lieu": "Banque",
+        "conditions": [
+            "R"
+        ]
+    },
+    {
+        "id": "tpiq5",
+        "valeur": "5",
+        "couleur": "pique",
+        "personnage": "Lecter(hannibal)",
+        "verbe": "S'évader",
+        "objet": "Couteau",
+        "lieu": "prison",
+        "conditions": [
+            "L"
+        ]
+    },
+    {
+        "id": "tpiq6",
+        "valeur": "6",
+        "couleur": "pique",
+        "personnage": "Jafar",
+        "verbe": "Trahir",
+        "objet": "Lampe",
+        "lieu": "Maroc",
+        "conditions": [
+            "CH", "G", "J"
+        ]
+    },
+    {
+        "id": "tpiq7",
+        "valeur": "7",
+        "couleur": "pique",
+        "personnage": "Kim Jong Un",
+        "verbe": "Terroriser",
+        "objet": "Bombe",
+        "lieu": "Corée",
+        "conditions": [
+            "K", "QU", "GU"
+        ]
+    },
+    {
+        "id": "tpiq8",
+        "valeur": "8",
+        "couleur": "pique",
+        "personnage": "Voldemort",
+        "verbe": "Ensorceller",
+        "objet": "Baguette",
+        "lieu": "Poudlard",
+        "conditions": [
+            "F", "V"
+        ]
+    },
+    {
+        "id": "tpiq9",
+        "valeur": "9",
+        "couleur": "pique",
+        "personnage": "Barbe Noire",
+        "verbe": "Piloter",
+        "objet": "Char",
+        "lieu": "Red Line",
+        "conditions": [
+            "B", "P"
+        ]
+    },
+    {
+        "id": "tpiq10",
+        "valeur": "10",
+        "couleur": "pique",
+        "personnage": "Melania Trump",
+        "verbe": "Négocier",
+        "objet": "Contrat",
+        "lieu": "Maison Blanche",
+        "conditions": {
+            "couple": "V"
+        }
+    },
+    {
+        "id": "tpiq11",
+        "valeur": "V",
+        "couleur": "pique",
+        "personnage": "Donald Trump",
+        "verbe": "Twitter",
+        "objet": "Avion",
+        "lieu": "Washington",
+        "conditions": {
+            "couple": "10"
+        }
+    },
+    {
+        "id": "tpiq12",
+        "valeur": "D",
+        "couleur": "pique",
+        "personnage": "Harley Quinn",
+        "verbe": "Chanter",
+        "objet": "Batte",
+        "lieu": "Toit",
+        "conditions": {
+            "couple": "R"
+        }
+    },
+    {
+        "id": "tpiq13",
+        "valeur": "R",
+        "couleur": "pique",
+        "personnage": "Joker",
+        "verbe": "Distribuer",
+        "objet": "Cartes",
+        "lieu": "Casino",
+        "conditions": {
+            "couple": "D"
+        }
+    }
+]

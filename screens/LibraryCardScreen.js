@@ -48,7 +48,7 @@ const TextInput = styled.TextInput`
 
 const ButtonView = styled.View`
   background: #FFFFFF;
-  width: ${widthContent/2 -10}px;;
+  width: ${widthContent/2 -10}px;
   height: 50px;
   justify-content: center;
   align-items: center;
