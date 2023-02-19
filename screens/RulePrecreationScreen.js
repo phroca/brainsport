@@ -194,16 +194,21 @@ const handleGotoHomePrecreation = async() => {
     const user = await Auth.currentAuthenticatedUser();
     CardService.initPrePlayData().then((value)=> {
         if(value){
-            CardService.initPreplayCardCreation(user?.pool?.userPoolId).then((data) => {
-                if(data) {
-                    CardService.initPreplayFamillyProgress().then((famillyprogressData) => {
-                        if(famillyprogressData) navigation.push("Accueil Preliminaire");
+            CardService.initStepperBeforePlay().then((stepValue)=> {
+                if(stepValue){
+                    CardService.initCardCreationMock(user?.pool?.userPoolId).then((data) => {
+                        if(data) {
+                            CardService.initFamillyProgress().then((famillyprogressData) => {
+                                if(famillyprogressData) navigation.push("Accueil Preliminaire");
+                            });
+                        }
                     });
                 }
             });
         }
     });
 }
+
 return (
         
     <Container source={require("../assets/brainsport-bg.png")}> 

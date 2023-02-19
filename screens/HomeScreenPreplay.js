@@ -1,16 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
-import { Dimensions, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Animated } from 'react-native';
 import styled from 'styled-components/native';
+import { useFocusEffect } from '@react-navigation/native';
 // import Card from '../components/Card';
 // import Menu from '../components/menu/Menu';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import Auth from "@aws-amplify/auth";
 import CardService from '../services/Card.service';
 import { Ionicons } from '@expo/vector-icons';
 import CheckBox from '../components/CheckBox';
 import SubtitleCard from '../components/SubtitleCard';
+import GameChoicePrompt from '../components/GameChoicePrompt';
+import { copilot, walkthroughable, CopilotStep } from "react-native-copilot";
+
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const widthContent = screenWidth  - 50;
@@ -68,7 +72,7 @@ const ButtonText = styled.Text`
   font-weight: bold;
 `;
 const ButtonViewGame = styled.View`
-  background: #A138F2;
+  background: ${props => props.color ? "#A138F2" : "#DADADA"};
   width: ${widthContent}px;
   height: 50px;
   justify-content: center;
@@ -78,14 +82,14 @@ const ButtonViewGame = styled.View`
 `;
 
 const ButtonTextGame = styled.Text`
-  color: #FFFFFF;
+  color: ${props => props.color ? "#FFFFFF" : "#000000"};
   font-size: 20px;
   font-weight: bold;
   text-transform: uppercase;
 `;
 
 const ButtonTextTab = styled.Text`
-  color: #FFFFFF;
+  color: ${props => props.color ? "#FFFFFF" : "#000000"};
   font-size: 14px;
   font-weight: bold;
   text-transform: uppercase;
@@ -111,13 +115,19 @@ const PlayCard = styled.View`
   position: relative;
   width: ${widthContent/2-5}px;
   margin: 5px 0px;
-  
   //padding: 0 15px;
   background-color: #FFFFFF;
   height: 150px;
   border-radius: 15px;
   justify-content: center;
   overflow: hidden;
+`;
+
+const PlayCardOverLayer = styled.View`
+position: absolute;
+width: 100%;
+height: 100%;
+background-color: #0000008f; 
 `;
 
 const ContentLabel = styled.View`
@@ -166,55 +176,191 @@ const HomeReplayButton = styled.View`
     justify-content: center;
 `;
 
+const ProgressContainer = styled.View`
 
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 40px;
+  padding-left: 10px;
+  justify-content: center;
+`;
 
-export default function HomeScreenPreplay({navigation}) {
+const ProgressContainerText = styled.Text`
+  color: #000000;
+  align-text: left;
+`
+
+const AnimatedPlayCard = Animated.createAnimatedComponent(PlayCard);
+const AnimatedFamillychosen = Animated.createAnimatedComponent(Famillychosen);
+
+const HomeScreenPreplay = (props) => {
+    const [flagUserDataCard, setFlagUserDataCard] = useState(false);
+    const [flagFamillyProgress, setFlagFamillyProgress] = useState(false);
     const [username, setUsername] = useState("");
-    const [currentPreplayUserDataCard, setCurrentPreplayUserDataCard] = useState({"userId": "", "cards": []})
-    const [prePlayCurrentFamillyProgress, setPrePlayCurrentFamillyProgress] = useState({});
-    const [randomGame, setRandomGame] = useState(false);
-    const [prePlayDataIn, setPrePlayDataIn] = useState(null);
-  
-    useEffect(() => {
-      CardService.getPrePlayData().then((preplayData) => {
-        setPrePlayDataIn(preplayData);
-      })
-    }, [prePlayDataIn]);
-
     useEffect(()=> {
       (async() => {
         const user = await Auth.currentAuthenticatedUser();
         setUsername(user?.attributes?.given_name);
       })();
+    },[])
+  
+    const [prePlayDataIn, setPrePlayDataIn] = useState(true);
+    useEffect(()=> {
       CardService.getPrePlayData().then((preplayData) => {
         setPrePlayDataIn(preplayData);
       })
-      CardService.getPreplayUserDataCard().then((data) => {
-        if(data) setCurrentPreplayUserDataCard(data);
-      })
-
-      CardService.getPreplayFamillyProgress().then((data) => {
-        if(data) setPrePlayCurrentFamillyProgress(data);
-      })
     },[prePlayDataIn]);
+  
+    const [currentUSerDataCard, setCurrentUSerDataCard] = useState({"userId": "", "cards": []})
+    useFocusEffect(
+      useCallback(() => {
+        if(!flagUserDataCard){
+          CardService.getUserCardsMock().then((userCardsData) => {
+            setCurrentUSerDataCard(userCardsData);
+          });
+        }
+        return () => setFlagUserDataCard(true)
+      },[currentUSerDataCard])
+    );
+    
+    
+    const [currentFamillyProgress, setCurrentFamillyProgress] = useState({   
+      "carreau": {
+          "eightFirstCardFilled": false,
+          "allCardFilled": false
+      },
+      "coeur": {
+          "eightFirstCardFilled": false,
+          "allCardFilled": false
+      },
+      "trefle": {
+          "eightFirstCardFilled": false,
+          "allCardFilled": false
+      },          
+      "pique": {
+          "eightFirstCardFilled": false,
+          "allCardFilled": false
+      },
+    });
+    useFocusEffect(
+    useCallback(()=> {
+      if(!flagFamillyProgress){
+        CardService.getFamillyProgress().then((famillyProgressData) => {
+          setCurrentFamillyProgress(famillyProgressData);
+        });
+      }
+      
+      return () => setFlagFamillyProgress(true)
+    },[currentFamillyProgress])
+    );
+    
+    const WalkthroughablePlayCard = walkthroughable(AnimatedPlayCard);
+
+    const [cardTop] = useState(new Animated.Value(0));
+    const [bgAnimation] = useState(new Animated.Value(0));
+    useEffect(()=> {
+      Animated.timing( cardTop ,{
+        toValue: 1,
+        delay: 200,
+        useNativeDriver: true
+      }).start(() => {
+        Animated.timing( bgAnimation ,{
+          toValue: 1,
+          useNativeDriver: true
+        }).start(() => {
+          CardService.getStepperBeforePlay().then((stepData) => {
+            if(stepData) props.start();
+          })
+        })
+      });
+    }, []);
+
+    const interpolateTranslation = {
+      transform: [{
+          translateY: cardTop.interpolate({
+              inputRange: [0, 1],
+              outputRange: [100, 0]
+          })
+          }   
+      ],
+      opacity: cardTop
+  }
+    const interpolateBgTranslation = {
+      transform: [{
+          translateY: bgAnimation.interpolate({
+              inputRange: [0, 1],
+              outputRange: [50, 0]
+          })
+          }   
+      ],
+      opacity: bgAnimation
+  }
+    const WalkthroughableButton = walkthroughable(ButtonViewGame);
+    
+
+
+    useEffect(()=> {
+      /*CardService.getStepperBeforePlay().then((stepData) => {
+        if(stepData) props.start();
+      })*/
+
+      props.copilotEvents.on("stop", () => {
+        CardService.terminateStepperBeforePlay();
+      });
+
+      return () => {
+        props.copilotEvents.off("stop");
+      }
+    },[])
+    
+    const promptGameRef = useRef();
+    const [randomGame, setRandomGame] = useState(false);
     
     const handleSelectFamilly = (couleur) => {
-      const famillyFiltered = currentPreplayUserDataCard?.cards.filter(elt=> elt.couleur === couleur);
-      navigation.navigate("Card Association Read Only", { userCards: famillyFiltered })
+      const famillyFiltered = currentUSerDataCard.cards.filter(elt=> elt.couleur === couleur);
+      props.navigation.navigate("Card Association Read Only", { userCards: famillyFiltered });
     }
 
    const handlePlayPreplayGame = () => {
-    const cardCopyToShuffle = JSON.parse(JSON.stringify(currentPreplayUserDataCard));
+     promptGameRef.current.setVisible(true);
+    /*const cardCopyToShuffle = JSON.parse(JSON.stringify(currentUSerDataCard));
     const shuffledArrayforPlayGame = cardCopyToShuffle.cards.sort((a, b) => 0.5 - Math.random());
-    navigation.navigate("PlayPregame", {userCards: shuffledArrayforPlayGame.slice(0,7)});
+    props.navigation.navigate("PlayPregame", {userCards: shuffledArrayforPlayGame.slice(0,7)});*/
     }
 
     const handleGoToMainHome = () => {
-      CardService.terminatePreplayData().then((value) =>{
-        if(value !== null) navigation.navigate("Accueil-Alt");
-      });
+
+      navigation.navigate("PlayFamilly", {famillyToPlay: currentUSerDataCard.cards, isRandom: randomGame});
+      // CardService.terminatePreplayData().then((value) =>{
+      //   if(value !== null) props.navigation.navigate("Accueil-Alt");
+      // });
     }
 
+
+    const handleModifyFamilly = (color) => {
+      const cardFamillyFilterToModify = currentUSerDataCard.cards.filter(elt => elt.couleur === color);
+      props.navigation.navigate("Card Association Par Famille", { userCardsFull: currentUSerDataCard, famillyProgress: currentFamillyProgress, color: color });
+    }
+    const checkAbleToTrain = () => {
+      return currentFamillyProgress?.carreau["allCardFilled"] || currentFamillyProgress?.carreau["eightFirstCardFilled"] ||
+      currentFamillyProgress?.coeur["allCardFilled"] || currentFamillyProgress?.coeur["eightFirstCardFilled"] ||
+       currentFamillyProgress?.trefle["allCardFilled"] || currentFamillyProgress?.trefle["eightFirstCardFilled"] ||
+        currentFamillyProgress?.pique["allCardFilled"] || currentFamillyProgress?.pique["eightFirstCardFilled"];
+    }
+    const checkAbleToLearnAll = () => {
+      return currentFamillyProgress?.carreau["allCardFilled"] && currentFamillyProgress?.carreau["eightFirstCardFilled"] &&
+      currentFamillyProgress?.coeur["allCardFilled"] && currentFamillyProgress?.coeur["eightFirstCardFilled"] &&
+       currentFamillyProgress?.trefle["allCardFilled"] && currentFamillyProgress?.trefle["eightFirstCardFilled"] &&
+        currentFamillyProgress?.pique["allCardFilled"] && currentFamillyProgress?.pique["eightFirstCardFilled"];
+    }
+    const calculateProgressionCardByFamilly = (couleurIn) => {
+      const cardFamilly = currentUSerDataCard.cards.filter(elt => elt.couleur === couleurIn);
+      const elementCarteRemplie = (element) => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "";
+      const cardFamillyProgress = cardFamilly.filter(element => elementCarteRemplie(element)).length;
+      return cardFamillyProgress + " / " + cardFamilly.length;
+    }
   return prePlayDataIn === null ?( 
           <Container source={require("../assets/brainsport-bg.png")}>   
             <StatusBar style="auto" />
@@ -230,7 +376,7 @@ export default function HomeScreenPreplay({navigation}) {
                   </Subtitle>
                 
                   <ButtonFooter>
-                    <TouchableOpacity onPress={()=> navigation.push("Regle Precreation")}>
+                    <TouchableOpacity onPress={()=> props.navigation.push("Regle Precreation")}>
                       <ButtonView>
                         <ButtonText>Commencer</ButtonText>
                       </ButtonView>
@@ -252,82 +398,177 @@ export default function HomeScreenPreplay({navigation}) {
               <SubtitleCard text="Pour débuter, tu joueras avec les familles suivantes. Cliques sur les familles pour voir les différentes cartes" sourceImg={require("../assets/brainsport-logo.png")}/>
            </SubtitleSection>
             <ListPlayCard>
-            <TouchableOpacity onPress={() => handleSelectFamilly("carreau")}>
-              <PlayCard>
-                  
-                  <ContentLabel>
-                      <LogoCard>
-                        <MaterialCommunityIcons name="cards-diamond" size={20} color="red" />
-                      </LogoCard>
-                      <Label>Carreau</Label>
-                  </ContentLabel>
-                  
-                  <Famillychosen>
-                    <ActionButton>
-                    <MaterialCommunityIcons name="cards-diamond" size={180} color="#FF000022" />
-                    </ActionButton>
-                  </Famillychosen>
-              </PlayCard>
-            </TouchableOpacity> 
-            <TouchableOpacity onPress={() => handleSelectFamilly("coeur")}>
-              <PlayCard >
+            <TouchableOpacity onPress={() => handleModifyFamilly("coeur")}>
+            <CopilotStep 
+              text="Nous allons commencer par créer la famille des Coeur. Définissez votre première catégorie en appuyant sur la couleur."
+              order={1}
+              name="second-familly">
+              <WalkthroughablePlayCard style={[interpolateTranslation]}>
                   <ContentLabel>
                       <LogoCard>
                         <MaterialCommunityIcons name="cards-heart" size={20} color="red" />
                       </LogoCard>
                       <Label>Coeur</Label>
                   </ContentLabel>
-                  <Famillychosen>
+                  <ProgressContainer>
+                    <ProgressContainerText>
+                      {calculateProgressionCardByFamilly("coeur")}
+                    </ProgressContainerText>
+                  </ProgressContainer>
+                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
                     <ActionButton>
                     <MaterialCommunityIcons name="cards-heart" size={180} color="#FF000022" />
                     </ActionButton>
-                  </Famillychosen>
-              </PlayCard>
+                  </AnimatedFamillychosen>
+              </WalkthroughablePlayCard>
+              </CopilotStep>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectFamilly("trefle")}>
-              <PlayCard >
+            <TouchableOpacity onPress={() => currentFamillyProgress?.carreau["eightFirstCardFilled"] !== undefined && handleModifyFamilly("carreau")}>
+              <CopilotStep 
+              text="Les autres familles se débloqueront lorsque vous aurez complété la famille du Coeur."
+              order={2}
+              name="first-familly">
+
+              
+              <WalkthroughablePlayCard style={[interpolateTranslation]}>
+              {currentFamillyProgress?.carreau["eightFirstCardFilled"] !== undefined ? 
+                <>
+                  <ContentLabel>
+                      <LogoCard>
+                        <MaterialCommunityIcons name="cards-diamond" size={20} color="red" />
+                      </LogoCard>
+                      <Label>Carreau</Label>
+                  </ContentLabel>
+                  <ProgressContainer>
+                    <ProgressContainerText>
+                      {calculateProgressionCardByFamilly("carreau")}
+                    </ProgressContainerText>
+                  </ProgressContainer>
+                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                    <ActionButton>
+                    <MaterialCommunityIcons name="cards-diamond" size={180} color="#FF000022" />
+                    </ActionButton>
+                  </AnimatedFamillychosen>
+                </> : 
+                <>
+                <PlayCardOverLayer /> 
+                <ContentLabel>
+                      <LogoCard>
+                        <MaterialCommunityIcons name="lock" size={20} color="#95a5a6" />
+                      </LogoCard>
+                      <Label>Carreau</Label>
+                  </ContentLabel>
+                  
+                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                    <ActionButton>
+                    <MaterialCommunityIcons name="lock" size={180} color="#95a5a622" />
+                    </ActionButton>
+                  </AnimatedFamillychosen>
+                </>}
+
+              </WalkthroughablePlayCard>
+              </CopilotStep>
+            </TouchableOpacity> 
+            
+            <TouchableOpacity onPress={() => currentFamillyProgress?.trefle["eightFirstCardFilled"] !== undefined && handleModifyFamilly("trefle")}>
+              <AnimatedPlayCard style={[interpolateTranslation]}>
+              {currentFamillyProgress?.trefle["eightFirstCardFilled"] !== undefined ? 
+                <>
                   <ContentLabel>
                     <LogoCard>
                       <MaterialCommunityIcons name="cards-club" size={20} color="black" />
                     </LogoCard>
                     <Label>Trèfle</Label>
                   </ContentLabel>
-                  <Famillychosen>
+                  <ProgressContainer>
+                    <ProgressContainerText>
+                      {calculateProgressionCardByFamilly("trefle")}
+                    </ProgressContainerText>
+                  </ProgressContainer>
+                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
                     <ActionButton>
                       <MaterialCommunityIcons name="cards-club" size={180} color="#00000022" />
                     </ActionButton>
-              </Famillychosen>
-              </PlayCard>
+              </AnimatedFamillychosen>
+              </> :
+              <>
+              <PlayCardOverLayer /> 
+                <ContentLabel>
+                      <LogoCard>
+                        <MaterialCommunityIcons name="lock" size={20} color="#95a5a6" />
+                      </LogoCard>
+                      <Label>Trèfle</Label>
+                  </ContentLabel>
+                  
+                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                    <ActionButton>
+                    <MaterialCommunityIcons name="lock" size={180} color="#95a5a622" />
+                    </ActionButton>
+                  </AnimatedFamillychosen>
+              </>
+              }
+              </AnimatedPlayCard>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleSelectFamilly("pique")}>
-              <PlayCard >
+            <TouchableOpacity onPress={() => currentFamillyProgress?.pique["eightFirstCardFilled"] !== undefined && handleModifyFamilly("pique")}>
+              <AnimatedPlayCard style={[interpolateTranslation]}>
+              {currentFamillyProgress?.pique["eightFirstCardFilled"] !== undefined ? 
+                <>
                   <ContentLabel>
                       <LogoCard>
                         <MaterialCommunityIcons name="cards-spade" size={20} color="black" />
                       </LogoCard>
                       <Label>Pique</Label>
                   </ContentLabel>
-                  <Famillychosen>
+                  <ProgressContainer>
+                    <ProgressContainerText>
+                      {calculateProgressionCardByFamilly("pique")}
+                    </ProgressContainerText>
+                  </ProgressContainer>
+                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
                     <ActionButton>
                     <MaterialCommunityIcons name="cards-spade" size={180} color="#00000022" />
                     </ActionButton>
-                  </Famillychosen>
-              </PlayCard>
+                  </AnimatedFamillychosen>
+                </> :
+                <>
+                <PlayCardOverLayer /> 
+                  <ContentLabel>
+                      <LogoCard>
+                        <MaterialCommunityIcons name="lock" size={20} color="#95a5a6" />
+                      </LogoCard>
+                      <Label>Pique</Label>
+                  </ContentLabel>
+                  
+                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                    <ActionButton>
+                    <MaterialCommunityIcons name="lock" size={180} color="#95a5a622" />
+                    </ActionButton>
+                  </AnimatedFamillychosen>
+                </>
+              }
+              </AnimatedPlayCard>
+              
             </TouchableOpacity>
             </ListPlayCard>
             <HomeReplayButton>
-              <TouchableOpacity onPress={() => handlePlayPreplayGame()}>
-                <ButtonViewGame>
-                  <ButtonTextGame>S'entrainer</ButtonTextGame>
-                </ButtonViewGame>
+              <TouchableOpacity onPress={() => checkAbleToTrain() && handlePlayPreplayGame()}>
+              <CopilotStep 
+              text="Une fois les cartes définies pour chaque famille vous pourrez commencer à jouer en appuyant ici."
+              order={3}
+              name="train">
+                <WalkthroughableButton color={checkAbleToTrain()}>
+                  <ButtonTextGame color={checkAbleToTrain()}>S'entrainer</ButtonTextGame>
+                </WalkthroughableButton>
+                </CopilotStep>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleGoToMainHome()}>
-                <ButtonViewGame>
-                  <ButtonTextTab>Créer son propre tableau</ButtonTextTab>
+              <TouchableOpacity onPress={() => checkAbleToLearnAll() && handleGoToMainHome()}>
+                <ButtonViewGame color={checkAbleToLearnAll()}>
+                  <ButtonTextTab color={checkAbleToLearnAll()}>Apprendre le tableau</ButtonTextTab>
                 </ButtonViewGame>
               </TouchableOpacity>
             </HomeReplayButton>
             </ScrollView>
+            <GameChoicePrompt ref={promptGameRef} famillyProgress={currentFamillyProgress} currentUSerDataCard={currentUSerDataCard} navigation={props.navigation}/>
         </SafeAreaView>      
     </Container>) : ( 
           <Container source={require("../assets/brainsport-bg.png")}>   
@@ -343,7 +584,7 @@ export default function HomeScreenPreplay({navigation}) {
                   </Subtitle>
                 
                   <ButtonFooter>
-                    <TouchableOpacity onPress={()=> navigation.push("Accueil")}>
+                    <TouchableOpacity onPress={()=> props.navigation.push("Accueil")}>
                       <ButtonView>
                         <ButtonText>Aller à la création du tableau</ButtonText>
                       </ButtonView>
@@ -356,3 +597,10 @@ export default function HomeScreenPreplay({navigation}) {
   );
 }
 
+
+export default copilot({overlay: "svg", animated: true, verticalOffset: 30, labels: {
+  previous: "Précédent",
+  next: "Suivant",
+  skip: "Passer",
+  finish: "Terminer"
+}})(HomeScreenPreplay);

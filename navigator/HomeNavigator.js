@@ -10,6 +10,7 @@ import CardService from '../services/Card.service';
 import HomeScreenPreplay from '../screens/HomeScreenPreplay';
 import CardAssociationReadOnlyScreen from '../screens/CardAssociationReadOnlyScreen';
 import PlayPregame from '../screens/PlayPregame';
+import CardAssociationPerFamillyScreen from '../screens/CardAssociationPerFamillyScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,7 +22,7 @@ const HomeNavigator = () => {
             console.log("PREPLAY DATA IN HOME NAVIGATOR =>", prePlayData);
             setPrePlayDataOut(prePlayData);
         })
-      }, );
+      }, []);
         return (
             
             <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -36,7 +37,10 @@ const HomeNavigator = () => {
                     <Stack.Screen name="Accueil Preliminaire" component={HomeScreenPreplay} />
                     <Stack.Screen name="Accueil-Alt" component={HomeScreen} />
                     <Stack.Screen name="Card Association Read Only" component={CardAssociationReadOnlyScreen} />
+                    <Stack.Screen name="Card Association" component={CardAssociationScreen} />
+                    <Stack.Screen name="Card Association Par Famille" component={CardAssociationPerFamillyScreen} />
                     <Stack.Screen name="PlayPregame" component={PlayPregame} />
+                    <Stack.Screen name="PlayFamilly" component={PlayCardFamilly} />
                     <Stack.Screen name="Regle Precreation" component={RulePrecreationScreen} />
                 </Stack.Group>)}
                 <Stack.Group screenOptions={{ presentation: 'modal' }}>

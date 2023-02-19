@@ -1,4 +1,160 @@
 [{
+        "id": "tcoe1",
+        "valeur": "1",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "D", "T"
+        ]
+    },
+    {
+        "id": "tcoe2",
+        "valeur": "2",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "N"
+        ]
+    },
+    {
+        "id": "tcoe3",
+        "valeur": "3",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "M"
+        ]
+    },
+    {
+        "id": "tcoe4",
+        "valeur": "4",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "R"
+        ]
+    },
+    {
+        "id": "tcoe5",
+        "valeur": "5",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "L"
+        ]
+    },
+    {
+        "id": "tcoe6",
+        "valeur": "6",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "CH", "G", "J"
+        ]
+    },
+    {
+        "id": "tcoe7",
+        "valeur": "7",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "K", "QU", "GU"
+        ]
+    },
+    {
+        "id": "tcoe8",
+        "valeur": "8",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "F", "V"
+        ]
+    },
+    {
+        "id": "tcoe9",
+        "valeur": "9",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": [
+            "B", "P"
+        ]
+    },
+    {
+        "id": "tcoe10",
+        "valeur": "10",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "V"
+        }
+    },
+    {
+        "id": "tcoe11",
+        "valeur": "V",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "10"
+        }
+    },
+    {
+        "id": "tcoe12",
+        "valeur": "D",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "R"
+        }
+    },
+    {
+        "id": "tcoe13",
+        "valeur": "R",
+        "couleur": "coeur",
+        "personnage": "",
+        "verbe": "",
+        "objet": "",
+        "lieu": "",
+        "conditions": {
+            "couple": "D"
+        }
+    },
+    {
         "id": "tcarr1",
         "valeur": "1",
         "couleur": "carreau",
@@ -302,162 +458,6 @@
         "id": "ttre13",
         "valeur": "R",
         "couleur": "trefle",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": {
-            "couple": "D"
-        }
-    },
-    {
-        "id": "tcoe1",
-        "valeur": "1",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": [
-            "D", "T"
-        ]
-    },
-    {
-        "id": "tcoe2",
-        "valeur": "2",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": [
-            "N"
-        ]
-    },
-    {
-        "id": "tcoe3",
-        "valeur": "3",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": [
-            "M"
-        ]
-    },
-    {
-        "id": "tcoe4",
-        "valeur": "4",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": [
-            "R"
-        ]
-    },
-    {
-        "id": "tcoe5",
-        "valeur": "5",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": [
-            "L"
-        ]
-    },
-    {
-        "id": "tcoe6",
-        "valeur": "6",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": [
-            "CH", "G", "J"
-        ]
-    },
-    {
-        "id": "tcoe7",
-        "valeur": "7",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": [
-            "K", "QU", "GU"
-        ]
-    },
-    {
-        "id": "tcoe8",
-        "valeur": "8",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": [
-            "F", "V"
-        ]
-    },
-    {
-        "id": "tcoe9",
-        "valeur": "9",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": [
-            "B", "P"
-        ]
-    },
-    {
-        "id": "tcoe10",
-        "valeur": "10",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": {
-            "couple": "V"
-        }
-    },
-    {
-        "id": "tcoe11",
-        "valeur": "V",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": {
-            "couple": "10"
-        }
-    },
-    {
-        "id": "tcoe12",
-        "valeur": "D",
-        "couleur": "coeur",
-        "personnage": "",
-        "verbe": "",
-        "objet": "",
-        "lieu": "",
-        "conditions": {
-            "couple": "R"
-        }
-    },
-    {
-        "id": "tcoe13",
-        "valeur": "R",
-        "couleur": "coeur",
         "personnage": "",
         "verbe": "",
         "objet": "",

@@ -192,6 +192,7 @@ const ProfilScreen = ({navigation}) => {
     const array = [];
     listProgress.forEach(item => array.push(item.time))
     const arraySorted = array.sort((a, b) => {return b - a});
+    if (arraySorted.length === 0) return 0;
     return arraySorted[arraySorted.length -1];
   }
   const handleAvatar = () => {
