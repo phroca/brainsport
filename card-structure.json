@@ -1,8 +1,8 @@
 {
     "couleurs": [
+        "coeur",
         "carreau",
         "trefle",
-        "coeur",
         "pique"
     ],
     "valeurs": [{

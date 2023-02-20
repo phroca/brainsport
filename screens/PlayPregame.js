@@ -5,6 +5,10 @@ import { SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutF
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
+import { copilot, walkthroughable, CopilotStep } from "react-native-copilot";
+import StepNumberComponent from '../components/stepper/StepNumberComponent';
+import TooltipComponent from '../components/stepper/TooltipComponent';
+import CardService from "../services/Card.service";
 
 const {width} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -136,7 +140,16 @@ font-size: 14px;
 font-weight: bold;
 `;
 
-const PlayPregame = ({navigation, route}) => {
+
+const StepView = styled.View`
+    position :absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+`;
+
+const PlayPregame = (props) => {
     const [personnage, setPersonnage] = useState("");
     const [verbe, setVerbe] = useState("");
     const [objet, setObjet] = useState("");
@@ -144,11 +157,27 @@ const PlayPregame = ({navigation, route}) => {
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const [cardFold, setCardFold] = useState(false);
     const [toggleCardValuesVisibility, setToggleCardValuesVisibility] = useState(true);
-    const { userCards } = route.params;
+    const { userCards } = props.route.params;
     const ref = useRef(null);
+    const WalkthroughableStepView = walkthroughable(StepView);
+
 
     useEffect(()=> {
         setPropertiesFromIndex(0);
+    },[]);
+
+    useEffect(()=> {
+        CardService.getStepperBeforePlay().then((stepData) => {
+            if(stepData?.initPrePlay) props.start();
+        });
+
+        props.copilotEvents.on("stop", () => {
+            CardService.updateStepperBeforePlay("initPrePlay", false);
+        });
+
+        return () => {
+            props.copilotEvents.off("stop");
+        }
     },[]);
 
     const updateCurrentItemIndex = element => {
@@ -207,7 +236,7 @@ const PlayPregame = ({navigation, route}) => {
         
     }
     const handleEndGame = () => {
-        navigation.goBack();
+        props.navigation.push("Accueil Preliminaire");
     }
 
     return (
@@ -217,13 +246,21 @@ const PlayPregame = ({navigation, route}) => {
                 <KeyboardAvoidingView behavior="position">
                 <TitleBar>
                     <CloseButton>
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <TouchableOpacity onPress={() => props.navigation.push("Accueil Preliminaire")}>
                             <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
                         </TouchableOpacity>
                     </CloseButton>
                 </TitleBar>
                 <PlayContent>
                     <CardVisual>
+                    <CopilotStep 
+                        text="Les cartes sont dans un ordre aléatoire. Faites les défiler en les mémorisant, en créant une histoire de 4 cartes.
+                        La première est le lieu, la seconde le personnage, la troisième le verbe d’action, la quatrième l’objet. 
+                        En cliquant sur la carte, elle se retournera face caché en cachant les éléments. Vous pourrez de nouveau cliquer sur la carte pour les réafficher."
+                        order={1}
+                        name="first-step">
+                        <WalkthroughableStepView />
+                        </CopilotStep>
                         <Animated.FlatList
                         data={userCards}
                         ref={ref}
@@ -256,6 +293,12 @@ const PlayPregame = ({navigation, route}) => {
                         </TouchableArrowRight>
                     </CardVisual>
                     <CardForm>
+                    <CopilotStep 
+                            text="Vous les nommez dans votre tête et vous les faites défiler par swipe."
+                            order={2}
+                            name="naming-step">
+                            <WalkthroughableStepView />
+                            </CopilotStep>
                     {toggleCardValuesVisibility && <><InputContainer >
                             <PreText>Personnage</PreText>
                             <TextInput editable={false} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
@@ -275,6 +318,12 @@ const PlayPregame = ({navigation, route}) => {
                         <EndGameButton>
                         <TouchableOpacity onPress={()=> handleEndGame()}>
                             <ButtonGameView>
+                            <CopilotStep 
+                            text="Vous pouvez terminer le jeu lorsque vous vous sentez capable d'avoir retenu les histoires. Bon jeu !"
+                            order={3}
+                            name="final-step">
+                            <WalkthroughableStepView />
+                            </CopilotStep>
                                 <ButtonGameText>Terminer le jeu</ButtonGameText>
                             </ButtonGameView>
                         </TouchableOpacity>
@@ -286,4 +335,9 @@ const PlayPregame = ({navigation, route}) => {
         </Container>);
 }
 
-export default PlayPregame;
+export default copilot({overlay: "svg", animated: true, verticalOffset: 30, labels: {
+    previous: "Précédent",
+    next: "Suivant",
+    skip: "Passer",
+    finish: "Terminer"
+  }, stepNumberComponent: StepNumberComponent, tooltipComponent: TooltipComponent})(PlayPregame);

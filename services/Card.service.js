@@ -3,7 +3,6 @@ import { DataStore } from '@aws-amplify/datastore';
 import { Card } from '../src/models';
 import { PackCard } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import tabCardPreplay from "../tabCardPreplay.json"
 /**
  * 
  * @param {*} userId 
@@ -66,36 +65,6 @@ const initCardCreationMock = async(userId) => {
     }
 }
 
-/**
- * 
- * @param {*} userId 
- */
-const initPreplayCardCreation = async(userId) => {
-    const userCards = {userId: userId, cards: []};
-    tabCardPreplay.forEach((cardIN) => {
-        const card = {
-            "valeur": cardIN.valeur,
-            "couleur": cardIN.couleur,
-            "personnage": cardIN.personnage,
-            "verbe": cardIN.verbe,
-            "objet": cardIN.objet,
-            "lieu": cardIN.lieu,
-            "conditions": cardIN.conditions
-        }
-        userCards.cards.push(card);
-    })
-    try{
-        getPreplayUserDataCard().then((data) => {
-            if(!data){
-                const jsonValue = JSON.stringify(userCards);
-                AsyncStorage.setItem('@user_PreplayCards', jsonValue);
-            }
-        })
-        return userCards;
-    } catch(e){
-        console.log(e);
-    }
-}
 /**
  * 
  * @returns 
@@ -165,26 +134,31 @@ const terminatePreplayData = async() => {
 
 const initStepperBeforePlay = async() => {
     try{
-        const data = await getStepperBeforePlay();
-        if(data === null || data === false){
-            const jsonValue = JSON.stringify(true);
-            AsyncStorage.setItem('@user_StepperData', jsonValue)
+        const dataInit = {
+            "initHomeScreen": true,
+            "initCardAssociation": true,
+            "initPrePlay": true,
+            "initPlayGame": true
         }
-        return true;
+
+        const jsonValue = JSON.stringify(dataInit);
+        await AsyncStorage.setItem('@user_StepperData', jsonValue)
+        return dataInit;
     } catch(e){
         console.log(e);
     }
 }
 
 
-const terminateStepperBeforePlay = async() => {
+const updateStepperBeforePlay = async(step, value) => {
     try{
-        const data = await getStepperBeforePlay();
+        let data = await getStepperBeforePlay();
         if(data !== null){
-            const jsonValue = JSON.stringify(false);
-            AsyncStorage.setItem('@user_StepperData', jsonValue)
+            data[step] = value;
+            const jsonValue = JSON.stringify(data);
+            await AsyncStorage.setItem('@user_StepperData', jsonValue)
+            return data;
         }
-        return false;
     } catch(e){
         console.log(e);
     }
@@ -449,13 +423,12 @@ const CardService ={
     terminatePreplayData,
     initStepperBeforePlay,
     getStepperBeforePlay,
-    terminateStepperBeforePlay,
+    updateStepperBeforePlay,
     saveCard,
     saveCardFromFamilly,
     initFamillyProgress,
     getFamillyProgress,
     updateFamillyProgress,
-    initPreplayCardCreation,
     getPreplayUserDataCard,
     getPreplayFamillyProgress,
     initPreplayFamillyProgress,

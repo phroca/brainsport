@@ -14,6 +14,9 @@ import CheckBox from '../components/CheckBox';
 import SubtitleCard from '../components/SubtitleCard';
 import GameChoicePrompt from '../components/GameChoicePrompt';
 import { copilot, walkthroughable, CopilotStep } from "react-native-copilot";
+import StepNumberComponent from '../components/stepper/StepNumberComponent';
+import TooltipComponent from '../components/stepper/TooltipComponent';
+import TabChoicePrompt from '../components/TabChoicePrompt';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -271,7 +274,7 @@ const HomeScreenPreplay = (props) => {
           useNativeDriver: true
         }).start(() => {
           CardService.getStepperBeforePlay().then((stepData) => {
-            if(stepData) props.start();
+            if(stepData?.initHomeScreen) props.start();
           })
         })
       });
@@ -302,12 +305,8 @@ const HomeScreenPreplay = (props) => {
 
 
     useEffect(()=> {
-      /*CardService.getStepperBeforePlay().then((stepData) => {
-        if(stepData) props.start();
-      })*/
-
       props.copilotEvents.on("stop", () => {
-        CardService.terminateStepperBeforePlay();
+        CardService.updateStepperBeforePlay("initHomeScreen", false);
       });
 
       return () => {
@@ -316,6 +315,8 @@ const HomeScreenPreplay = (props) => {
     },[])
     
     const promptGameRef = useRef();
+
+
     const [randomGame, setRandomGame] = useState(false);
     
     const handleSelectFamilly = (couleur) => {
@@ -330,9 +331,10 @@ const HomeScreenPreplay = (props) => {
     props.navigation.navigate("PlayPregame", {userCards: shuffledArrayforPlayGame.slice(0,7)});*/
     }
 
+    const promptTabRef = useRef();
     const handleGoToMainHome = () => {
-
-      navigation.navigate("PlayFamilly", {famillyToPlay: currentUSerDataCard.cards, isRandom: randomGame});
+      promptTabRef.current.setVisible(true);
+      
       // CardService.terminatePreplayData().then((value) =>{
       //   if(value !== null) props.navigation.navigate("Accueil-Alt");
       // });
@@ -341,7 +343,7 @@ const HomeScreenPreplay = (props) => {
 
     const handleModifyFamilly = (color) => {
       const cardFamillyFilterToModify = currentUSerDataCard.cards.filter(elt => elt.couleur === color);
-      props.navigation.navigate("Card Association Par Famille", { userCardsFull: currentUSerDataCard, famillyProgress: currentFamillyProgress, color: color });
+      props.navigation.push("Card Association Par Famille", { userCardsFull: currentUSerDataCard, famillyProgress: currentFamillyProgress, color: color });
     }
     const checkAbleToTrain = () => {
       return currentFamillyProgress?.carreau["allCardFilled"] || currentFamillyProgress?.carreau["eightFirstCardFilled"] ||
@@ -562,13 +564,19 @@ const HomeScreenPreplay = (props) => {
                 </CopilotStep>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => checkAbleToLearnAll() && handleGoToMainHome()}>
-                <ButtonViewGame color={checkAbleToLearnAll()}>
+              <CopilotStep 
+              text="Lorsque vous aurez rempli toutes vos familles et retenus toutes vos cartes, vous pourrez débloquer la dernière étape ! C'est parti !"
+              order={4}
+              name="final">
+                <WalkthroughableButton color={checkAbleToLearnAll()}>
                   <ButtonTextTab color={checkAbleToLearnAll()}>Apprendre le tableau</ButtonTextTab>
-                </ButtonViewGame>
+                </WalkthroughableButton>
+              </CopilotStep>
               </TouchableOpacity>
             </HomeReplayButton>
             </ScrollView>
             <GameChoicePrompt ref={promptGameRef} famillyProgress={currentFamillyProgress} currentUSerDataCard={currentUSerDataCard} navigation={props.navigation}/>
+            <TabChoicePrompt ref={promptTabRef} famillyProgress={currentFamillyProgress} currentUSerDataCard={currentUSerDataCard} navigation={props.navigation}/>
         </SafeAreaView>      
     </Container>) : ( 
           <Container source={require("../assets/brainsport-bg.png")}>   
@@ -603,4 +611,4 @@ export default copilot({overlay: "svg", animated: true, verticalOffset: 30, labe
   next: "Suivant",
   skip: "Passer",
   finish: "Terminer"
-}})(HomeScreenPreplay);
+}, stepNumberComponent: StepNumberComponent, tooltipComponent: TooltipComponent})(HomeScreenPreplay);

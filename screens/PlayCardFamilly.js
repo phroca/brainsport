@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Animated, ScrollView, TouchableOpacity, Dimensions } from "react-native";
+import { Animated, ScrollView, TouchableOpacity, Dimensions, Text } from "react-native";
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
@@ -120,19 +120,47 @@ const TouchableBtnFinish = styled.TouchableOpacity`
 
 const TouchableBtnNext = styled.TouchableOpacity`
     height: 50px;
+    width: ${widthContent}px;
     justify-content: center;
     align-items: center;
+    background-color: #FFFFFF;
+    border-radius: 10px;
 
 `;
 
+const TextContinue = styled.Text`
+    text-transform: uppercase;
+    color: #000000;
+    font-weight: bold;
+`;
 const TextFinish = styled.Text`
     text-transform: uppercase;
     color: #000000;
     font-weight: bold;
 `;
+const TitleReady = styled.Text`
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 40px;
+    text-align: center;
+`;
+const Timing = styled.Text`
+    text-transform: uppercase;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 190px;
+`;
+
+const TextProgress = styled.Text`
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    bottom: 70px;
+`;
 
 const PlayCardFamilly = ({navigation, route}) => {
-    const [min, setMin] = useState(0);
+    const [preSec, setPreSec] = useState(5);
     const [sec, setSec] = useState(0);
     const [intervalTime, setIntervalTime] = useState(null);
     const { famillyToPlay, isRandom } = route.params;
@@ -144,12 +172,30 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [results, setResults] = useState([]);
     const [resultCurrentfromVoice, setResultCurrentfromVoice] = useState("");
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
+    const [progressionPercentage, setProgressionPercentage] = useState(0);
+    const [flagReady, setFlagReady] = useState(false);
+
+    useEffect(()=> {
+        let chrono = null
+        if(!flagReady){
+            chrono = setInterval(() => {
+                setPreSec(sec=> sec - 1); 
+            }, 1000);
+        } else {
+            clearInterval(chrono); 
+        }
+        return () => clearInterval(chrono);    
+    }, [flagReady]);
+
+    useEffect(() => {
+        if(preSec === 0) setFlagReady(true);
+    },[preSec])
 
     const ref = useRef(null);
     let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
     useEffect(()=> {
         let int = null;
-        if(isFinished === false){
+        if(isFinished === false && flagReady ===true){
             int = setInterval(() => {
                 setSec(sec=> sec + 1);
             }, 1000);
@@ -157,7 +203,7 @@ const PlayCardFamilly = ({navigation, route}) => {
             clearInterval(int);
         } 
         return () => clearInterval(int);
-    },[isFinished])
+    },[isFinished, flagReady])
 
     useEffect(() => {
         if(isRandom) {
@@ -251,10 +297,10 @@ const PlayCardFamilly = ({navigation, route}) => {
     const handleNextOnList = () => {
         let id = currentQuestionIndex;
         //if(id === 0 || currentItemIndex !== 0) goNextItem();
-        const currentItem = cardsPlay[currentItemIndex];
-        const currentQuestionLowercase = currentQuestion.toLowerCase();
+        // const currentItem = cardsPlay[currentItemIndex];
+        // const currentQuestionLowercase = currentQuestion.toLowerCase();
         
-        console.log("VALEUR DE " + currentQuestionLowercase + " => " + currentItem[currentQuestionLowercase]);
+        // console.log("VALEUR DE " + currentQuestionLowercase + " => " + currentItem[currentQuestionLowercase]);
         
         if(id === 3 ) {
             if(currentItemIndex !== cardsPlay.length -1){
@@ -277,6 +323,7 @@ const PlayCardFamilly = ({navigation, route}) => {
         const nextItemIndex = currentItemIndex + 1;
         const offset = nextItemIndex * screenWidth;
         ref?.current?.scrollToOffset({offset});
+        setProgressionPercentage(Math.round(nextItemIndex/52*100));
         setCurrentItemIndex(nextItemIndex);
     };
 
@@ -284,7 +331,7 @@ const PlayCardFamilly = ({navigation, route}) => {
         setFinished(true);
         handleStopSpeech();
         CardService.saveProgressionTime({timeInSec: sec, famillyPlayed: famillyToPlay}).then(() => {
-            navigation.navigate("Accueil");
+            navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé le jeu en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
         });
     }
 
@@ -302,6 +349,11 @@ const PlayCardFamilly = ({navigation, route}) => {
     return(
     <Container source={require("../assets/brainsport-bg.png")}>
         <StatusBar style="auto" />
+        {flagReady === false ? <>
+            <TitleReady>Le jeu se mélange, êtes-vous pret ?</TitleReady>
+            <Timing>{preSec}</Timing>
+        </> : 
+        <>
         <Header>
             <ChronoContainer>
                 <ChronoText>{padToTwo(Math.trunc(sec/60))}</ChronoText>
@@ -309,7 +361,7 @@ const PlayCardFamilly = ({navigation, route}) => {
                 <ChronoText>{padToTwo(sec%60)}</ChronoText>
             </ChronoContainer>
             <CloseButton>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
+                <TouchableOpacity onPress={() => navigation.push("Accueil Preliminaire")}>
                     <MaterialCommunityIcons name="close-circle-outline" size={24} color="#ffffff7b"  />
                 </TouchableOpacity>
             </CloseButton>
@@ -322,6 +374,7 @@ const PlayCardFamilly = ({navigation, route}) => {
                 scrollEventThrottle={32}
                 onMomentumScrollEnd={updateCurrentItemIndex}
                 pagingEnabled
+                scrollEnabled={false}
                 showsHorizontalScrollIndicator={false}
                 renderItem={({item, index}) => {
                     return (<><FlatView>
@@ -351,7 +404,8 @@ const PlayCardFamilly = ({navigation, route}) => {
             { !(currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3) &&
             <ButtonContainer>
                 <TouchableBtnNext onPress={() => handleNextOnList()}>
-                    <MaterialCommunityIcons name="arrow-right-thin-circle-outline" size={40} color="#FFFFFF" />
+                <TextContinue>... ou passez au suivant</TextContinue>
+                    
                 </TouchableBtnNext>
             </ButtonContainer>}
             <ChronoButton>
@@ -360,7 +414,9 @@ const PlayCardFamilly = ({navigation, route}) => {
                     <TextFinish>Terminer</TextFinish>
                 </TouchableBtnFinish>}
             </ChronoButton>
-
+            <TextProgress>Progression : {progressionPercentage}%</TextProgress>
+            </>
+        }
     </Container>)
 }
 

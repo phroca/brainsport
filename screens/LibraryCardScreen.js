@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import { ActivityIndicator, Animated, Dimensions, KeyboardAvoidingView, SafeAreaView, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
@@ -17,19 +18,33 @@ const Container = styled.ImageBackground`
   flex:1;
   width: 100%;
   height: 100%;
+  align-items: center;
+`;
+
+const TitleBar = styled.View`
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+`;
+
+const CloseButton = styled.View`
+  width: ${widthContent}px;
+  justify-content: flex-start;
 `;
 
 const FlatView = styled.View`
     width: ${width}px;    
     align-items: center;
-    margin-top: 50px;
+    margin-top: 20px;
+    margin-bottom: 10px;
     padding-right: 30px;
     padding-left: 30px;
 `;
 
 const CardForm = styled.View`
   align-items: center;
-  flex: .9;
+  //margin-bottom: 60px;
 `;
 
 const TextInput = styled.TextInput`
@@ -79,7 +94,7 @@ color: #FFFFFF;
   z-index: 2;
 `;
 
-PostText = styled.View`
+const PostText = styled.View`
     position: absolute;
     width: 30px;
     top: 20px;
@@ -337,111 +352,124 @@ const LibraryCardScreen = ({route, navigation}) => {
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
-            <Animated.FlatList
-            data={userCards.cards}
-            ref={ref}
-            style={{flex: 0.1, marginBottom: -130}}
-            keyExtractor={item => "card-"+item.couleur+"-"+item.valeur}
-            horizontal
-            scrollEventThrottle={32}
-            onMomentumScrollEnd={updateCurrentItemIndex}
-            pagingEnabled={false}
-            scrollEnabled={false}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({item, index}) => {
-                return (<FlatView>
-                    <Card
-                    key={"card-"+item.couleur+"-"+item.valeur}
-                    couleur={item.couleur}
-                    valeur={item.valeur}
-                    />
-                </FlatView>);
-            }}
-            />
+            <SafeAreaView>
+                <TitleBar>
+                    <CloseButton>
+                        <TouchableOpacity onPress={() => navigation.push("Profil Home")}>
+                            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+                        </TouchableOpacity>
+                    </CloseButton>
+                </TitleBar>
+                <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
+                    <KeyboardAvoidingView behavior="position">
+                        <Animated.FlatList
+                        data={userCards.cards}
+                        ref={ref}
+                        style={{}}
+                        keyExtractor={item => "card-"+item.couleur+"-"+item.valeur}
+                        horizontal
+                        scrollEventThrottle={32}
+                        onMomentumScrollEnd={updateCurrentItemIndex}
+                        pagingEnabled={false}
+                        scrollEnabled={false}
+                        showsHorizontalScrollIndicator={false}
+                        renderItem={({item, index}) => {
+                            return (<FlatView>
+                                <Card
+                                key={"card-"+item.couleur+"-"+item.valeur}
+                                couleur={item.couleur}
+                                valeur={item.valeur}
+                                />
+                            </FlatView>);
+                        }}
+                        />
 
-            <CardForm>
-                <TouchableWithoutFeedback onPress={() => handleFocusPersonnage()}>
-                <InputContainer >
-                    <PreText>Personnage</PreText>
-                    <TextInput ref={refPersonnage} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
-                    <PostText>
-                    {!recordPersonnageStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForPersonnage()}>
-                            <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
-                        </TouchableOpacity> }
-                    {recordPersonnageStarted && <TouchableOpacity onPress={()=> handleStopSpeechForPersonnage()}>
-                        <MaterialCommunityIcons name="record" size={20} color="red" />
-                        </TouchableOpacity> }
+                        <CardForm>
+                            <TouchableWithoutFeedback onPress={() => handleFocusPersonnage()}>
+                            <InputContainer >
+                                <PreText>Personnage</PreText>
+                                <TextInput ref={refPersonnage} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
+                                <PostText>
+                                {!recordPersonnageStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForPersonnage()}>
+                                        <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                                    </TouchableOpacity> }
+                                {recordPersonnageStarted && <TouchableOpacity onPress={()=> handleStopSpeechForPersonnage()}>
+                                    <MaterialCommunityIcons name="record" size={20} color="red" />
+                                    </TouchableOpacity> }
 
-                    </PostText>
-                </InputContainer>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={() => handleFocusVerbe()}>
-                <InputContainer>
-                    <PreText>Verbe</PreText>
-                    <TextInput ref={refVerbe} value={verbe} onChangeText={(e)=> setVerbe(e)} />
-                    <PostText>
-                    {!recordVerbeStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForVerbe()}>
-                            <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
-                        </TouchableOpacity> }
-                    {recordVerbeStarted && <TouchableOpacity onPress={()=> handleStopSpeechForVerbe()}>
-                        <MaterialCommunityIcons name="record" size={20} color="red" />
-                        </TouchableOpacity> }
+                                </PostText>
+                            </InputContainer>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={() => handleFocusVerbe()}>
+                            <InputContainer>
+                                <PreText>Verbe</PreText>
+                                <TextInput ref={refVerbe} value={verbe} onChangeText={(e)=> setVerbe(e)} />
+                                <PostText>
+                                {!recordVerbeStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForVerbe()}>
+                                        <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                                    </TouchableOpacity> }
+                                {recordVerbeStarted && <TouchableOpacity onPress={()=> handleStopSpeechForVerbe()}>
+                                    <MaterialCommunityIcons name="record" size={20} color="red" />
+                                    </TouchableOpacity> }
 
-                    </PostText>
-                </InputContainer>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={() => handleFocusObjet()}>
-                <InputContainer >
-                    <PreText>Objet</PreText>
-                    <TextInput ref={refObjet} value={objet} onChangeText={(e)=> setObjet(e)} />
-                    <PostText>
-                    {!recordObjetStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForObjet()}>
-                            <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
-                        </TouchableOpacity> }
-                    {recordObjetStarted && <TouchableOpacity onPress={()=> handleStopSpeechForObjet()}>
-                        <MaterialCommunityIcons name="record" size={20} color="red" />
-                        </TouchableOpacity> }
+                                </PostText>
+                            </InputContainer>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={() => handleFocusObjet()}>
+                            <InputContainer >
+                                <PreText>Objet</PreText>
+                                <TextInput ref={refObjet} value={objet} onChangeText={(e)=> setObjet(e)} />
+                                <PostText>
+                                {!recordObjetStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForObjet()}>
+                                        <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                                    </TouchableOpacity> }
+                                {recordObjetStarted && <TouchableOpacity onPress={()=> handleStopSpeechForObjet()}>
+                                    <MaterialCommunityIcons name="record" size={20} color="red" />
+                                    </TouchableOpacity> }
 
-                    </PostText>
-                </InputContainer>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={() => handleFocusLieu()}>
-                <InputContainer>
-                    <PreText>Lieu</PreText>
-                    <TextInput ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
-                    <PostText>
-                    {!recordLieuStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForLieu()}>
-                            <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
-                        </TouchableOpacity> }
-                    {recordLieuStarted && <TouchableOpacity onPress={()=> handleStopSpeechForLieu()}>
-                        <MaterialCommunityIcons name="record" size={20} color="red" />
-                        </TouchableOpacity> }
+                                </PostText>
+                            </InputContainer>
+                            </TouchableWithoutFeedback>
+                            <TouchableWithoutFeedback onPress={() => handleFocusLieu()}>
+                            <InputContainer>
+                                <PreText>Lieu</PreText>
+                                <TextInput ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
+                                <PostText>
+                                {!recordLieuStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForLieu()}>
+                                        <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                                    </TouchableOpacity> }
+                                {recordLieuStarted && <TouchableOpacity onPress={()=> handleStopSpeechForLieu()}>
+                                    <MaterialCommunityIcons name="record" size={20} color="red" />
+                                    </TouchableOpacity> }
 
-                    </PostText>
-                </InputContainer>
-                </TouchableWithoutFeedback>
-                <SaveButton>
-                    <TouchableOpacity onPress={()=> handleSaveCurrentCard()}>
-                        <ButtonSaveView>
-                            {!loadingSaveCard && <ButtonSaveText>Enregistrer</ButtonSaveText>}
-                            {loadingSaveCard && <ActivityIndicator size="large" color="#FFFFFF" />}
-                        </ButtonSaveView>
-                    </TouchableOpacity>
-                </SaveButton>
-                <SigninButton>
-                    <TouchableOpacity onPress={()=> handlePrevCard()}>
-                        <ButtonView>
-                        <ButtonText>Carte Précédente</ButtonText>
-                        </ButtonView>
-                    </TouchableOpacity>
-                    <ViewSpace />
-                    <TouchableOpacity onPress={()=> handleNextCard()}>
-                        <ButtonView>
-                        <ButtonText>Carte Suivante</ButtonText>
-                        </ButtonView>
-                    </TouchableOpacity>
-                </SigninButton>
-            </CardForm>
+                                </PostText>
+                            </InputContainer>
+                            </TouchableWithoutFeedback>
+                            <SaveButton>
+                                <TouchableOpacity onPress={()=> handleSaveCurrentCard()}>
+                                    <ButtonSaveView>
+                                        {!loadingSaveCard && <ButtonSaveText>Enregistrer</ButtonSaveText>}
+                                        {loadingSaveCard && <ActivityIndicator size="large" color="#FFFFFF" />}
+                                    </ButtonSaveView>
+                                </TouchableOpacity>
+                            </SaveButton>
+                            <SigninButton>
+                                <TouchableOpacity onPress={()=> handlePrevCard()}>
+                                    <ButtonView>
+                                    <ButtonText>Carte Précédente</ButtonText>
+                                    </ButtonView>
+                                </TouchableOpacity>
+                                <ViewSpace />
+                                <TouchableOpacity onPress={()=> handleNextCard()}>
+                                    <ButtonView>
+                                    <ButtonText>Carte Suivante</ButtonText>
+                                    </ButtonView>
+                                </TouchableOpacity>
+                            </SigninButton>
+                        </CardForm>
+                    </KeyboardAvoidingView>
+                </ScrollView>
+            </SafeAreaView>
             <AudioRecordModal resultAudio={resultAudio} restartSpeech={handleStartSpeech}/>
         </Container>);
 }

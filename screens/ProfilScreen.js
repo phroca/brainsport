@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Dimensions, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from "react-native";
 import styled from 'styled-components/native';
+import { useFocusEffect } from '@react-navigation/native';
 import CardService from '../services/Card.service';
 import Toast from 'react-native-toast-message';
 import { Auth } from 'aws-amplify';
@@ -154,6 +155,7 @@ const ProfilScreen = ({navigation}) => {
   const [listProgress, setListProgress] = useState([]);
   const [prePlayDataIn, setPrePlayDataIn] = useState(null);
   let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
+  const [flagUserDataCard, setFlagUserDataCard] = useState(false);
   const [currentUserDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
   useEffect(() => {
     CardService.getProgressionTime().then((result) => {
@@ -161,10 +163,19 @@ const ProfilScreen = ({navigation}) => {
         setListProgress(result);
       }
     })
-    CardService.getUserCardsMock().then((userCardsData)=> {
-      setCurrentUserDataCard(userCardsData);
-    });
   }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      if(!flagUserDataCard){
+        CardService.getUserCardsMock().then((userCardsData)=> {
+          setCurrentUserDataCard(userCardsData);
+        });
+      }
+      return () => setFlagUserDataCard(true)
+    }, [currentUserDataCard])
+  );
+
   const handleReinit = () => {
     CardService.clearAll().then(()=> {
       Toast.show({
@@ -326,14 +337,6 @@ const ProfilScreen = ({navigation}) => {
               </TouchableOpacity>
             </ProfilActions>       
           <ButtonAction>
-            <PrePlaySection>
-              <CheckBox value={prePlayDataIn} label="Activer le préGame (nécessite un déconnexion)" onPress={() => handleTogglePregame()} />
-            </PrePlaySection>
-            <TouchableOpacity onPress={()=> handleReinitPregame()}>
-              <ButtonView>
-                <ButtonText>Réinitialiser les données Pregame</ButtonText>
-              </ButtonView>
-            </TouchableOpacity>
             <TouchableOpacity onPress={()=> handleReinit()}>
               <ButtonView>
                 <ButtonText>Tout Reinitialiser</ButtonText>

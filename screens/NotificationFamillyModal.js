@@ -73,10 +73,11 @@ const GlitterContainer = styled.View`
     width: ${screenWidth}px;
     height: ${screenHeight}px;
 `;
-const NotificationFamillyModal = ({navigation}) => {
+const NotificationFamillyModal = ({navigation, route}) => {
 
+    const {texteContent} = route.params;
     const handleStartGame = () => {
-        navigation.navigate("Accueil Preliminaire");
+        navigation.push("Accueil Preliminaire");
     }
 
     return (
@@ -91,13 +92,13 @@ const NotificationFamillyModal = ({navigation}) => {
                 <MaterialCommunityIcons name="party-popper" size={50} color="#FFFFFF" />
                 <Title>Bravo !</Title>
                 <Content>
-                    Vous avez suffisament créé de cartes pour commencer à jouer et à créer des histoires !
+                    {texteContent}
                 </Content>
             </ContentSection>
             <PlayButtons>
                 <TouchableOpacity onPress={()=> handleStartGame()}>
                         <ButtonView>
-                            <ButtonText>Commencer à jouer !</ButtonText>
+                            <ButtonText>Continuer!</ButtonText>
                         </ButtonView>
                 </TouchableOpacity>
             </PlayButtons>

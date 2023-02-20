@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView } from "react-native";
+import { ActivityIndicator, SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, View } from "react-native";
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; 
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
@@ -10,6 +10,9 @@ import Voice from '@react-native-voice/voice';
 import AudioRecordModal from "../components/AudioRecordModal";
 import { useDispatch, useSelector } from "react-redux";
 import { closeAudio, openAudio } from "../slices/audioSlice";
+import { copilot, walkthroughable, CopilotStep } from "react-native-copilot";
+import StepNumberComponent from '../components/stepper/StepNumberComponent';
+import TooltipComponent from '../components/stepper/TooltipComponent';
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -142,7 +145,15 @@ const ViewSpace = styled.View`
     width: 20px;
 `;
 
-const CardAssociationPerFamillyScreen = ({route, navigation}) => {
+const InputView = styled.View`
+    position :absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+`;
+
+const CardAssociationPerFamillyScreen = (props) => {
     const [recordPersonnageStarted, setRecordPersonnageStarted] = useState(false);
     const [recordVerbeStarted, setRecordVerbeStarted] = useState(false);
     const [recordLieuStarted, setRecordLieuStarted] = useState(false);
@@ -154,15 +165,37 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
     const [lieu, setLieu] = useState("");
     const [conditionalText, setConditionalText] = useState("");
     const [loadingSaveCard, setloadingSaveCard] = useState(false);
-    const { userCardsFull, famillyProgress, color } = route.params;
+    const { userCardsFull, famillyProgress, color } = props.route.params;
     const userCards = userCardsFull?.cards?.filter(elt => elt.couleur === color);
+    const [flagUserDataCard, setFlagUserDataCard] = useState(false);
     const ref = useRef(null);
     const audio = useSelector(state => state.audio.value)
     const dispatch = useDispatch();
     const [resultAudio, setResultAudio] = useState("");
+
     useEffect(()=> {
-        setPropertiesFromIndex(0);
+            setPropertiesFromIndex(0);
     },[]);
+
+    useEffect(()=> {
+        CardService.getStepperBeforePlay().then((stepData) => {
+            if(stepData?.initCardAssociation) props.start();
+        });
+
+        props.copilotEvents.on("stop", () => {
+            CardService.updateStepperBeforePlay("initCardAssociation", false);
+        });
+
+        return () => {
+            props.copilotEvents.off("stop");
+        }
+    },[]);
+
+    const WalkthroughableInputView = walkthroughable(InputView);
+    const WalkthroughableConditionTextContainer = walkthroughable(ConditionTextContainer);
+    const WalkthroughableInputContainer = walkthroughable(InputContainer);
+    const WalkthroughableSaveButton = walkthroughable(SaveButton);
+    const WalkthroughableSigninButton = walkthroughable(SigninButton);
 
     useEffect(()=> {
         const onSpeechResults = (result) => {
@@ -227,7 +260,9 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
         refLieu.current.focus();
     }
     const setPropertiesFromIndex = (itemIndex)=> {
+        
         const currentCard = userCards[itemIndex];
+        console.log(currentCard);
         setPersonnage(currentCard?.personnage);
         setVerbe(currentCard?.verbe);
         setObjet(currentCard?.objet);
@@ -248,34 +283,44 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
     const calculateIndexToCardsFull = (color, itemindex) => {
         const numbercardPerFamilly = 13;
         const colorAssociation = {
-            "carreau": 0,
-            "trefle": 1,
-            "coeur": 2,          
+            "coeur": 0,
+            "carreau": 1,
+            "trefle": 2, 
             "pique": 3,
         };
-        console.log("CALCUL INDEX =>", (colorAssociation[color] * numbercardPerFamilly) + itemindex);
         return (colorAssociation[color] * numbercardPerFamilly) + itemindex;
     }
 
     const handleSaveCurrentCard = () =>{
         setloadingSaveCard(true);
-        CardService.saveCard(userCardsFull, calculateIndexToCardsFull(color, currentItemIndex), personnage, verbe, objet, lieu).then(()=> {
-            setloadingSaveCard(false);
-            Toast.show({
-              type: 'success',
-              text1: 'Enregistrement réussi',
-              text2:  "La carte a bien été enregistrée"
+        const currentCard = userCards[currentItemIndex];
+        if(checkConditionsCard(personnage, currentCard?.conditions)){
+            CardService.saveCard(userCardsFull, calculateIndexToCardsFull(color, currentItemIndex), personnage, verbe, objet, lieu).then(()=> {
+                setloadingSaveCard(false);
+                Toast.show({
+                type: 'success',
+                text1: 'Enregistrement réussi',
+                text2:  "La carte a bien été enregistrée"
+                });
+                checkFamillyCardDone(color);
+            }).catch((e) => {
+                setloadingSaveCard(false);
+                console.warn(e);
+                Toast.show({
+                    type: 'error',
+                    text1: "Erreur à l'enregistrement" ,
+                    text2: "veuillez réessayer ultérieurement."
+                });
             });
-            checkFamillyCardDone(color);
-        }).catch((e) => {
+        } else {
             setloadingSaveCard(false);
-            console.warn(e);
+            const conditionEndText = currentCard?.conditions.join(", ");
             Toast.show({
                 type: 'error',
                 text1: "Erreur à l'enregistrement" ,
-                text2: "veuillez réessayer ultérieurement."
-              });
-        });
+                text2: "le personnage doit commencer par ces lettres : " + conditionEndText
+            });
+        }
     }
 
     const handlePrevCard = () => {
@@ -316,6 +361,19 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
         if(colorIn === "trefle" ||colorIn === "pique") return "pique";
     }
 
+    const checkConditionsCard = (personnage, conditionElement) => {
+        if(personnage === "") return true;
+        const personnageLowCase = personnage.toLowerCase();
+        if(conditionElement?.length > 0) {
+            return conditionElement.filter(elt => {
+                const eltLowCase = elt.toLowerCase();
+                return personnageLowCase.indexOf(eltLowCase) === 0;
+            }).length > 0 ? true : false;
+
+        } else {
+            return true;
+        }
+    }
     const checkFamillyCardDone = (colorIn) => {
         const elementCarteRemplie = (element) => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "";
         const isListCardFamillyRemplie = userCards.filter(element => element.couleur === colorIn).every(elementCarteRemplie);
@@ -325,7 +383,7 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
         console.log("famillyProgressEightFirstParsed : " + famillyProgressEightFirstParsed + " famillyProgressAllParsed " + famillyProgressAllParsed);
         if(isListCardFamillyRemplieEightFirst && !famillyProgressEightFirstParsed) {
             CardService.updateFamillyProgress(famillyProgress, colorIn, "eightFirstCardFilled", true).then((data)=> {
-                if(data) navigation.navigate("FamillyModal");
+                if(data) props.navigation.navigate("FamillyModal", {texteContent : "Vous avez suffisament créé de cartes pour commencer à jouer et à créer des histoires !"});
             });
         }
         if(isListCardFamillyRemplie && !famillyProgressAllParsed){
@@ -333,11 +391,20 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
                 if(data) {
                     const nextColor = calculateNextColor(colorIn);
                     console.log("NEXTCOLOR =>", nextColor);
-                    CardService.updateFamillyProgress(famillyProgress, nextColor, "eightFirstCardFilled", false).then((data)=> {
-                        CardService.updateFamillyProgress(famillyProgress, nextColor, "allCardFilled", false).then((data) => {
-                            navigation.navigate("FamillyModal");
-                        });
-                    }); 
+                    console.log("COLORIN =>", colorIn);
+                    if(nextColor === colorIn){
+                        CardService.updateFamillyProgress(famillyProgress, nextColor, "eightFirstCardFilled", true).then((data)=> {
+                            CardService.updateFamillyProgress(famillyProgress, nextColor, "allCardFilled", true).then((data) => {
+                                props.navigation.navigate("FamillyModal", {texteContent : "Félicitations ! Vous avez rempli toutes les familles de cartes ! Vous pouvez désormais aprendre le tableau !"});
+                            });
+                        }); 
+                    } else {                    
+                        CardService.updateFamillyProgress(famillyProgress, nextColor, "eightFirstCardFilled", false).then((data)=> {
+                            CardService.updateFamillyProgress(famillyProgress, nextColor, "allCardFilled", false).then((data) => {
+                                props.navigation.navigate("FamillyModal", {texteContent : "Vous avez rempli toute une famille de carte ! Vous pouvez remplir la famille suivante !"});
+                            });
+                        }); 
+                    }
                 }
             });
         } 
@@ -430,14 +497,13 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
             <SafeAreaView>
             <TitleBar>
                     <CloseButton>
-                    <TouchableOpacity onPress={() => navigation.push("Accueil Preliminaire")}>
+                    <TouchableOpacity onPress={() => props.navigation.push("Accueil Preliminaire")}>
                     <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
                     </TouchableOpacity>
                     </CloseButton>
                 </TitleBar>
             <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
                 <KeyboardAvoidingView behavior="position">
-                
                     <Animated.FlatList
                     data={userCards}
                     ref={ref}
@@ -450,24 +516,38 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
                     scrollEnabled={false}
                     showsHorizontalScrollIndicator={false}
                     renderItem={({item, index}) => {
-                        return (<FlatView>
+                        return (
+                        <FlatView>
                             <Card
                             key={"card-"+item.couleur+"-"+item.valeur}
                             couleur={item.couleur}
                             valeur={item.valeur}
                             />
-                        </FlatView>);
+                        </FlatView>
+                        );
                     }}
                     />
-
+                    
                     <CardForm>
-                        <ConditionTextContainer>
+                        <CopilotStep 
+                        text="Chaque personnage de chaque carte doit répondre à une règle en ce qui concerne l’initiale de son nom."
+                        order={1}
+                        name="second-step">
+                        <WalkthroughableConditionTextContainer>
                             <ConditionText>
                                 {conditionalText}
                             </ConditionText>
-                        </ConditionTextContainer>
+                        </WalkthroughableConditionTextContainer>
+                        </CopilotStep>
                         <TouchableWithoutFeedback onPress={() => handleFocusPersonnage()}>
-                        <InputContainer >
+                        
+                        <InputContainer>
+                            <CopilotStep 
+                            text="Choisissez bien des personnages que vous visionnez facilement."
+                            order={2}
+                            name="third-step">
+                                <WalkthroughableInputView />
+                            </CopilotStep>
                             <PreText>Personnage</PreText>
                             <TextInput ref={refPersonnage} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
                             <PostText>
@@ -482,7 +562,14 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
                         </InputContainer>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => handleFocusVerbe()}>
+                        
                         <InputContainer>
+                            <CopilotStep 
+                            text="Choisissez bien des verbes qui amènent un mouvement physique. Les activités sexuelles peuvent en faire partie."
+                            order={3}
+                            name="fourth-step">
+                                <WalkthroughableInputView />
+                            </CopilotStep>
                             <PreText>Verbe</PreText>
                             <TextInput ref={refVerbe} value={verbe} onChangeText={(e)=> setVerbe(e)} />
                             <PostText>
@@ -495,9 +582,17 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
 
                             </PostText>
                         </InputContainer>
+                        
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => handleFocusObjet()}>
-                        <InputContainer >
+                        
+                        <InputContainer>
+                        <CopilotStep 
+                        text="Choisissez bien des objets qui peuvent être grossis, en couleur, qui peuvent faire du bruit."
+                        order={4}
+                        name="fifth-step">
+                            <WalkthroughableInputView />
+                        </CopilotStep>
                             <PreText>Objet</PreText>
                             <TextInput ref={refObjet} value={objet} onChangeText={(e)=> setObjet(e)} />
                             <PostText>
@@ -512,7 +607,14 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
                         </InputContainer>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => handleFocusLieu()}>
+                        
                         <InputContainer>
+                            <CopilotStep 
+                            text="Choisissez bien des lieux faciles à visualiser, avec des environnements riches en détails et, si possible, en bruits caractéristiques, ou en odeurs."
+                            order={5}
+                            name="sixth-step">
+                                <WalkthroughableInputView />
+                            </CopilotStep>
                             <PreText>Lieu</PreText>
                             <TextInput ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
                             <PostText>
@@ -526,15 +628,24 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
                             </PostText>
                         </InputContainer>
                         </TouchableWithoutFeedback>
-                        <SaveButton>
+                        <CopilotStep 
+                        text="Enregistrez les information de la carte lorsque vous avez correctement rempli."
+                        order={6}
+                        name="seventh-step">
+                        <WalkthroughableSaveButton>
                             <TouchableOpacity onPress={()=> handleSaveCurrentCard()}>
                                 <ButtonSaveView>
                                     {!loadingSaveCard && <ButtonSaveText>Enregistrer</ButtonSaveText>}
                                     {loadingSaveCard && <ActivityIndicator size="large" color="#FFFFFF" />}
                                 </ButtonSaveView>
                             </TouchableOpacity>
-                        </SaveButton>
-                        <SigninButton>
+                        </WalkthroughableSaveButton>
+                        </CopilotStep>
+                        <CopilotStep 
+                        text="Une fois enregistré, vous pourrez passer à la carte suivante. Bon jeu !"
+                        order={7}
+                        name="eighth-step">
+                        <WalkthroughableSigninButton>
                             {/* <TouchableOpacity onPress={()=> handlePrevCard()}>
                                 <ButtonView>
                                 <ButtonText>Carte Précédente</ButtonText>
@@ -546,7 +657,8 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
                                 <ButtonText>Carte Suivante</ButtonText>
                                 </ButtonView>
                             </TouchableOpacity>
-                        </SigninButton>
+                        </WalkthroughableSigninButton>
+                        </CopilotStep>
                     </CardForm>
                 </KeyboardAvoidingView>
                 </ScrollView>
@@ -555,4 +667,9 @@ const CardAssociationPerFamillyScreen = ({route, navigation}) => {
         </Container>);
 }
 
-export default CardAssociationPerFamillyScreen;
+export default copilot({overlay: "svg", animated: true, verticalOffset: 30, labels: {
+    previous: "Précédent",
+    next: "Suivant",
+    skip: "Passer",
+    finish: "Terminer"
+  }, stepNumberComponent: StepNumberComponent, tooltipComponent: TooltipComponent})(CardAssociationPerFamillyScreen);
