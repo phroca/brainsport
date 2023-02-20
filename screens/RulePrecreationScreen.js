@@ -110,7 +110,11 @@ const TextSignin = styled.Text`
 const DATA = [
     {
       "key": "001",
-      "text": "Vous allez avoir 8 cartes qui vont s’afficher au hasard, que vous pouvez faire défiler sur votre écran.\n\nPour les mémoriser nous vous conseillons de créer une histoire, en y associant les images les plus marquantes possibles.\n\nJouer sur les tailles, les couleurs, les sons, les registres (Ridicules, sexuels, dangereux).",
+      "text": "Vous êtes capable de mémoriser un jeu de 52 cartes en moins de 10 minutes.\n\nPas convaincu ?\n\nOn vous aide à relever le challenge.\n\nVous allez définir pour chaque carte :\nUn Personnage, un Verbe d’action, un Objet et un lieu.",
+    },
+    {
+      "key": "002",
+      "text": "Vous allez avoir des listes de familles à remplir, selon les couleurs des cartes.\n\nPour les mémoriser nous vous conseillons de créer une histoire, en y associant les images les plus marquantes possibles.\n\nJouer sur les tailles, les couleurs, les sons, les registres (Ridicules, sexuels, dangereux).",
     },
     {
       "key": "002",
@@ -118,11 +122,7 @@ const DATA = [
     },
     {
       "key": "003",
-      "text": "Une fois cette histoire créée, vous appuyez sur la carte de la troisième colonne, pour la retourner face cachée. La première et la seconde colonne disparaissent.\n\nFaites le pour 8 cartes.\n\nPuis réappuyer sur la carte de la troisième colonne pour vérifier, si vous avez bien mémoriser 8 cartes.",
-    },
-    {
-      "key": "004",
-      "text": "Nous vous reproposons l’exercice avec 12 cartes.\n\nLorsque vous aurez réussi,vous serez pret à passer à l’étape suivante : Créer votre propre tableau.",
+      "text": "Lorsque vous aurez réussi, vous serez pret à passer à l’étape suivante : Créer votre propre tableau.",
     },
   ]
 
