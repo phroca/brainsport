@@ -2,7 +2,7 @@
     "expo": {
         "name": "brainsport",
         "slug": "brainsport",
-        "version": "0.0.4",
+        "version": "0.0.6",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "light",
@@ -19,7 +19,11 @@
         ],
         "ios": {
             "supportsTablet": true,
-            "bundleIdentifier": "com.irocap.brainsport"
+            "bundleIdentifier": "com.irocap.brainsport",
+            "infoPlist": {
+                "NSPhotoLibraryUsageDescription": "Cette application requiert l'autorisation d'accès à la bibliothèque photo de l'utilisateur.",
+                "NSSpeechRecognitionUsageDescription ": "Cette application requiert l'autorisation d'accès au microphone de l'appareil de l'utilisateur."
+            }
         },
         "android": {
             "adaptiveIcon": {
