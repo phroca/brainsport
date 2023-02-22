@@ -34,7 +34,6 @@ margin-bottom: 30px;
 `
 
 const OtherSection = styled.View`
-  margin-left: 25px;
   margin-top: 30px;
   margin-bottom: 30px;
 `
@@ -97,14 +96,6 @@ const FormationScreen = () => {
                   </TouchableOpacity>
                 </FormationsSection>
                 <OtherSection>
-                  <Subtitle>Les formations des formateurs</Subtitle>
-                    <FormatorCard topic="Julien Test" title="Formation Laurem ipsum" notation="4.2" sourceImg={require("../assets/formation/formator.jpg")}/>
-                    <Separator />
-                    <FormatorCard topic="Bob Poc" title="Formation Laurem ipsum" notation="4" sourceImg={require("../assets/formation/formator.jpg")}/>
-                    <Separator />
-                    <FormatorCard topic="Marion Juste" title="Formation Laurem ipsum" notation="4.6" sourceImg={require("../assets/formation/formator-female.jpg")}/>
-                </OtherSection>
-                <OtherSection>
                   <Subtitle>Le mentorat</Subtitle>
                   <ButtonView>
                     <ButtonText>
@@ -119,6 +110,10 @@ const FormationScreen = () => {
                       En savoir plus
                     </ButtonText>
                   </ButtonView>
+                </OtherSection>
+                <OtherSection>
+                  <Subtitle>Les formations des formateurs</Subtitle>
+                    <FormatorCard topic="Julien Test" title="Formation Laurem ipsum" notation="4.2" sourceImg={require("../assets/formation/formator.jpg")}/>
                 </OtherSection>
               </ScrollView>
             </SafeAreaView>

@@ -21,14 +21,15 @@ const CardPin = styled.View`
     position: absolute;
     background-color: #FFFFFF;
     top : 20px;
-    left: -10px;
+    left: 0px;
     width: 60px;
     height: 20px;
     justify-content: center;
     align-items: center;
     text-align: center;
     border-radius: 2px;
-    z-index: 2;
+    z-index: 2000;
+    overflow: visible;
 `;
 const PinText = styled.Text`
     color: #000000;
