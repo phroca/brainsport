@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Animated } from 'react-native';
+import { Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Animated, Platform } from 'react-native';
 import styled from 'styled-components/native';
 import { useFocusEffect } from '@react-navigation/native';
 // import Card from '../components/Card';
@@ -34,7 +34,7 @@ const Container = styled.ImageBackground`
 const TitleBar = styled.View`
   width: 100%;
   margin-top: 30px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 `;
 
 const Title = styled.Text`
@@ -52,7 +52,7 @@ color: #FFFFFF;
   margin-right: 40px;
 `;
 
-const SubtitleSection = styled.Text`
+const SubtitleSection = styled.View`
 width: ${widthContent}px;
 justify-content: center;
   align-items: center;
@@ -177,6 +177,7 @@ overflow: hidden;
 
 const HomeReplayButton = styled.View`
     justify-content: center;
+    margin-bottom: 60px;
 `;
 
 const ProgressContainer = styled.View`
@@ -192,7 +193,7 @@ const ProgressContainer = styled.View`
 
 const ProgressContainerText = styled.Text`
   color: #000000;
-  align-text: left;
+  text-align: left;
 `
 
 const AnimatedPlayCard = Animated.createAnimatedComponent(PlayCard);
@@ -606,7 +607,7 @@ const HomeScreenPreplay = (props) => {
 }
 
 
-export default copilot({overlay: "svg", animated: true, verticalOffset: 30, labels: {
+export default copilot({overlay: "svg", animated: true, verticalOffset: Platform.OS === 'ios' ? 0 : 30, labels: {
   previous: "Précédent",
   next: "Suivant",
   skip: "Passer",

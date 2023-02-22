@@ -12,8 +12,6 @@ const CardContainer = styled.View`
     width: ${widthContent}px;
     background: #FFFFFF3d;
     align-items: center;
-    margin-top: 40px;
-    margin-bottom: 40px;
     flex-direction: row;
     display: flex;
     border-radius: 15px;

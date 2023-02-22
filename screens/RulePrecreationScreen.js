@@ -117,11 +117,11 @@ const DATA = [
       "text": "Vous allez avoir des listes de familles à remplir, selon les couleurs des cartes.\n\nPour les mémoriser nous vous conseillons de créer une histoire, en y associant les images les plus marquantes possibles.\n\nJouer sur les tailles, les couleurs, les sons, les registres (Ridicules, sexuels, dangereux).",
     },
     {
-      "key": "002",
+      "key": "003",
       "text": "Les règles pour débuter : \n\nLa première carte : prenez le personnage dans sa carte d’identité. \nLa seconde carte : Prenez le lieu dans sa carte d’identité \nLa troisième carte : prenez l’objet dans sa carte d’identité. \nLa quatrième carte : faite faire à votre personnage l’action du verbe.",
     },
     {
-      "key": "003",
+      "key": "004",
       "text": "Lorsque vous aurez réussi, vous serez pret à passer à l’étape suivante : Créer votre propre tableau.",
     },
   ]
