@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, View } from "react-native";
+import { ActivityIndicator, SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, View, Platform } from "react-native";
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; 
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
@@ -667,7 +667,7 @@ const CardAssociationPerFamillyScreen = (props) => {
         </Container>);
 }
 
-export default copilot({overlay: "svg", animated: true, verticalOffset: 30, labels: {
+export default copilot({overlay: "svg", animated: true, verticalOffset: Platform.OS ==='ios'? 0 : 30, labels: {
     previous: "Précédent",
     next: "Suivant",
     skip: "Passer",

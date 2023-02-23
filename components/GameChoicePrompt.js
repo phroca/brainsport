@@ -95,7 +95,6 @@ const AnimatedPromptContentContainer = Animated.createAnimatedComponent(PromptCo
 const GameChoicePrompt = (props, ref) => {
     const [_visible, _setVisible] = useState(false);
     const [visible, setVisible] = useState(false);
-    const [hintText, setHintText]= useState("");
     const animValue = useRef(new Animated.Value(0)).current;
     const [selectCoeur, setSelectCoeur] = useState(false);
     const [selectCarreau, setSelectCarreau] = useState(false);
@@ -106,8 +105,7 @@ const GameChoicePrompt = (props, ref) => {
     useEffect(() => {
         if(ref) {
             ref.current = {
-                setVisible: _setVisible, 
-                setHintText
+                setVisible: _setVisible
             }
         }
     }, [ref]);
@@ -133,7 +131,6 @@ const GameChoicePrompt = (props, ref) => {
                 }
             ).start(() => {
                 setVisible(false);
-                setHintText('');
             })
         }
     }, [_visible, animValue]);
@@ -193,7 +190,7 @@ const GameChoicePrompt = (props, ref) => {
             shuffledArrayforPlayGame = cardCopyToShuffle.cards.filter(elt => elt.couleur === colorChosen).sort((a, b) => 0.5 - Math.random());
         }
         handleCloseModal();
-        props.navigation.navigate("PlayPregame", {userCards: shuffledArrayforPlayGame});
+        props.navigation.push("PlayPregame", {userCards: shuffledArrayforPlayGame});
     }
     return (
         <Modal visible={visible} transparent={true}>

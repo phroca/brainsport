@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, Pressable } from "react-native";
+import { SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, Pressable, Platform } from "react-native";
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
@@ -167,10 +167,13 @@ const PlayPregame = (props) => {
     },[]);
 
     useEffect(()=> {
-        CardService.getStepperBeforePlay().then((stepData) => {
-            if(stepData?.initPrePlay) props.start();
-        });
-
+        //Copilot reloading properly
+        setTimeout(() => {
+            CardService.getStepperBeforePlay().then((stepData) => {
+                if(stepData?.initPrePlay) props.start();
+            });
+        }, 500);
+        
         props.copilotEvents.on("stop", () => {
             CardService.updateStepperBeforePlay("initPrePlay", false);
         });
@@ -335,7 +338,7 @@ const PlayPregame = (props) => {
         </Container>);
 }
 
-export default copilot({overlay: "svg", animated: true, verticalOffset: 30, labels: {
+export default copilot({overlay: "svg", animated: true, verticalOffset: Platform.OS ==='ios'? 0 : 30, labels: {
     previous: "Précédent",
     next: "Suivant",
     skip: "Passer",

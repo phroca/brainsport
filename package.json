@@ -1,6 +1,6 @@
 {
     "name": "brainsport",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "scripts": {
         "start": "expo start --dev-client",
         "android": "expo run:android",

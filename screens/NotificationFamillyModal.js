@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from 'styled-components/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Dimensions, TouchableOpacity } from "react-native";
+import { Dimensions, Platform, TouchableOpacity } from "react-native";
 import Glitter from "../components/Glitter";
 
 const screenDimension = Dimensions.get('window');
@@ -77,6 +77,9 @@ const NotificationFamillyModal = ({navigation, route}) => {
 
     const {texteContent} = route.params;
     const handleStartGame = () => {
+        if(Platform.OS === 'ios') {
+            navigation.popToTop();
+        }
         navigation.push("Accueil Preliminaire");
     }
 
