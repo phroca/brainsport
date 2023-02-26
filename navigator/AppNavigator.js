@@ -19,7 +19,7 @@ const AppNavigator = () => {
     useEffect(()=> {
         AsyncStorage.getItem('isAppFirstLaunched').then((result) => {
             if(result === null){
-                AsyncStorage.setItem('isAppFirstLaunched', true)
+                AsyncStorage.setItem('isAppFirstLaunched', JSON.stringify(true))
                 setIsCitation(true);
             }else {
                 setIsCitation(false);
