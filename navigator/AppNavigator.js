@@ -24,13 +24,11 @@ const AppNavigator = () => {
             }else {
                 setIsCitation(false);
             } 
-            console.log("CITATION RESULT=>", result);
-            console.log("STATE CITATION =>", isCitation);
         })
     }, []);
         return (
             
-            <Stack.Navigator initialRouteName={isCitation ? "BeforeSignin" :"Signin"} screenOptions={{ headerShown: false }}>
+            <Stack.Navigator initialRouteName="BeforeSignin" screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="BeforeSignin" component={BeforeSigninScreen} />
                 <Stack.Screen name="Signin" component={SignInScreen} />
                 <Stack.Screen name="Main" component={TabNavigator} />
