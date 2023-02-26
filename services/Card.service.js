@@ -3,6 +3,49 @@ import { DataStore } from '@aws-amplify/datastore';
 import { Card } from '../src/models';
 import { PackCard } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+/**
+ * 
+ */
+ const initCitation = async() => {
+    try{
+        const data = await getCitation();
+        if(data === null || data === false){
+            const jsonValue = JSON.stringify(true);
+            AsyncStorage.setItem('isAppFirstLaunched', jsonValue)
+        }
+        return true;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+/**
+ * 
+ * @returns 
+ */
+const getCitation = async() => {
+    try{
+        const jsonValue = await AsyncStorage.getItem('isAppFirstLaunched')
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+const terminateCitation = async() => {
+    try{
+        const data = await getCitation();
+        if(data !== null){
+            const jsonValue = JSON.stringify(false);
+            AsyncStorage.setItem('isAppFirstLaunched', jsonValue)
+        }
+        return false;
+    } catch(e){
+        console.log(e);
+    }
+}
+
 /**
  * 
  * @param {*} userId 
@@ -415,6 +458,9 @@ const clearPregameData = async() => {
     console.log('Clear Done.')
 }
 const CardService ={
+    initCitation,
+    getCitation,
+    terminateCitation,
     initCardCreation,
     initCardCreationMock,
     getUserCardsMock,

@@ -8,29 +8,34 @@ import SignUpScreen from '../screens/SignUpScreen';
 import ConfirmationSignUpScreen from '../screens/ConfirmationSignUpScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import ForgotPasswordEmailSubmitScreen from '../screens/ForgotPasswordEmailSubmitScreen';
+import CardService from '../services/Card.service';
 
 const Stack = createNativeStackNavigator();
 
 
 const AppNavigator = () => {
-        const [isAppFirstLaunched, setIsAppFirstLaunched] = useState(null);
-        useEffect(()=> {
-            const appData = AsyncStorage.getItem('isAppFirstLaunched');
-            if(appData == null){
-                setIsAppFirstLaunched(true);
-                AsyncStorage.setItem('isAppFirstLaunched', false);
-            } else {
-                setIsAppFirstLaunched(false);
-            }
-        }, []);
+    const [isCitation, setIsCitation] = useState(true);
+
+    useEffect(()=> {
+        AsyncStorage.getItem('isAppFirstLaunched').then((result) => {
+            if(result === null){
+                AsyncStorage.setItem('isAppFirstLaunched', true)
+                setIsCitation(true);
+            }else {
+                setIsCitation(false);
+            } 
+            console.log("CITATION RESULT=>", result);
+            console.log("STATE CITATION =>", isCitation);
+        })
+    }, []);
         return (
             
-            <Stack.Navigator initialRouteName="BeforeSignin" screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Main" component={TabNavigator} />
+            <Stack.Navigator initialRouteName={isCitation ? "BeforeSignin" :"Signin"} screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="BeforeSignin" component={BeforeSigninScreen} />
                 <Stack.Screen name="Signin" component={SignInScreen} />
+                <Stack.Screen name="Main" component={TabNavigator} />
                 <Stack.Screen name="Signup" component={SignUpScreen} />
                 <Stack.Screen name="Confirmation Code" component={ConfirmationSignUpScreen} />
-                <Stack.Screen name="BeforeSignin" component={BeforeSigninScreen} />
                 <Stack.Screen name="Mdp Oublié" component={ForgotPasswordScreen} />
                 <Stack.Screen name="Changement Mdp" component={ForgotPasswordEmailSubmitScreen} />
             </Stack.Navigator>

@@ -259,7 +259,7 @@ const PlayPregame = (props) => {
                     <CopilotStep 
                         text="Les cartes sont dans un ordre aléatoire. Faites les défiler en les mémorisant, en créant une histoire de 4 cartes.
                         La première est le lieu, la seconde le personnage, la troisième le verbe d’action, la quatrième l’objet. 
-                        En cliquant sur la carte, elle se retournera face caché en cachant les éléments. Vous pourrez de nouveau cliquer sur la carte pour les réafficher."
+                        En cliquant sur la carte, elle se retournera face cachée en cachant les éléments. Vous pourrez de nouveau cliquer sur la carte pour les réafficher."
                         order={1}
                         name="first-step">
                         <WalkthroughableStepView />
@@ -322,7 +322,7 @@ const PlayPregame = (props) => {
                         <TouchableOpacity onPress={()=> handleEndGame()}>
                             <ButtonGameView>
                             <CopilotStep 
-                            text="Vous pouvez terminer le jeu lorsque vous vous sentez capable d'avoir retenu les histoires. Bon jeu !"
+                            text="Les histoires sont crées pour l'ensemble des cartes déjà renseignées ? Elles sont mémorisées ? Vous pouvez tenter la restitution. Bon jeu!"
                             order={3}
                             name="final-step">
                             <WalkthroughableStepView />

@@ -4,8 +4,10 @@ import { Animated, View, Dimensions } from "react-native";
 import styled from "styled-components/native";
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const {width, height} = Dimensions.get("screen");
+const widthContent = width  - 50;
 
 const Container = styled.ImageBackground`
     flex: 1;
@@ -96,6 +98,19 @@ const TextSignin = styled.Text`
     color: #000000;
     font-weight: bold;
 `
+
+const HideCitationContainer = styled.View`
+
+    background-color: transparent;
+    justify-content: center;
+    align-items: center;
+`
+const TextHideCitation = styled.Text`
+
+    color: #FFFFFF;
+    font-weight: bold;
+`
+
 const DATA = [
     {
       "key": "001",
@@ -211,6 +226,17 @@ const BeforeSigninScreen = ({navigation}) => {
         ref?.current?.scrollToOffset({offset});
         setCurrentItemIndex(lastItemIndex);
     }
+
+    const handleHideCitation = async() => {
+        try{
+            const jsonValue = JSON.stringify(false);
+            await AsyncStorage.setItem('isAppFirstLaunched', jsonValue);
+            navigation.replace('Signin');
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     return (
             
         <Container source={require("../assets/brainsport-bg.png")}> 
@@ -255,6 +281,13 @@ const BeforeSigninScreen = ({navigation}) => {
             }    
             </SigninButton>
             <Indicator scrollX={scrollX}/>
+            <HideCitationContainer>
+                <TouchableOpacity onPress={() => handleHideCitation()}>
+                    <TextHideCitation>
+                        Cacher les citations
+                    </TextHideCitation>
+                </TouchableOpacity>
+            </HideCitationContainer>
         </Container>
     )
 }

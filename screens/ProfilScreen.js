@@ -157,6 +157,7 @@ const ProfilScreen = ({navigation}) => {
   let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
   const [flagUserDataCard, setFlagUserDataCard] = useState(false);
   const [currentUserDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
+  const [isAppFirstLaunched, setIsAppFirstLaunched] = useState(null);
   useEffect(() => {
     CardService.getProgressionTime().then((result) => {
       if(result) {
@@ -192,6 +193,26 @@ const ProfilScreen = ({navigation}) => {
       setPrePlayDataIn(preplayData);
     })
   }, [prePlayDataIn]);
+
+  useEffect(()=> {
+    CardService.getCitation().then((value) => {
+      if(value !== null) {
+        setIsAppFirstLaunched(value);
+      }
+    })
+  }, []);
+
+  const handleToggleHideCitation = () => {
+    if(isAppFirstLaunched) {
+      CardService.terminateCitation().then(() => {
+        setIsAppFirstLaunched(false);
+      })
+    } else {
+      CardService.initCitation().then(() => {
+        setIsAppFirstLaunched(true);
+      })
+    }
+  }
 
   const disconnect = async() => {
     Auth.signOut().then(()=> {
@@ -337,6 +358,9 @@ const ProfilScreen = ({navigation}) => {
               </TouchableOpacity>
             </ProfilActions>       
           <ButtonAction>
+          <PrePlaySection>
+          <CheckBox value={isAppFirstLaunched} label="Activer les citations au démarrage" onPress={() => handleToggleHideCitation()} />
+          </PrePlaySection>
             <TouchableOpacity onPress={()=> handleReinit()}>
               <ButtonView>
                 <ButtonText>Tout Reinitialiser</ButtonText>
