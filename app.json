@@ -22,7 +22,8 @@
             "bundleIdentifier": "com.irocap.brainsport",
             "infoPlist": {
                 "NSPhotoLibraryUsageDescription": "Cette application requiert l'autorisation d'accès à la bibliothèque photo de l'utilisateur.",
-                "NSSpeechRecognitionUsageDescription": "Cette application requiert l'autorisation d'accès au microphone de l'appareil de l'utilisateur."
+                "NSSpeechRecognitionUsageDescription": "Cette application requiert l'autorisation d'accès à la reconnaissance vocale de l'appareil de l'utilisateur.",
+                "NSMicrophoneUsageDescription": "Cette application requiert l'autorisation d'accès au microphone de l'appareil de l'utilisateur."
             }
         },
         "android": {
@@ -33,6 +34,9 @@
             "permissions": [
                 "android.permission.RECORD_AUDIO"
             ],
+            "intentFilters": [{
+                "action": "android.speech.RecognitionService"
+            }],
             "package": "com.irocap.brainsport"
         },
         "web": {
@@ -43,6 +47,7 @@
             "eas": {
                 "projectId": "77686e4a-6456-4620-b8ad-baf81be012d5"
             }
-        }
+        },
+        "plugins": ["@react-native-voice/voice"]
     }
 }
