@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, Pressable, Platform } from "react-native";
+import { SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, Pressable, Platform, ScrollView } from "react-native";
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
@@ -149,6 +149,26 @@ const StepView = styled.View`
     height: 100%;
 `;
 
+const PlayHistoryContainer = styled.View`
+    justify-content: center;
+    align-items: center;
+`;
+
+const PlayHistoryText = styled.Text`
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: bold;
+`;
+
+const HideTextContainer = styled.View`
+    justify-content: center;
+    align-items: center;
+`;
+const HideText = styled.Text`
+    color: #FFFFFF;
+    font-size: 20px;
+    font-weight: bold;
+`;
 const PlayPregame = (props) => {
     const [personnage, setPersonnage] = useState("");
     const [verbe, setVerbe] = useState("");
@@ -158,10 +178,19 @@ const PlayPregame = (props) => {
     const [cardFold, setCardFold] = useState(false);
     const [toggleCardValuesVisibility, setToggleCardValuesVisibility] = useState(true);
     const { userCards } = props.route.params;
+    const [cardVisibility, setCardVisibility] = useState([]);
     const ref = useRef(null);
     const WalkthroughableStepView = walkthroughable(StepView);
 
-
+    useEffect(() => {
+        userCards.forEach(item => {
+            const objectVisibility = {key: "card-"+item.couleur+"-"+item.valeur, isVisible: true};
+            cardVisibility.push(objectVisibility);
+        })
+        return () => {
+            setCardVisibility([]);
+        }
+    }, [])
     useEffect(()=> {
         setPropertiesFromIndex(0);
     },[]);
@@ -228,7 +257,8 @@ const PlayPregame = (props) => {
     const checkCurrentElementNotEmpty = () => {
         return userCards[currentItemIndex].personnage !== "" && userCards[currentItemIndex].verbe !== "" && userCards[currentItemIndex].objet !== "" && userCards[currentItemIndex].lieu !== "";
     }
-    const handleToggleVisibilityGame = () =>{
+    
+    const handleToggleVisibilityAllCards = () =>{
         if(cardFold== false) {
             setToggleCardValuesVisibility(false);
             setCardFold(true);
@@ -242,6 +272,27 @@ const PlayPregame = (props) => {
         props.navigation.push("Accueil Preliminaire");
     }
 
+    const isCardVisible = (keyIn) =>{
+        const currentCard = cardVisibility.filter(card => card.key === keyIn);
+        return currentCard[0]?.isVisible === false;
+    }
+    const isInputVisible = (index) => {
+        const currentCard = userCards[index];
+        return !isCardVisible("card-"+currentCard.couleur+"-"+currentCard.valeur);
+    }
+
+    const handleHideAllCards = () => {
+        const hideAllCardVisibility = cardVisibility.map((card) => {
+            card.isVisible=false;
+            return card;
+        })
+        setCardVisibility(hideAllCardVisibility);
+    }
+
+    const isAllCardVisible =() => {
+        const listCardNotVisible = cardVisibility.filter(elt => elt.isVisible === false);
+        return listCardNotVisible.length === 0;
+    }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
@@ -254,12 +305,22 @@ const PlayPregame = (props) => {
                         </TouchableOpacity>
                     </CloseButton>
                 </TitleBar>
+                <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
                 <PlayContent>
+                    <PlayHistoryContainer>
+                    <CopilotStep 
+                            text="Vous pourrez savoir quelle histoire vous mémorisez via cet indicateur."
+                            order={2}
+                            name="history-step">
+                            <WalkthroughableStepView />
+                        </CopilotStep>
+                        <PlayHistoryText>
+                            Histoire n°{Math.floor(currentItemIndex / 4) + 1}
+                        </PlayHistoryText>
+                    </PlayHistoryContainer>
                     <CardVisual>
                     <CopilotStep 
-                        text="Les cartes sont dans un ordre aléatoire. Faites les défiler en les mémorisant, en créant une histoire de 4 cartes.
-                        La première est le lieu, la seconde le personnage, la troisième le verbe d’action, la quatrième l’objet. 
-                        En cliquant sur la carte, elle se retournera face cachée en cachant les éléments. Vous pourrez de nouveau cliquer sur la carte pour les réafficher."
+                        text="Mémorisez les cartes en créant une histoire avec 4 cartes."
                         order={1}
                         name="first-step">
                         <WalkthroughableStepView />
@@ -274,14 +335,31 @@ const PlayPregame = (props) => {
                         onMomentumScrollEnd={updateCurrentItemIndex}
                         pagingEnabled
                         showsHorizontalScrollIndicator={false}
+                        extraData={cardVisibility}
                         renderItem={({item}) => {
+
+                            const handleToggleVisibilityGame = (keyIn) =>{          
+                                const nexCurrentCardVisibility = cardVisibility.map((card) => {
+                                    if(card.key === "card-"+keyIn.couleur+"-"+keyIn.valeur) {
+                                        if(card.isVisible === false) {
+                                            card.isVisible = true;
+                                        } else {
+                                            card.isVisible=false;
+                                        }
+                                    }
+                                    return card;
+
+                                })
+                                setCardVisibility(nexCurrentCardVisibility);
+                            }
+                           
                             return (<FlatView>
-                                <Pressable onPress={handleToggleVisibilityGame}>
+                                <Pressable onPress={() => handleToggleVisibilityGame(item)}>
                                 <Card
                                 key={"card-"+item.couleur+"-"+item.valeur}
                                 couleur={item.couleur}
                                 valeur={item.valeur}
-                                isFold={cardFold}
+                                isFold={isCardVisible("card-"+item.couleur+"-"+item.valeur)}
                                 />
                                 </Pressable>
                             </FlatView>);
@@ -296,43 +374,74 @@ const PlayPregame = (props) => {
                         </TouchableArrowRight>
                     </CardVisual>
                     <CardForm>
-                    <CopilotStep 
-                            text="Vous les nommez dans votre tête et vous les faites défiler par swipe."
-                            order={2}
+                        <CopilotStep 
+                            text="Vous nommez les éléments des cartes dans votre tête et vous les faites défiler par swipe."
+                            order={3}
                             name="naming-step">
                             <WalkthroughableStepView />
+                        </CopilotStep>
+                    {isInputVisible(currentItemIndex) && <>
+                        <InputContainer >
+                            <CopilotStep 
+                                text="Retenez les éléments en surbrillance pour chaque carte. Par exemple pour cette carte, il vous faudra mémoriser le personnage pour cette histoire."
+                                order={4}
+                                name="highlight-step">
+                                <WalkthroughableStepView />
                             </CopilotStep>
-                    {toggleCardValuesVisibility && <><InputContainer >
                             <PreText>Personnage</PreText>
-                            <TextInput editable={false} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
+                            <TextInput style={{borderColor: currentItemIndex % 4 == 0 ? "#A138F2" : "#53565f"}} editable={false} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
                         </InputContainer>
                         <InputContainer>
                             <PreText>Verbe</PreText>
-                            <TextInput editable={false} value={verbe} onChangeText={(e)=> setVerbe(e)} />
+                            <TextInput style={{borderColor: currentItemIndex % 4 == 1 ? "#A138F2" : "#53565f"}} editable={false} value={verbe} onChangeText={(e)=> setVerbe(e)} />
                         </InputContainer>
                         <InputContainer >
                             <PreText>Objet</PreText>
-                            <TextInput editable={false} value={objet} onChangeText={(e)=> setObjet(e)} />
+                            <TextInput style={{borderColor: currentItemIndex % 4 == 2 ? "#A138F2" : "#53565f"}} editable={false} value={objet} onChangeText={(e)=> setObjet(e)} />
                         </InputContainer>
                         <InputContainer>
                             <PreText>Lieu</PreText>
-                            <TextInput editable={false} value={lieu} onChangeText={(e)=> setLieu(e)} />
+                            <TextInput style={{borderColor: currentItemIndex % 4 == 3 ? "#A138F2" : "#53565f"}} editable={false} value={lieu} onChangeText={(e)=> setLieu(e)} />
                         </InputContainer>
                         <EndGameButton>
-                        <TouchableOpacity onPress={()=> handleEndGame()}>
+                        {isAllCardVisible() && <TouchableOpacity onPress={()=> handleHideAllCards()}>
                             <ButtonGameView>
                             <CopilotStep 
-                            text="Les histoires sont crées pour l'ensemble des cartes déjà renseignées ? Elles sont mémorisées ? Vous pouvez tenter la restitution. Bon jeu!"
-                            order={3}
+                            text="Pour commencer le jeu, cliquez sur ce bouton qui retournera face cachée toutes les cartes. Pour vous aider, une question vous sera posée. Vous pourrez de nouveau cliquer sur la carte pour la réafficher. Faites-le pour chaque carte."
+                            order={5}
+                            name="hide-step">
+                            <WalkthroughableStepView />
+                            </CopilotStep>
+                            <CopilotStep 
+                            text="Les histoires sont créées pour l'ensemble des cartes déjà renseignées ? Elles sont mémorisées ? Vous pouvez tenter la restitution. Bon jeu!"
+                            order={6}
                             name="final-step">
                             <WalkthroughableStepView />
                             </CopilotStep>
+                            
+                                <ButtonGameText>Retourner toutes les cartes</ButtonGameText>
+                            </ButtonGameView>
+                        </TouchableOpacity>}
+                        {currentItemIndex === userCards.length - 1 && isAllCardVisible() && <TouchableOpacity onPress={()=> handleEndGame()}>
+                            <ButtonGameView style={{marginBottom: 130}}>
                                 <ButtonGameText>Terminer le jeu</ButtonGameText>
                             </ButtonGameView>
-                        </TouchableOpacity>
+                        </TouchableOpacity>}
+
                     </EndGameButton></>}
+                    {!isInputVisible(currentItemIndex) &&
+                        <HideTextContainer>
+                            <HideText>
+                                {currentItemIndex % 4 == 0 && "Quel est le personnage de cette histoire ?"}
+                                {currentItemIndex % 4 == 1 && "Quel est le verbe de cette histoire ?"}
+                                {currentItemIndex % 4 == 2 && "Quel est l'objet de cette histoire ?"}
+                                {currentItemIndex % 4 == 3 && "Quel est le lieu de cette histoire ?"}
+                            </HideText>
+                        </HideTextContainer>
+                    }
                     </CardForm>
                 </PlayContent>
+                </ScrollView>
                 </KeyboardAvoidingView>
             </SafeAreaView>
         </Container>);

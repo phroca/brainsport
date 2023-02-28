@@ -560,7 +560,7 @@ const HomeScreenPreplay = (props) => {
               order={3}
               name="train">
                 <WalkthroughableButton color={checkAbleToTrain()}>
-                  <ButtonTextGame color={checkAbleToTrain()}>S'entrainer</ButtonTextGame>
+                  <ButtonTextGame color={checkAbleToTrain()}>Créer vos histoires</ButtonTextGame>
                 </WalkthroughableButton>
                 </CopilotStep>
               </TouchableOpacity>

@@ -187,7 +187,7 @@ const GameChoicePrompt = (props, ref) => {
             shuffledArrayforPlayGame = cardCopyToShuffle.cards.filter(elt => elt.couleur === colorChosen).slice(0,8).sort((a, b) => 0.5 - Math.random());
         }
         if(famillyProgress?.[colorChosen]["eightFirstCardFilled"] && famillyProgress?.[colorChosen]["allCardFilled"]){
-            shuffledArrayforPlayGame = cardCopyToShuffle.cards.filter(elt => elt.couleur === colorChosen).sort((a, b) => 0.5 - Math.random());
+            shuffledArrayforPlayGame = cardCopyToShuffle.cards.filter(elt => elt.couleur === colorChosen).sort((a, b) => 0.5 - Math.random()).slice(0,12);
         }
         handleCloseModal();
         props.navigation.push("PlayPregame", {userCards: shuffledArrayforPlayGame});
@@ -241,7 +241,7 @@ const GameChoicePrompt = (props, ref) => {
                     <TouchableOpacity onPress={() => validateOneSelection() &&  handlePlayGame()}>
                         <PromptContentButtonValidate color={validateOneSelection()}>
                             <PromptContentButtonValidateText color={validateOneSelection()}>
-                                    S'entrainer
+                                    Jouer
                             </PromptContentButtonValidateText>
                         </PromptContentButtonValidate>
                     </TouchableOpacity>
