@@ -19,7 +19,6 @@ const HomeNavigator = () => {
     const [prePlayDataOut, setPrePlayDataOut] = useState(null);
     useEffect(() => {
         CardService.getPrePlayData().then((prePlayData) =>{
-            console.log("PREPLAY DATA IN HOME NAVIGATOR =>", prePlayData);
             setPrePlayDataOut(prePlayData);
         })
       }, []);

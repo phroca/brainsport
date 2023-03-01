@@ -284,7 +284,6 @@ const ProfilScreen = ({navigation}) => {
   }
 
   const handleTogglePregame = async() => {
-    console.log("PREPLAY DATA => ", prePlayDataIn);
     if(prePlayDataIn == true){
       CardService.terminatePreplayData().then(() => {
         setPrePlayDataIn(false);

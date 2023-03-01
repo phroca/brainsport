@@ -45,7 +45,7 @@ const CardRight = styled.View`
     align-items: center;
     padding-top:5px;
     padding-bottom:5px;
-    width: ${widthContent - 70}px;
+    width: ${widthContent - 90}px;
 `;
 
 const CardTitleTopic = styled.Text`
