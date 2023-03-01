@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Dimensions, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from "react-native";
+import { Dimensions, TouchableOpacity, SafeAreaView, ScrollView, StatusBar, Switch } from "react-native";
 import styled from 'styled-components/native';
 import { useFocusEffect } from '@react-navigation/native';
 import CardService from '../services/Card.service';
@@ -151,6 +151,32 @@ const PrePlaySection = styled.View`
   margin-bottom: 10px;
 `
 
+const TipActions = styled.View`
+  justify-content: center;
+  align-items: center;
+`;
+
+const TipSection = styled.View`
+  width: ${widthContent}px;
+  height: 50px;
+  border-radius: 10px;
+  margin-top: 20px;
+  z-index: 1;
+  justify-content: center;
+  position: relative;
+`;
+
+const TipText = styled.Text`
+  width: ${widthContent-80}px;
+  color: #FFFFFF;
+  font-size: 14px;
+`;
+
+const TipSwitch = styled.Switch`
+  position: absolute;
+  right: 20px;
+`;
+
 const ProfilScreen = ({navigation}) => {
   const [listProgress, setListProgress] = useState([]);
   const [prePlayDataIn, setPrePlayDataIn] = useState(null);
@@ -158,13 +184,31 @@ const ProfilScreen = ({navigation}) => {
   const [flagUserDataCard, setFlagUserDataCard] = useState(false);
   const [currentUserDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
   const [isAppFirstLaunched, setIsAppFirstLaunched] = useState(null);
+  const [currentStepper, setCurrentStepper] = useState({});
+  const [isInitHomeEnabled, setIsInitHomeEnabled] = useState(false);
+  const [isInitCardAssociation, setIsInitCardAssociation] = useState(false);
+  const [isInitPrePlay, setIsInitPrePlay] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      CardService.getStepperBeforePlay().then((stepData) => {
+        if(stepData) {
+          setCurrentStepper(stepData);
+          setIsInitHomeEnabled(stepData?.initHomeScreen);
+          setIsInitCardAssociation(stepData?.initCardAssociation);
+          setIsInitPrePlay(stepData?.initPrePlay);
+        }
+    });
+    },[])
+  );
+
   useEffect(() => {
     CardService.getProgressionTime().then((result) => {
       if(result) {
         setListProgress(result);
       }
     })
-  }, [])
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -263,6 +307,20 @@ const ProfilScreen = ({navigation}) => {
       });
     });
   }
+
+
+  const toggleSwitchInitHome = (value) => {
+    CardService.updateStepperBeforePlay("initHomeScreen", value);
+    setIsInitHomeEnabled(value);
+  }
+  const toggleSwitchInitCardAssociation = (value) => {
+    CardService.updateStepperBeforePlay("initCardAssociation", value);
+    setIsInitCardAssociation(value);
+  }
+  const toggleSwitchInitPrePlay = (value) => {
+    CardService.updateStepperBeforePlay("initPrePlay", value);
+    setIsInitPrePlay(value);
+  }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
         <SafeAreaView>
@@ -356,7 +414,45 @@ const ProfilScreen = ({navigation}) => {
                   </ActionButton>
                 </ProfilAction>
               </TouchableOpacity>
-            </ProfilActions>       
+            </ProfilActions>  
+            <TipActions>
+              <TipSection>
+                <TipText>
+                  Aide contextuel sur les règles de départ
+                </TipText>
+                <TipSwitch 
+                  trackColor={{false: '#767577', true: '#3e3e3e'}}
+                  thumbColor={isInitHomeEnabled ? '#A138F2' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={(val) =>toggleSwitchInitHome(val)}
+                  value={isInitHomeEnabled}
+                />
+              </TipSection>
+              <TipSection>
+                <TipText>
+                  Aide contextuel sur la création des familles de cartes
+                </TipText>
+                <TipSwitch 
+                  trackColor={{false: '#767577', true: '#3e3e3e'}}
+                  thumbColor={isInitCardAssociation ? '#A138F2' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={(val) =>toggleSwitchInitCardAssociation(val)}
+                  value={isInitCardAssociation}
+                />
+              </TipSection>
+              <TipSection>
+                <TipText>
+                  Aide contextuel sur la création des histoire
+                </TipText>
+                <TipSwitch 
+                  trackColor={{false: '#767577', true: '#3e3e3e'}}
+                  thumbColor={isInitPrePlay ? '#A138F2' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={(val) =>toggleSwitchInitPrePlay(val)}
+                  value={isInitPrePlay}
+                />
+              </TipSection>
+            </TipActions>     
           <ButtonAction>
           <PrePlaySection>
           <CheckBox value={isAppFirstLaunched} label="Activer les citations au démarrage" onPress={() => handleToggleHideCitation()} />

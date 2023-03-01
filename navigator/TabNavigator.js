@@ -16,10 +16,17 @@ const inactiveColor = "#FFFFFF";
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigator = (navigation, route) => {
+        
     return(  
             <Tab.Navigator 
-            screenOptions={({route})=> ({
+            screenOptions={({navigation, route})=> { 
+                const onPress = () => {
+                    // The `merge: true` option makes sure that the params inside the tab screen are preserved
+                navigation.navigate(route.name, {merge: true}); 
+                };
+                
+                return ({
                 tabBarShowLabel: false,
                 tabBarStyle: {
                     position: 'absolute',
@@ -32,7 +39,7 @@ const TabNavigator = () => {
                 borderTopLeftRadius: 15,
                 borderTopRightRadius: 15
             }} />
-            ),
+            ), 
                 tabBarIcon: ({focused, color, size}) => {
                 let iconName;
                 if (route.name === "Formation") {
@@ -47,12 +54,12 @@ const TabNavigator = () => {
                     iconName = focused ? 'cards-playing' : 'cards-outline';
                 }
 
-                return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
+                return <MaterialCommunityIcons onPress={onPress} name={iconName} size={size} color={color} />;
                 },
                     tabBarActiveTintColor: activeColor,
                     tabBarInactiveTintColor: inactiveColor,
                     headerShown: false,
-                })} initialRouteName="Home">
+                })}} initialRouteName="Home">
                 
                 <Tab.Screen name="Formation" component={FormationScreen} />
                 <Tab.Screen name="Communauté" component={CommunauteScreen} />

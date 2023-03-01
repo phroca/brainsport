@@ -309,7 +309,7 @@ const PlayPregame = (props) => {
                 <PlayContent>
                     <PlayHistoryContainer>
                     <CopilotStep 
-                            text="Vous pourrez savoir quelle histoire vous mémorisez via cet indicateur."
+                            text="Cet indicateur vous informe de quelle histoire vous êtes en train de créer et mémoriser."
                             order={2}
                             name="history-step">
                             <WalkthroughableStepView />

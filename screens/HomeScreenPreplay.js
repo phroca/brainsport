@@ -86,14 +86,14 @@ const ButtonViewGame = styled.View`
 
 const ButtonTextGame = styled.Text`
   color: ${props => props.color ? "#FFFFFF" : "#000000"};
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   text-transform: uppercase;
 `;
 
 const ButtonTextTab = styled.Text`
   color: ${props => props.color ? "#FFFFFF" : "#000000"};
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
   text-transform: uppercase;
   text-align: center;
@@ -227,6 +227,14 @@ const HomeScreenPreplay = (props) => {
         }
         return () => setFlagUserDataCard(true)
       },[currentUSerDataCard])
+    );
+
+    useFocusEffect(
+      useCallback(() => {
+        CardService.getStepperBeforePlay().then((stepData) => {
+          if(stepData?.initHomeScreen) props.start();
+        })
+      },[])
     );
     
     
