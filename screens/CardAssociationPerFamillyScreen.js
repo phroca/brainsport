@@ -129,6 +129,7 @@ const SaveButton = styled.View`
     position: relative;
     justify-content: center;
     align-items: center;
+    z-index: 100;
 `;
 
 const ButtonSaveView = styled.View`
@@ -198,6 +199,7 @@ const CardAssociationPerFamillyScreen = (props) => {
     const WalkthroughableSigninButton = walkthroughable(SigninButton);
 
     useEffect(()=> {
+        console.log(Voice.getSpeechRecognitionServices());
         const onSpeechResults = (result) => {
             console.log("result =>",result.value);
             setResults(result.value ?? []);

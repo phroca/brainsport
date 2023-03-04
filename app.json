@@ -48,6 +48,14 @@
                 "projectId": "77686e4a-6456-4620-b8ad-baf81be012d5"
             }
         },
-        "plugins": ["@react-native-voice/voice"]
+        "plugins": [
+            [
+                "@react-native-voice/voice",
+                {
+                    "microphonePermission": "Cette application requiert l'autorisation d'accès au microphone de l'appareil de l'utilisateur.",
+                    "speechRecognitionPermission": "Cette application requiert l'autorisation d'accès à la reconnaissance vocale de l'appareil de l'utilisateur."
+                }
+            ]
+        ]
     }
 }
