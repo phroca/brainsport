@@ -188,6 +188,7 @@ const ProfilScreen = ({navigation}) => {
   const [isInitHomeEnabled, setIsInitHomeEnabled] = useState(false);
   const [isInitCardAssociation, setIsInitCardAssociation] = useState(false);
   const [isInitPrePlay, setIsInitPrePlay] = useState(false);
+  const [isPrePlayHint, setIsPrePlayHint] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -198,7 +199,10 @@ const ProfilScreen = ({navigation}) => {
           setIsInitCardAssociation(stepData?.initCardAssociation);
           setIsInitPrePlay(stepData?.initPrePlay);
         }
-    });
+      });
+      CardService.getPrePlayHintData().then((hintData) => {
+        setIsPrePlayHint(hintData);
+      });
     },[])
   );
 
@@ -280,7 +284,7 @@ const ProfilScreen = ({navigation}) => {
       "userId": currentUserDataCard.userId,
        "cards": currentUserDataCardElementInProgressFiltered
     }
-    navigation.navigate("Bibliothèque", {userCards: currentLibraryCard});
+    navigation.navigate("Bibliothèque", {userCards: currentUserDataCard});
   }
 
   const handleTogglePregame = async() => {
@@ -319,6 +323,10 @@ const ProfilScreen = ({navigation}) => {
   const toggleSwitchInitPrePlay = (value) => {
     CardService.updateStepperBeforePlay("initPrePlay", value);
     setIsInitPrePlay(value);
+  }
+  const toggleSwitchPrePlayHint = (value) => {
+    CardService.updatePrePlayHintData(value);
+    setIsPrePlayHint(value);
   }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
@@ -449,6 +457,18 @@ const ProfilScreen = ({navigation}) => {
                   ios_backgroundColor="#3e3e3e"
                   onValueChange={(val) =>toggleSwitchInitPrePlay(val)}
                   value={isInitPrePlay}
+                />
+              </TipSection>
+              <TipSection>
+                <TipText>
+                  Aide de mémorisation lors de l'apprentissage du tableau
+                </TipText>
+                <TipSwitch 
+                  trackColor={{false: '#767577', true: '#3e3e3e'}}
+                  thumbColor={isPrePlayHint ? '#A138F2' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={(val) =>toggleSwitchPrePlayHint(val)}
+                  value={isPrePlayHint}
                 />
               </TipSection>
             </TipActions>     

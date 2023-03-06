@@ -196,13 +196,17 @@ const handleGotoHomePrecreation = async() => {
         if(value){
             CardService.initStepperBeforePlay().then((stepValue)=> {
                 if(stepValue){
-                    CardService.initCardCreationMock(user?.pool?.userPoolId).then((data) => {
-                        if(data) {
-                            CardService.initFamillyProgress().then((famillyprogressData) => {
-                                if(famillyprogressData) navigation.push("Accueil Preliminaire");
+                    CardService.initPrePlayHintData().then((preplayHintValue) => {
+                        if(preplayHintValue){
+                            CardService.initCardCreationMock(user?.pool?.userPoolId).then((data) => {
+                                if(data) {
+                                    CardService.initFamillyProgress().then((famillyprogressData) => {
+                                        if(famillyprogressData) navigation.push("Accueil Preliminaire");
+                                    });
+                                }
                             });
                         }
-                    });
+                    })
                 }
             });
         }

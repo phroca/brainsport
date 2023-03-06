@@ -175,6 +175,77 @@ const terminatePreplayData = async() => {
     }
 }
 
+/**
+ * 
+ */
+const initPrePlayHintData = async() => {
+    try{
+        const data = await getPrePlayData();
+        if(data === null || data === false){
+            const jsonValue = JSON.stringify(false);
+            AsyncStorage.setItem('@user_PrePlayHintData', jsonValue)
+        }
+        return false;
+    } catch(e){
+        console.log(e);
+    }
+}
+/**
+ * 
+ */
+const activatePrePlayHintData = async() => {
+    try{
+        const data = await getPrePlayData();
+        if(data !== null){
+            const jsonValue = JSON.stringify(true);
+            AsyncStorage.setItem('@user_PrePlayHintData', jsonValue)
+        }
+        return true;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+
+const updatePrePlayHintData = async(value) => {
+    try{
+        const data = await getStepperBeforePlay();
+        if(data !== null){
+            const jsonValue = JSON.stringify(value);
+            await AsyncStorage.setItem('@user_PrePlayHintData', jsonValue)
+            return data;
+        }
+    } catch(e){
+        console.log(e);
+    }
+}
+
+/**
+ * 
+ * @returns 
+ */
+const getPrePlayHintData = async() => {
+    try{
+        const jsonValue = await AsyncStorage.getItem('@user_PrePlayHintData')
+        return jsonValue != null ? JSON.parse(jsonValue) : false;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+const terminatePreplayHintData = async() => {
+    try{
+        const data = await getPrePlayData();
+        if(data !== null){
+            const jsonValue = JSON.stringify(false);
+            AsyncStorage.setItem('@user_PrePlayHintData', jsonValue)
+        }
+        return false;
+    } catch(e){
+        console.log(e);
+    }
+}
+
 const initStepperBeforePlay = async() => {
     try{
         const dataInit = {
@@ -467,6 +538,11 @@ const CardService ={
     getPrePlayData,
     initPrePlayData,
     terminatePreplayData,
+    initPrePlayHintData,
+    activatePrePlayHintData,
+    updatePrePlayHintData,
+    getPrePlayHintData,
+    terminatePreplayHintData,
     initStepperBeforePlay,
     getStepperBeforePlay,
     updateStepperBeforePlay,

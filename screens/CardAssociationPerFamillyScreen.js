@@ -228,7 +228,14 @@ const CardAssociationPerFamillyScreen = (props) => {
         if(audio === "retryRecordAudio") {
             handleStartSpeech();
         }
-    });
+
+        if(audio === "closeAudio"){
+            handleStopSpeechForPersonnage();
+            handleStopSpeechForLieu();
+            handleStopSpeechForObjet();
+            handleStopSpeechForVerbe();
+        }
+    }, [audio]);
 
     useEffect(()=> {
         if(results.length > 0) {

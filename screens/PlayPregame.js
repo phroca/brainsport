@@ -179,6 +179,7 @@ const PlayPregame = (props) => {
     const [toggleCardValuesVisibility, setToggleCardValuesVisibility] = useState(true);
     const { userCards } = props.route.params;
     const [cardVisibility, setCardVisibility] = useState([]);
+    const [isPrePlayHint, setIsPrePlayHint] = useState(false);
     const ref = useRef(null);
     const WalkthroughableStepView = walkthroughable(StepView);
 
@@ -212,6 +213,11 @@ const PlayPregame = (props) => {
         }
     },[]);
 
+    useEffect(() => {
+        CardService.getPrePlayHintData().then((dataHint) => {
+            setIsPrePlayHint(dataHint);
+        });
+    }, [])
     const updateCurrentItemIndex = element => {
         const contentOffsetX = element.nativeEvent.contentOffset.x;
         const currentIndex = Math.round(contentOffsetX / width);
@@ -307,17 +313,11 @@ const PlayPregame = (props) => {
                 </TitleBar>
                 <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
                 <PlayContent>
-                    <PlayHistoryContainer>
-                    <CopilotStep 
-                            text="Cet indicateur vous informe de quelle histoire vous êtes en train de créer et mémoriser."
-                            order={2}
-                            name="history-step">
-                            <WalkthroughableStepView />
-                        </CopilotStep>
+                    {isPrePlayHint && <PlayHistoryContainer>
                         <PlayHistoryText>
                             Histoire n°{Math.floor(currentItemIndex / 4) + 1}
                         </PlayHistoryText>
-                    </PlayHistoryContainer>
+                    </PlayHistoryContainer>}
                     <CardVisual>
                     <CopilotStep 
                         text="Mémorisez les cartes en créant une histoire avec 4 cartes."
@@ -376,7 +376,7 @@ const PlayPregame = (props) => {
                     <CardForm>
                         <CopilotStep 
                             text="Vous nommez les éléments des cartes dans votre tête et vous les faites défiler par swipe."
-                            order={3}
+                            order={2}
                             name="naming-step">
                             <WalkthroughableStepView />
                         </CopilotStep>
@@ -384,7 +384,7 @@ const PlayPregame = (props) => {
                         <InputContainer >
                             <CopilotStep 
                                 text="Retenez les éléments en surbrillance pour chaque carte. Par exemple pour cette carte, il vous faudra mémoriser le personnage pour cette histoire."
-                                order={4}
+                                order={3}
                                 name="highlight-step">
                                 <WalkthroughableStepView />
                             </CopilotStep>
@@ -408,13 +408,13 @@ const PlayPregame = (props) => {
                             <ButtonGameView>
                             <CopilotStep 
                             text="Pour commencer le jeu, cliquez sur ce bouton qui retournera face cachée toutes les cartes. Pour vous aider, une question vous sera posée. Vous pourrez de nouveau cliquer sur la carte pour la réafficher. Faites-le pour chaque carte."
-                            order={5}
+                            order={4}
                             name="hide-step">
                             <WalkthroughableStepView />
                             </CopilotStep>
                             <CopilotStep 
                             text="Les histoires sont créées pour l'ensemble des cartes déjà renseignées ? Elles sont mémorisées ? Vous pouvez tenter la restitution. Bon jeu!"
-                            order={6}
+                            order={5}
                             name="final-step">
                             <WalkthroughableStepView />
                             </CopilotStep>
@@ -429,7 +429,7 @@ const PlayPregame = (props) => {
                         </TouchableOpacity>}
 
                     </EndGameButton></>}
-                    {!isInputVisible(currentItemIndex) &&
+                    {isPrePlayHint && !isInputVisible(currentItemIndex) &&
                         <HideTextContainer>
                             <HideText>
                                 {currentItemIndex % 4 == 0 && "Quel est le personnage de cette histoire ?"}

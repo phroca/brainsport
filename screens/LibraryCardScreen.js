@@ -141,6 +141,7 @@ const LibraryCardScreen = ({route, navigation}) => {
     const [objet, setObjet] = useState("");
     const [lieu, setLieu] = useState("");
     const [loadingSaveCard, setloadingSaveCard] = useState(false);
+    const [userCardLength, setUserCardLength] = useState(0);
     const { userCards } = route.params;
     const ref = useRef(null);
     const audio = useSelector(state => state.audio.value)
@@ -149,6 +150,11 @@ const LibraryCardScreen = ({route, navigation}) => {
     useEffect(()=> {
         setPropertiesFromIndex(0);
     },[]);
+
+    useEffect(() => {
+        const currentUserDataCardElementInProgressFiltered = userCards.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
+        setUserCardLength(currentUserDataCardElementInProgressFiltered.length);
+    }, [])
 
     useEffect(()=> {
         const onSpeechResults = (result) => {
@@ -247,18 +253,20 @@ const LibraryCardScreen = ({route, navigation}) => {
         setPropertiesFromIndex(prevItemIndex);
     }
     const handleNextCard = () => {
-        if(checkElementNotEmpty() && checkCurrentElementNotEmpty()) {
-            const nextItemIndex = currentItemIndex < userCards.cards.length - 1 ? currentItemIndex + 1 : userCards.cards.length - 1;
-            const offset = nextItemIndex * width;
-            ref?.current?.scrollToOffset({offset});      
-            setPropertiesFromIndex(nextItemIndex);
-            setCurrentItemIndex(nextItemIndex);
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: "Erreur à l'enregistrement de la carte" ,
-                text2: "veuillez compléter les éléments de la carte."
-              });
+        if( currentItemIndex < userCardLength - 1) {
+            if(checkElementNotEmpty() && checkCurrentElementNotEmpty()) {
+                const nextItemIndex = currentItemIndex < userCards.cards.length - 1 ? currentItemIndex + 1 : userCards.cards.length - 1;
+                const offset = nextItemIndex * width;
+                ref?.current?.scrollToOffset({offset});      
+                setPropertiesFromIndex(nextItemIndex);
+                setCurrentItemIndex(nextItemIndex);
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: "Erreur à l'enregistrement de la carte" ,
+                    text2: "veuillez compléter les éléments de la carte."
+                });
+            }
         }
     }
 
