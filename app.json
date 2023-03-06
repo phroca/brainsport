@@ -35,8 +35,12 @@
                 "android.permission.RECORD_AUDIO"
             ],
             "intentFilters": [{
-                "action": "android.speech.RecognitionService"
-            }],
+                    "action": "android.speech.RecognitionService"
+                },
+                {
+                    "action": "android.speech.SpeechRecognizer"
+                }
+            ],
             "package": "com.irocap.brainsport"
         },
         "web": {
@@ -55,7 +59,8 @@
                     "microphonePermission": "Cette application requiert l'autorisation d'accès au microphone de l'appareil de l'utilisateur.",
                     "speechRecognitionPermission": "Cette application requiert l'autorisation d'accès à la reconnaissance vocale de l'appareil de l'utilisateur."
                 }
-            ]
+            ],
+            ["./native-config/android-manifest.plugin.js"]
         ]
     }
 }

@@ -199,7 +199,10 @@ const CardAssociationPerFamillyScreen = (props) => {
     const WalkthroughableSigninButton = walkthroughable(SigninButton);
 
     useEffect(()=> {
-        console.log(Voice.getSpeechRecognitionServices());
+        Voice.isAvailable().then((value) => {
+            console.log("SERVICES VOICE ", value);
+        })
+        
         const onSpeechResults = (result) => {
             console.log("result =>",result.value);
             setResults(result.value ?? []);
@@ -365,6 +368,7 @@ const CardAssociationPerFamillyScreen = (props) => {
 
     const checkConditionsCard = (personnage, conditionElement) => {
         if(personnage === "") return true;
+        if(!personnage) return true;
         const personnageLowCase = personnage.toLowerCase();
         if(conditionElement?.length > 0) {
             return conditionElement.filter(elt => {
