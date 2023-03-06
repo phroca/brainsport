@@ -350,7 +350,7 @@ const PlayCardFamilly = ({navigation, route}) => {
     <Container source={require("../assets/brainsport-bg.png")}>
         <StatusBar style="auto" />
         {flagReady === false ? <>
-            <TitleReady>Le jeu se mélange, êtes-vous pret ?</TitleReady>
+            <TitleReady>Le jeu se mélange, êtes-vous prêt ?</TitleReady>
             <Timing>{preSec}</Timing>
         </> : 
         <>
