@@ -18,7 +18,7 @@ const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
 
 const Container = styled.ImageBackground`
-  flex:1;
+  //flex:1;
   width: 100%;
   height: 100%;
   align-items: center;
@@ -36,8 +36,20 @@ const CloseButton = styled.View`
   justify-content: flex-start;
 `;
 
+const TouchableArrowLeft = styled.TouchableOpacity`
+    position: absolute;
+    left: 20px;
+    top:  ${widthContent/3}px;
+`;
+
+const TouchableArrowRight = styled.TouchableOpacity`
+    position: absolute;
+    right: 20px;
+    top:  ${widthContent/3}px;
+`;
+
 const FlatView = styled.View`
-    width: ${width}px;    
+    width: ${width}px; 
     align-items: center;
     margin-top: 30px;
     padding-right: 30px;
@@ -230,10 +242,8 @@ const CardAssociationPerFamillyScreen = (props) => {
         }
 
         if(audio === "closeAudio"){
-            handleStopSpeechForPersonnage();
-            handleStopSpeechForLieu();
-            handleStopSpeechForObjet();
-            handleStopSpeechForVerbe();
+            Voice.stop();
+            reinitRecords();
         }
     }, [audio]);
 
@@ -515,7 +525,6 @@ const CardAssociationPerFamillyScreen = (props) => {
                     </TouchableOpacity>
                     </CloseButton>
                 </TitleBar>
-            <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
                 <KeyboardAvoidingView behavior="position">
                     <Animated.FlatList
                     data={userCards}
@@ -540,7 +549,13 @@ const CardAssociationPerFamillyScreen = (props) => {
                         );
                     }}
                     />
-                    
+                    <TouchableArrowLeft onPress={()=> handlePrevCard()}>
+                        <Ionicons name="chevron-back" size={50} color="#FFFFFF" />
+                    </TouchableArrowLeft>
+
+                    <TouchableArrowRight onPress={()=> handleNextCard()}>
+                        <Ionicons name="chevron-forward" size={50} color="#FFFFFF" />
+                    </TouchableArrowRight>
                     <CardForm>
                         <CopilotStep 
                         text="Chaque personnage de chaque carte doit répondre à une règle en ce qui concerne l’initiale de son nom."
@@ -674,7 +689,6 @@ const CardAssociationPerFamillyScreen = (props) => {
                         </CopilotStep>
                     </CardForm>
                 </KeyboardAvoidingView>
-                </ScrollView>
             </SafeAreaView>
             <AudioRecordModal resultAudio={resultAudio} restartSpeech={handleStartSpeech}/>
         </Container>);

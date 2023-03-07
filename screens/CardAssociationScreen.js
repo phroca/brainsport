@@ -134,6 +134,7 @@ const CardAssociationScreen = ({route, navigation}) => {
     const [resultAudio, setResultAudio] = useState("");
     useEffect(()=> {
         setPropertiesFromIndex(0);
+        console.log("CARTES", userCards);
     },[]);
 
     useEffect(()=> {
@@ -162,7 +163,11 @@ const CardAssociationScreen = ({route, navigation}) => {
         if(audio === "retryRecordAudio") {
             handleStartSpeech();
         }
-    });
+        if(audio === "closeAudio"){
+            Voice.stop();
+            reinitRecords();
+        }
+    },[audio]);
 
     useEffect(()=> {
         if(results.length > 0) {

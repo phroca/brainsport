@@ -48,9 +48,17 @@ const PromptContentContainer = styled.View`
     justify-content: center;
 `;
 
+const PromptContentHeaderContainer = styled.View`
+    justify-content: center;
+    width: ${widthContent -40}px;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+`;
+
 const PromptContentTitle = styled.Text`
     color: #000000;
-    font-size: 20px;
+    font-size: 16px;
   font-weight: bold;
 `;
 const PromptContentButtonChoicesContainer = styled.View`
@@ -84,7 +92,7 @@ const PromptContentButtonValidate = styled.View`
 `;
 const PromptContentButtonValidateText = styled.Text`
     color: ${props => props.color ? "#FFFFFF" : "#000000"};
-    font-size: 20px;
+    font-size: 14px;
   font-weight: bold;
   text-transform: uppercase;
 `;
@@ -95,13 +103,16 @@ const AnimatedPromptContentContainer = Animated.createAnimatedComponent(PromptCo
 const GameChoicePrompt = (props, ref) => {
     const [_visible, _setVisible] = useState(false);
     const [visible, setVisible] = useState(false);
+
     const animValue = useRef(new Animated.Value(0)).current;
     const [selectCoeur, setSelectCoeur] = useState(false);
     const [selectCarreau, setSelectCarreau] = useState(false);
     const [selectTrefle, setSelectTrefle] = useState(false);
     const [selectPique, setSelectPique] = useState(false);
-    const famillyProgress = props?.famillyProgress;
-    const userDataCard = props?.currentUSerDataCard;
+
+    const userCardSaved = props?.userCardSaved;
+    const informationDataCard = props?.informationDataCard;
+
     useEffect(() => {
         if(ref) {
             ref.current = {
@@ -178,17 +189,8 @@ const GameChoicePrompt = (props, ref) => {
     const handlePlayGame = () => {
         let colorChosen = "";
         let shuffledArrayforPlayGame = [];
-        if(selectCoeur) colorChosen = "coeur";
-        if(selectCarreau) colorChosen = "carreau";
-        if(selectTrefle) colorChosen = "trefle";
-        if(selectPique) colorChosen = "pique";
-        const cardCopyToShuffle = JSON.parse(JSON.stringify(userDataCard));
-        if(famillyProgress?.[colorChosen]["eightFirstCardFilled"] && !famillyProgress?.[colorChosen]["allCardFilled"]){
-            shuffledArrayforPlayGame = cardCopyToShuffle.cards.filter(elt => elt.couleur === colorChosen).slice(0,8).sort((a, b) => 0.5 - Math.random());
-        }
-        if(famillyProgress?.[colorChosen]["eightFirstCardFilled"] && famillyProgress?.[colorChosen]["allCardFilled"]){
-            shuffledArrayforPlayGame = cardCopyToShuffle.cards.filter(elt => elt.couleur === colorChosen).sort((a, b) => 0.5 - Math.random()).slice(0,12);
-        }
+        const cardCopyToShuffle = JSON.parse(JSON.stringify(userCardSaved));
+        shuffledArrayforPlayGame = cardCopyToShuffle.sort((a, b) => 0.5 - Math.random()).slice(0,informationDataCard.numberCardToPlayForHistory);
         handleCloseModal();
         props.navigation.push("PlayPregame", {userCards: shuffledArrayforPlayGame});
     }
@@ -204,44 +206,17 @@ const GameChoicePrompt = (props, ref) => {
                             </TouchableOpacity>
                         </CloseButton>
                     </Header>
+                    <PromptContentHeaderContainer>
                     <PromptContentTitle>
-                        Sélectionnez la famille à jouer
+                        Vous avez enregistré {informationDataCard.cardDoneLength} cartes. Vous pouvez commencer à jouer.
                     </PromptContentTitle>
-                    <PromptContentButtonChoicesContainer>
-                        {(famillyProgress?.coeur["eightFirstCardFilled"] || famillyProgress.coeur["allCardFilled"]) && <TouchableOpacity onPress={() => toggleColorCoeur()}>
-                            <PromptContentButton color={selectCoeur}>
-                                <PromptContentButtonText color={selectCoeur}>
-                                    Coeur
-                                </PromptContentButtonText>
-                            </PromptContentButton>
-                        </TouchableOpacity>}
-                        {(famillyProgress?.carreau["eightFirstCardFilled"] || famillyProgress.carreau["allCardFilled"]) &&<TouchableOpacity onPress={() => toggleColorCarreau()}>
-                            <PromptContentButton color={selectCarreau}>
-                                <PromptContentButtonText color={selectCarreau}>
-                                    Carreau
-                                </PromptContentButtonText>
-                            </PromptContentButton>
-                        </TouchableOpacity>}
-                        {(famillyProgress?.trefle["eightFirstCardFilled"] || famillyProgress.trefle["allCardFilled"]) &&<TouchableOpacity onPress={() => toggleColorTrefle()}>
-                            <PromptContentButton color={selectTrefle}>
-                                <PromptContentButtonText color={selectTrefle}>
-                                    Trèfle
-                                </PromptContentButtonText>
-                            </PromptContentButton>
-                        </TouchableOpacity>}
-                        {(famillyProgress?.pique["eightFirstCardFilled"] || famillyProgress.pique["allCardFilled"]) &&<TouchableOpacity onPress={() => toggleColorPique()}>
-                            <PromptContentButton color={selectPique}>
-                                <PromptContentButtonText color={selectPique}>
-                                    Pique
-                                </PromptContentButtonText>
-                            </PromptContentButton>
-                        </TouchableOpacity>}
-                    </PromptContentButtonChoicesContainer>
+                    </PromptContentHeaderContainer>
+                    
                     <PromptContentButtonValidateContainer>
-                    <TouchableOpacity onPress={() => validateOneSelection() &&  handlePlayGame()}>
-                        <PromptContentButtonValidate color={validateOneSelection()}>
-                            <PromptContentButtonValidateText color={validateOneSelection()}>
-                                    Jouer
+                    <TouchableOpacity onPress={() =>handlePlayGame()}>
+                        <PromptContentButtonValidate color={true}>
+                            <PromptContentButtonValidateText color={true}>
+                                    Créer vos histoire avec {informationDataCard.cardDoneLength} cartes
                             </PromptContentButtonValidateText>
                         </PromptContentButtonValidate>
                     </TouchableOpacity>

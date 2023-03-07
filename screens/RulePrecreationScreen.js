@@ -197,7 +197,7 @@ const handleGotoHomePrecreation = async() => {
             CardService.initStepperBeforePlay().then((stepValue)=> {
                 if(stepValue){
                     CardService.initPrePlayHintData().then((preplayHintValue) => {
-                        if(preplayHintValue){
+                        if(preplayHintValue === false){
                             CardService.initCardCreationMock(user?.pool?.userPoolId).then((data) => {
                                 if(data) {
                                     CardService.initFamillyProgress().then((famillyprogressData) => {

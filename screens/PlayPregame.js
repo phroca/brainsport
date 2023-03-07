@@ -180,6 +180,8 @@ const PlayPregame = (props) => {
     const { userCards } = props.route.params;
     const [cardVisibility, setCardVisibility] = useState([]);
     const [isPrePlayHint, setIsPrePlayHint] = useState(false);
+    const [showElements, setShowElements] = useState(true);
+
     const ref = useRef(null);
     const WalkthroughableStepView = walkthroughable(StepView);
 
@@ -299,6 +301,11 @@ const PlayPregame = (props) => {
         const listCardNotVisible = cardVisibility.filter(elt => elt.isVisible === false);
         return listCardNotVisible.length === 0;
     }
+
+    const handleToggleElements = () => {
+        setShowElements((elt) => !elt);
+    }
+    
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
@@ -381,7 +388,8 @@ const PlayPregame = (props) => {
                             <WalkthroughableStepView />
                         </CopilotStep>
                     {isInputVisible(currentItemIndex) && <>
-                        <InputContainer >
+                        {showElements && <>
+                        <InputContainer>
                             <CopilotStep 
                                 text="Retenez les éléments en surbrillance pour chaque carte. Par exemple pour cette carte, il vous faudra mémoriser le personnage pour cette histoire."
                                 order={3}
@@ -402,10 +410,18 @@ const PlayPregame = (props) => {
                         <InputContainer>
                             <PreText>Lieu</PreText>
                             <TextInput style={{borderColor: currentItemIndex % 4 == 3 ? "#A138F2" : "#53565f"}} editable={false} value={lieu} onChangeText={(e)=> setLieu(e)} />
-                        </InputContainer>
+                        </InputContainer></>}
                         <EndGameButton>
-                        {isAllCardVisible() && <TouchableOpacity onPress={()=> handleHideAllCards()}>
+ 
+                        <TouchableOpacity onPress={()=> handleToggleElements()}>
                             <ButtonGameView>
+                                {showElements && <ButtonGameText>Cacher les éléments</ButtonGameText>}
+                                {!showElements && <ButtonGameText>Afficher les éléments</ButtonGameText>}
+                            </ButtonGameView>
+                        </TouchableOpacity>
+
+                        {isAllCardVisible() && <TouchableOpacity onPress={()=> handleHideAllCards()}>
+                            <ButtonGameView style={{marginBottom: currentItemIndex < userCards.length - 1 ? 130 : 0}}>
                             <CopilotStep 
                             text="Pour commencer le jeu, cliquez sur ce bouton qui retournera face cachée toutes les cartes. Pour vous aider, une question vous sera posée. Vous pourrez de nouveau cliquer sur la carte pour la réafficher. Faites-le pour chaque carte."
                             order={4}

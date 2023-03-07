@@ -121,7 +121,7 @@ const TabChoicePrompt = (props, ref) => {
         const cardCopyToShuffle = JSON.parse(JSON.stringify(userDataCard));
         const shuffledArrayforPlayGame = cardCopyToShuffle.cards.sort(() => 0.5 - Math.random());
         _setVisible(false);
-        props.navigation.push("PlayPregame", {userCards: shuffledArrayforPlayGame});
+        props.navigation.push("Card Association Read Only", {userCards: shuffledArrayforPlayGame});
     }
 
     const handlePlayRealGame = () => {

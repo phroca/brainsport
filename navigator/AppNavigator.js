@@ -28,7 +28,7 @@ const AppNavigator = () => {
     }, []);
         return (
             
-            <Stack.Navigator initialRouteName="BeforeSignin" screenOptions={{ headerShown: false }}>
+            <Stack.Navigator initialRouteName="Signin" screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="BeforeSignin" component={BeforeSigninScreen} />
                 <Stack.Screen name="Signin" component={SignInScreen} />
                 <Stack.Screen name="Main" component={TabNavigator} />

@@ -218,11 +218,30 @@ const HomeScreenPreplay = (props) => {
     },[prePlayDataIn]);
   
     const [currentUSerDataCard, setCurrentUSerDataCard] = useState({"userId": "", "cards": []})
+    const [userCardSaved, setUserCardSaved] = useState([]);
+    const [informationDataCard, setInformationDataCard] = useState({
+        "cardDoneLength": 0,
+        "numberCardToPlayForHistory": 0,
+        "numberOfHistoriesToPlay": 0
+
+    })
     useFocusEffect(
       useCallback(() => {
         if(!flagUserDataCard){
           CardService.getUserCardsMock().then((userCardsData) => {
             setCurrentUSerDataCard(userCardsData);
+            const userCardDone = currentUSerDataCard.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
+            setUserCardSaved(userCardDone);
+            const userCardDoneLength = userCardDone.length;
+            const moduloUserCardDone = userCardDoneLength % 4;      
+            const numberCardToPlayForHistory = (userCardDoneLength - moduloUserCardDone);
+            const numberOfHistoriesToPlay = Math.floor(numberCardToPlayForHistory / 4);
+            setInformationDataCard({
+              ...informationDataCard,
+              cardDoneLength: userCardDoneLength,
+              numberCardToPlayForHistory: numberCardToPlayForHistory,
+              numberOfHistoriesToPlay: numberOfHistoriesToPlay
+            });
           });
         }
         return () => setFlagUserDataCard(true)
@@ -584,7 +603,7 @@ const HomeScreenPreplay = (props) => {
               </TouchableOpacity>
             </HomeReplayButton>
             </ScrollView>
-            <GameChoicePrompt ref={promptGameRef} famillyProgress={currentFamillyProgress} currentUSerDataCard={currentUSerDataCard} navigation={props.navigation}/>
+            <GameChoicePrompt ref={promptGameRef} userCardSaved={userCardSaved} informationDataCard={informationDataCard} navigation={props.navigation}/>
             <TabChoicePrompt ref={promptTabRef} famillyProgress={currentFamillyProgress} currentUSerDataCard={currentUSerDataCard} navigation={props.navigation}/>
         </SafeAreaView>      
     </Container>) : ( 

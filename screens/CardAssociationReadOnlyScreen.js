@@ -111,6 +111,29 @@ const InputContainer = styled.View`
     position: relative;
 `;
 
+const EndGameButton = styled.View`
+    position: relative;
+    justify-content: center;
+    align-items: center;
+`;
+
+const ButtonGameView = styled.View`
+  background: #A138F2;
+  width: ${widthContent}px;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin-top: 20px;
+`;
+
+const ButtonGameText = styled.Text`
+color: #FFFFFF;
+font-size: 14px;
+font-weight: bold;
+`;
+
+
 const SigninButton = styled.View`
     flex-direction: row;
 `;
@@ -125,6 +148,7 @@ const CardAssociationReadOnlyScreen = ({navigation, route}) => {
     const [objet, setObjet] = useState("");
     const [lieu, setLieu] = useState("");
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
+    const [showElements, setShowElements] = useState(true);
     const { userCards } = route.params;
     const ref = useRef(null);
 
@@ -195,6 +219,9 @@ const CardAssociationReadOnlyScreen = ({navigation, route}) => {
         return userCards[currentItemIndex].personnage !== "" && userCards[currentItemIndex].verbe !== "" && userCards[currentItemIndex].objet !== "" && userCards[currentItemIndex].lieu !== "";
     }
 
+    const handleToggleElements = () => {
+        setShowElements((elt) => !elt);
+    }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
@@ -202,7 +229,7 @@ const CardAssociationReadOnlyScreen = ({navigation, route}) => {
                 <KeyboardAvoidingView behavior="position">
                 <TitleBar>
                     <CloseButton>
-                        <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <TouchableOpacity onPress={() => navigation.push("Accueil Preliminaire")}>
                             <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
                         </TouchableOpacity>
                     </CloseButton>
@@ -239,6 +266,7 @@ const CardAssociationReadOnlyScreen = ({navigation, route}) => {
                         </TouchableArrowRight>
                     </CardVisual>
                     <CardForm>
+                    {showElements  && <>
                         <TouchableWithoutFeedback onPress={() => handleFocusPersonnage()}>
                         <InputContainer >
                             <PreText>Personnage</PreText>
@@ -263,6 +291,15 @@ const CardAssociationReadOnlyScreen = ({navigation, route}) => {
                             <TextInput editable={false} ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
                         </InputContainer>
                         </TouchableWithoutFeedback>
+                    </>}
+                        <EndGameButton>
+                        <TouchableOpacity onPress={()=> handleToggleElements()}>
+                            <ButtonGameView>
+                                {showElements && <ButtonGameText>Cacher les éléments</ButtonGameText>}
+                                {!showElements && <ButtonGameText>Afficher les éléments</ButtonGameText>}
+                            </ButtonGameView>
+                        </TouchableOpacity>
+                        </EndGameButton>
                     </CardForm>
                 </KeyboardAvoidingView>
             </SafeAreaView>

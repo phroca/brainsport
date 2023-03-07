@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Animated, Dimensions, KeyboardAvoidingView, SafeAreaView, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import Toast from 'react-native-toast-message';
@@ -10,6 +10,7 @@ import CardService from "../services/Card.service";
 import AudioRecordModal from "../components/AudioRecordModal";
 import { useDispatch, useSelector } from "react-redux";
 import Voice from '@react-native-voice/voice';
+import { useFocusEffect } from "@react-navigation/core";
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -130,6 +131,24 @@ const ViewSpace = styled.View`
     width: 20px;
 `;
 
+const ColorContainer = styled.View`
+    position: absolute;
+    right: 20px;
+    top:  ${widthContent/10}px;
+`;
+const FamillyContainer = styled.View`
+    background-color: #FFFFFF;
+    border-width: 1px;
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+`;
+
+
 const LibraryCardScreen = ({route, navigation}) => {
     const [recordPersonnageStarted, setRecordPersonnageStarted] = useState(false);
     const [recordVerbeStarted, setRecordVerbeStarted] = useState(false);
@@ -151,10 +170,12 @@ const LibraryCardScreen = ({route, navigation}) => {
         setPropertiesFromIndex(0);
     },[]);
 
-    useEffect(() => {
-        const currentUserDataCardElementInProgressFiltered = userCards.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
-        setUserCardLength(currentUserDataCardElementInProgressFiltered.length);
-    }, [])
+    useFocusEffect(
+        useCallback(() => {
+            const currentUserDataCardElementInProgressFiltered = userCards.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
+            setUserCardLength(currentUserDataCardElementInProgressFiltered.length);
+        }, [userCards])
+      );
 
     useEffect(()=> {
         const onSpeechResults = (result) => {
@@ -182,7 +203,11 @@ const LibraryCardScreen = ({route, navigation}) => {
         if(audio === "retryRecordAudio") {
             handleStartSpeech();
         }
-    });
+        if(audio === "closeAudio"){
+            Voice.stop();
+            reinitRecords();
+        }
+    }, [audio]);
 
     useEffect(()=> {
         if(results.length > 0) {
@@ -356,6 +381,24 @@ const LibraryCardScreen = ({route, navigation}) => {
     }
 
 
+    const calculateIndexToCardsFull = (color, itemindex) => {
+        const numbercardPerFamilly = 13;
+        const colorAssociation = {
+            "coeur": 0,
+            "carreau": 1,
+            "trefle": 2, 
+            "pique": 3,
+        };
+        return (colorAssociation[color] * numbercardPerFamilly) + itemindex;
+    }
+
+    const handleGotoIndex = (index) => {
+        const nextItemIndex = index;
+        const offset = nextItemIndex * width;
+        ref?.current?.scrollToOffset({offset});      
+        setPropertiesFromIndex(nextItemIndex);
+        setCurrentItemIndex(nextItemIndex);
+    }
 
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
@@ -368,7 +411,6 @@ const LibraryCardScreen = ({route, navigation}) => {
                         </TouchableOpacity>
                     </CloseButton>
                 </TitleBar>
-                <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
                     <KeyboardAvoidingView behavior="position">
                         <Animated.FlatList
                         data={userCards.cards}
@@ -391,7 +433,34 @@ const LibraryCardScreen = ({route, navigation}) => {
                             </FlatView>);
                         }}
                         />
-
+                        <ColorContainer>
+                            {userCardLength > 13 && 
+                            
+                            <TouchableOpacity style={{flexDirection:"row", justifyContent:"center", alignItems: "center"}} onPress={()=> handleGotoIndex(0)}>
+                            {currentItemIndex < 13 && <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />}
+                                <FamillyContainer style={{borderColor: currentItemIndex < 13 ? "#A138F2" : "#FFFFFF", }}>
+                                    <MaterialCommunityIcons name="cards-heart" size={20} color="red" />
+                                </FamillyContainer>
+                            </TouchableOpacity>}
+                            {userCardLength > 13 && <TouchableOpacity style={{flexDirection:"row", justifyContent:"center", alignItems: "center"}} onPress={()=> handleGotoIndex(13)}>
+                            {currentItemIndex >= 13 && currentItemIndex < 26 && <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />}
+                                <FamillyContainer style={{borderColor: currentItemIndex >= 13 && currentItemIndex < 26 ? "#A138F2" : "#FFFFFF"}}>
+                                    <MaterialCommunityIcons name="cards-diamond" size={20} color="red" />
+                                </FamillyContainer>
+                            </TouchableOpacity>}
+                            {userCardLength > 26 && <TouchableOpacity style={{flexDirection:"row", justifyContent:"center", alignItems: "center"}} onPress={()=> handleGotoIndex(26)}>
+                            {currentItemIndex >= 26 && currentItemIndex < 39 && <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />}
+                                <FamillyContainer style={{borderColor: currentItemIndex >= 26 && currentItemIndex < 39 ? "#A138F2" : "#FFFFFF"}}>
+                                    <MaterialCommunityIcons name="cards-club" size={20} color="black" />
+                                </FamillyContainer>
+                            </TouchableOpacity>}
+                            {userCardLength > 39 && <TouchableOpacity style={{flexDirection:"row", justifyContent:"center", alignItems: "center"}} onPress={()=> handleGotoIndex(39)}>
+                            {currentItemIndex >= 39 && currentItemIndex < 52 && <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />}
+                                <FamillyContainer style={{borderColor: currentItemIndex >= 39 && currentItemIndex < 52 ? "#A138F2" : "#FFFFFF"}}>
+                                    <MaterialCommunityIcons name="cards-spade" size={20} color="black" />
+                                </FamillyContainer>
+                            </TouchableOpacity>}
+                        </ColorContainer>
                         <CardForm>
                             <TouchableWithoutFeedback onPress={() => handleFocusPersonnage()}>
                             <InputContainer >
@@ -476,7 +545,6 @@ const LibraryCardScreen = ({route, navigation}) => {
                             </SigninButton>
                         </CardForm>
                     </KeyboardAvoidingView>
-                </ScrollView>
             </SafeAreaView>
             <AudioRecordModal resultAudio={resultAudio} restartSpeech={handleStartSpeech}/>
         </Container>);

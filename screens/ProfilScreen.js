@@ -284,7 +284,7 @@ const ProfilScreen = ({navigation}) => {
       "userId": currentUserDataCard.userId,
        "cards": currentUserDataCardElementInProgressFiltered
     }
-    navigation.navigate("Bibliothèque", {userCards: currentUserDataCard});
+    navigation.push("Bibliothèque", {userCards: currentUserDataCard});
   }
 
   const handleTogglePregame = async() => {
