@@ -257,13 +257,13 @@ const CardAssociationReadOnlyScreen = ({navigation, route}) => {
                             </FlatView>);
                         }}
                         />
-                        <TouchableArrowLeft onPress={()=> handlePrevCard()}>
+                        {currentItemIndex > 0 && <TouchableArrowLeft onPress={()=> handlePrevCard()}>
                             <Ionicons name="chevron-back" size={50} color="#FFFFFF" />
-                        </TouchableArrowLeft>
+                        </TouchableArrowLeft>}
  
-                        <TouchableArrowRight onPress={()=> handleNextCard()}>
+                        {currentItemIndex < userCards.length - 1  && <TouchableArrowRight onPress={()=> handleNextCard()}>
                             <Ionicons name="chevron-forward" size={50} color="#FFFFFF" />
-                        </TouchableArrowRight>
+                        </TouchableArrowRight>}
                     </CardVisual>
                     <CardForm>
                     {showElements  && <>

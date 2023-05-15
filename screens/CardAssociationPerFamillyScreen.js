@@ -549,13 +549,13 @@ const CardAssociationPerFamillyScreen = (props) => {
                         );
                     }}
                     />
-                    <TouchableArrowLeft onPress={()=> handlePrevCard()}>
+                    {currentItemIndex > 0 && <TouchableArrowLeft onPress={()=> handlePrevCard()}>
                         <Ionicons name="chevron-back" size={50} color="#FFFFFF" />
-                    </TouchableArrowLeft>
+                    </TouchableArrowLeft>}
 
-                    <TouchableArrowRight onPress={()=> handleNextCard()}>
+                    {currentItemIndex < userCards.length - 1  && <TouchableArrowRight onPress={()=> handleNextCard()}>
                         <Ionicons name="chevron-forward" size={50} color="#FFFFFF" />
-                    </TouchableArrowRight>
+                    </TouchableArrowRight>}
                     <CardForm>
                         <CopilotStep 
                         text="Chaque personnage de chaque carte doit répondre à une règle en ce qui concerne l’initiale de son nom."

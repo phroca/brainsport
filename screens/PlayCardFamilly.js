@@ -247,7 +247,7 @@ const PlayCardFamilly = ({navigation, route}) => {
             if(resultOut === currentItem[currentQuestionLowercase].toLowerCase()) {
                 console.log("REUSSI PASSAGE AU SUIVANT");
                 handleNextOnList();
-                setResultCurrentfromVoice("");
+                
                 setResults([]);
             }
         }
@@ -316,6 +316,7 @@ const PlayCardFamilly = ({navigation, route}) => {
             setCurrentQuestionIndex(id);
             setCurrentQuestion(currentListChoose[id]); 
         }
+        setResultCurrentfromVoice("");
         handleStartSpeech();
     }
 
@@ -404,7 +405,7 @@ const PlayCardFamilly = ({navigation, route}) => {
             { !(currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3) &&
             <ButtonContainer>
                 <TouchableBtnNext onPress={() => handleNextOnList()}>
-                <TextContinue>... ou passez au suivant</TextContinue>
+                <TextContinue>passer au suivant</TextContinue>
                     
                 </TouchableBtnNext>
             </ButtonContainer>}
