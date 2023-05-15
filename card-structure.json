@@ -44,7 +44,7 @@
         {
             "valeur": "7",
             "conditions": [
-                "K", "QU", "GU"
+                "K", "QU", "GU", "GA", "GO", "GL", "GR"
             ]
         },
         {
