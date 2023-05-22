@@ -508,6 +508,36 @@ const getProgressionTime = async() => {
     }
 }
 
+const saveProgressionHistoryTime = async({timeInSec, userCards}) => {
+    const progress = {
+        "time": timeInSec,
+        userCards
+    }
+    try {
+        const jsonValue = await AsyncStorage.getItem('@user_HistoryTimeprogress');
+        let listTimeProgress = []
+        if(jsonValue != null) {
+            listTimeProgress = JSON.parse(jsonValue);
+            listTimeProgress.push(progress);
+        } else {
+            listTimeProgress.push(progress);
+        }
+        const newJsonValue = JSON.stringify(listTimeProgress);
+        await AsyncStorage.setItem('@user_HistoryTimeprogress', newJsonValue);
+    } catch(error) {
+        console.log(error);
+    }
+}
+
+const getProgressionHistoryTime = async() => {
+    try{
+        const jsonValue = await AsyncStorage.getItem('@user_HistoryTimeprogress');
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch(e){
+        console.log(e);
+    }
+}
+
 const clearAll = async () => {
     try {
       await AsyncStorage.clear()
@@ -557,6 +587,8 @@ const CardService ={
     updatePreplayFamillyProgress,
     getProgressionTime,
     saveProgressionTime,
+    saveProgressionHistoryTime,
+    getProgressionHistoryTime,
     clearPregameData,
     clearAll
 };

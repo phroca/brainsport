@@ -35,7 +35,7 @@ const Header = styled.View`
 
 const CloseButton = styled.View`
   width: ${widthContent/8}px;
-  align-items: flex-end;;
+  align-items: flex-end;
 `;
 
 const ChronoContainer = styled.View`

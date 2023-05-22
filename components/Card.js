@@ -4,8 +4,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View } from "react-native";
 
 const CardContainer = styled.View`
-    width: 150px;
-    height: 250px;
+    width: ${props => props.w ?? "150"}px;
+    height: ${props => props.h ?? "250"}px;
     background-color: ${props=> props.isFold === true ? "black": "white"};
     border: ${props=> props.isFold === true ? " 1px solid white": "none"};
     border-radius: 15px;
@@ -54,7 +54,7 @@ position: absolute;
     height: 80px;
 `;
 
-const Card = ({valeur, couleur, isFold = false}) => {
+const Card = ({valeur, couleur, isFold = false, width = 150, height = 250}) => {
 
     const namingColorCard = (couleur) => {
         if(couleur === "pique"){
@@ -72,7 +72,7 @@ const Card = ({valeur, couleur, isFold = false}) => {
     }
     return (
   
-                <CardContainer isFold={isFold}>
+                <CardContainer isFold={isFold} w={width} h={height} >
                       {
                         isFold === true ? 
                         (

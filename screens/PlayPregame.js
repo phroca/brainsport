@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
-import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, Pressable, Platform, ScrollView } from "react-native";
+import { MaterialCommunityIcons, Ionicons, AntDesign } from "@expo/vector-icons";
+import React, { memo, useEffect, useRef, useState } from "react";
+import { SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, Pressable, Platform, ScrollView, Text } from "react-native";
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
@@ -18,18 +18,31 @@ const Container = styled.ImageBackground`
   width: 100%;
   height: 100%;
   align-items: center;
-`;
-
-const TitleBar = styled.View`
   justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
 `;
 
+const Header = styled.View`
+    width: ${widthContent}px;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 30px;
+    flex-direction: row;
+`;
+const ChronoContainer = styled.View`
+    width: ${widthContent/8}px;
+    flex-direction: row;
+`;
+
+const ChronoText = styled.Text`
+    color: #FFFFFF;
+    font-size: 12px;
+`;
 const CloseButton = styled.View`
-  width: ${widthContent}px;
-  justify-content: flex-start;
+  width: ${widthContent/8}px;
+  align-items: flex-end;
 `;
 
 const FlatView = styled.View`
@@ -41,8 +54,22 @@ const FlatView = styled.View`
     padding-left: 30px;
 `;
 
+const FlatViewHistoryCard = styled.View`
+    width: ${width}px; 
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: stretch;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding-right: 30px;
+    padding-left: 30px;
+`;
+
 const CardForm = styled.View`
   align-items: center;
+  margin-bottom: 50px;
 `;
 
 const TextInput = styled.TextInput`
@@ -60,7 +87,7 @@ const TextInput = styled.TextInput`
 `;
 
 const PlayContent= styled.View`
-    
+      margin-bottom: 50px;
 `;
 const ButtonView = styled.View`
   background: #FFFFFF;
@@ -90,7 +117,7 @@ color: #FFFFFF;
   z-index: 2;
 `;
 
-PostText = styled.View`
+const PostText = styled.View`
     position: absolute;
     width: 30px;
     top: 20px;
@@ -169,7 +196,23 @@ const HideText = styled.Text`
     font-size: 20px;
     font-weight: bold;
 `;
-const PlayPregame = (props) => {
+
+const HistoryModeContainer = styled.View`
+    width: ${widthContent/8}px;
+    align-items: center;
+`;
+
+
+const SpacedContainer = styled.View`
+    margin: 10px;
+    align-items: center;
+`;
+
+const TextUnderCardHistory = styled.Text`
+    color : #FFFFFF;
+`;
+
+const PlayPregame = memo((props) => {
     const [personnage, setPersonnage] = useState("");
     const [verbe, setVerbe] = useState("");
     const [objet, setObjet] = useState("");
@@ -179,19 +222,43 @@ const PlayPregame = (props) => {
     const [toggleCardValuesVisibility, setToggleCardValuesVisibility] = useState(true);
     const { userCards } = props.route.params;
     const [cardVisibility, setCardVisibility] = useState([]);
+    const [cardHistoryVisibility, setCardHistoryVisibility] = useState([]);
     const [isPrePlayHint, setIsPrePlayHint] = useState(false);
     const [showElements, setShowElements] = useState(true);
-
+    const [sec, setSec] = useState(0);
+    const [isFinished, setFinished] = useState(false);
+    const [isHistoryMode, setIsHistoryMode] = useState(false);
     const ref = useRef(null);
     const WalkthroughableStepView = walkthroughable(StepView);
+    const [historyCards, setHistoryCards] = useState([]);
+
+    useEffect(() => {
+        let history = [];
+        const historyCount = Math.round(userCards.length / 4);
+        for (let i = 0; i < historyCount; i++) {
+            let historyQuarterCards =[];
+            for (let j = 0; j < 4; j++) {
+                const cardCurrent = userCards[i * 4 + j ];
+                historyQuarterCards.push(cardCurrent);
+                const objectHistoryVisibility = {key: "cont-"+i+"-"+cardCurrent.couleur+"-"+cardCurrent.valeur, isVisible: true};
+                cardHistoryVisibility.push(objectHistoryVisibility);
+            }
+            history.push(historyQuarterCards);
+        }
+        setHistoryCards(history);
+    }, [userCards]);
+    
 
     useEffect(() => {
         userCards.forEach(item => {
             const objectVisibility = {key: "card-"+item.couleur+"-"+item.valeur, isVisible: true};
+            
             cardVisibility.push(objectVisibility);
+            
         })
         return () => {
             setCardVisibility([]);
+            setCardHistoryVisibility([]);
         }
     }, [])
     useEffect(()=> {
@@ -277,11 +344,16 @@ const PlayPregame = (props) => {
         
     }
     const handleEndGame = () => {
-        props.navigation.push("Accueil Preliminaire");
+        stopChrono();
+        //props.navigation.push("Accueil Preliminaire");
     }
 
     const isCardVisible = (keyIn) =>{
         const currentCard = cardVisibility.filter(card => card.key === keyIn);
+        return currentCard[0]?.isVisible === false;
+    }
+    const isCardHistoryVisible = (keyIn) =>{
+        const currentCard = cardHistoryVisibility.filter(card => card.key === keyIn);
         return currentCard[0]?.isVisible === false;
     }
     const isInputVisible = (index) => {
@@ -302,22 +374,77 @@ const PlayPregame = (props) => {
         return listCardNotVisible.length === 0;
     }
 
+
+    const isAllCardHistoryVisible =() => {
+        const listCardNotVisible = cardHistoryVisibility.filter(elt => elt.isVisible === false);
+        return listCardNotVisible.length === 0;
+    }
     const handleToggleElements = () => {
         setShowElements((elt) => !elt);
     }
-    
+    let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
+    useEffect(()=> {
+        let int = null;
+        if(isFinished === false){
+            int = setInterval(() => {
+                setSec(sec=> sec + 1);
+            }, 1000);
+        } else {
+            clearInterval(int);
+        } 
+        return () => clearInterval(int);
+    },[isFinished]);
+
+    const stopChrono = () => {
+        setFinished(true);
+        CardService.saveProgressionHistoryTime({timeInSec: sec, userCards: userCards}).then(() => {
+            props.navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé le l'entrainement en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
+        });
+    }
+    const handleToggleMode =() => {
+        setIsHistoryMode(isHistoryMode => !isHistoryMode);
+    }
+    const handleToggleVisibilityHistoryGame = (keyIn, index) => {
+        //console.log("CARD VISIBILTY", cardHistoryVisibility);
+        const nexCurrentCardVisibility = cardHistoryVisibility.map((card) => {
+
+                
+                if(card.key === "cont-"+index+"-"+keyIn.couleur+"-"+keyIn.valeur) {
+                    console.log("CARD KEY =>", card.key)
+                if(card.isVisible === false) {
+                    card.isVisible = true;
+                } else {
+                    card.isVisible=false;
+                }
+            }
+            return card;
+            });
+
+        setCardHistoryVisibility(nexCurrentCardVisibility);
+    }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
+            <Header>
+                <ChronoContainer>
+                    <ChronoText>{padToTwo(Math.trunc(sec/60))}</ChronoText>
+                    <ChronoText>:</ChronoText>
+                    <ChronoText>{padToTwo(sec%60)}</ChronoText>
+                </ChronoContainer>
+                <HistoryModeContainer>
+                    <TouchableOpacity onPress={() => handleToggleMode()}>
+                        <AntDesign name={isHistoryMode ? "appstore1" : "appstore-o"} size={20} color="white" />
+                    </TouchableOpacity>
+                </HistoryModeContainer>
+                <CloseButton>
+                    <TouchableOpacity onPress={() => props.navigation.push("Accueil Preliminaire")}>
+                    <MaterialCommunityIcons name="close-circle-outline" size={24} color="#ffffff7b"/>
+                    </TouchableOpacity>
+                </CloseButton>
+            </Header>
             <SafeAreaView>
                 <KeyboardAvoidingView behavior="position">
-                <TitleBar>
-                    <CloseButton>
-                        <TouchableOpacity onPress={() => props.navigation.push("Accueil Preliminaire")}>
-                            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-                        </TouchableOpacity>
-                    </CloseButton>
-                </TitleBar>
+               
                 <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
                 <PlayContent>
                     {isPrePlayHint && <PlayHistoryContainer>
@@ -325,6 +452,7 @@ const PlayPregame = (props) => {
                             Histoire n°{Math.floor(currentItemIndex / 4) + 1}
                         </PlayHistoryText>
                     </PlayHistoryContainer>}
+                    
                     <CardVisual>
                     <CopilotStep 
                         text="Mémorisez les cartes en créant une histoire avec 4 cartes."
@@ -332,7 +460,7 @@ const PlayPregame = (props) => {
                         name="first-step">
                         <WalkthroughableStepView />
                         </CopilotStep>
-                        <Animated.FlatList
+                        {!isHistoryMode && <Animated.FlatList
                         data={userCards}
                         ref={ref}
                         style={{}}
@@ -369,16 +497,48 @@ const PlayPregame = (props) => {
                                 isFold={isCardVisible("card-"+item.couleur+"-"+item.valeur)}
                                 />
                                 </Pressable>
-                            </FlatView>);
+                            </FlatView>)
                         }}
-                        />
-                        <TouchableArrowLeft onPress={()=> handlePrevCard()}>
-                            <Ionicons name="chevron-back" size={50} color="#FFFFFF" />
-                        </TouchableArrowLeft>
- 
-                        <TouchableArrowRight onPress={()=> handleNextCard()}>
-                            <Ionicons name="chevron-forward" size={50} color="#FFFFFF" />
-                        </TouchableArrowRight>
+                        />}
+                        {isHistoryMode && <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            directionalLockEnabled={true}
+                            alwaysBounceVertical={false}
+                            pagingEnabled={true}>
+                               {historyCards.map((historyQuarterElt, i) => (
+                                
+                                    <FlatViewHistoryCard key={i} >
+                                        {historyQuarterElt.map((item, index) => (
+                                            <Pressable key={"cont-"+i+ "-" + item.couleur+"-"+item.valeur} onPress={() => handleToggleVisibilityHistoryGame(item, i)}>
+                                                <SpacedContainer >
+                                                    <Card
+                                                    key={"cardHistory-"+item.couleur+"-"+item.valeur}
+                                                    couleur={item.couleur}
+                                                    valeur={item.valeur}
+                                                    isFold={isCardHistoryVisible("cont-"+i+ "-" + item.couleur+"-"+item.valeur)}
+                                                    width={120}
+                                                    height={200}
+                                                    />
+                                                    <TextUnderCardHistory> carte n°{index+1}</TextUnderCardHistory>
+                                                </SpacedContainer>
+                                            </Pressable>
+                                        ))}
+                                    </FlatViewHistoryCard>
+                                    
+                                ))} 
+                        </ScrollView>}
+                        {!isHistoryMode &&
+                            <>
+                                {currentItemIndex > 0 && <TouchableArrowLeft onPress={()=> handlePrevCard()}>
+                                    <Ionicons name="chevron-back" size={50} color="#FFFFFF" />
+                                </TouchableArrowLeft>}
+        
+                                {currentItemIndex < userCards.length - 1  && <TouchableArrowRight onPress={()=> handleNextCard()}>
+                                    <Ionicons name="chevron-forward" size={50} color="#FFFFFF" />
+                                </TouchableArrowRight>}
+                            </>
+                        }
                     </CardVisual>
                     <CardForm>
                         <CopilotStep 
@@ -388,7 +548,7 @@ const PlayPregame = (props) => {
                             <WalkthroughableStepView />
                         </CopilotStep>
                     {isInputVisible(currentItemIndex) && <>
-                        {showElements && <>
+                        {!isHistoryMode && showElements && <>
                         <InputContainer>
                             <CopilotStep 
                                 text="Retenez les éléments en surbrillance pour chaque carte. Par exemple pour cette carte, il vous faudra mémoriser le personnage pour cette histoire."
@@ -413,15 +573,19 @@ const PlayPregame = (props) => {
                         </InputContainer></>}
                         <EndGameButton>
  
-                        <TouchableOpacity onPress={()=> handleToggleElements()}>
-                            <ButtonGameView>
-                                {showElements && <ButtonGameText>Cacher les éléments</ButtonGameText>}
+                        {!isHistoryMode &&<TouchableOpacity onPress={()=> handleToggleElements()}>
+                            {isAllCardVisible() && <ButtonGameView>
+                                {showElements && <ButtonGameText >Cacher les éléments</ButtonGameText>}
                                 {!showElements && <ButtonGameText>Afficher les éléments</ButtonGameText>}
-                            </ButtonGameView>
-                        </TouchableOpacity>
+                            </ButtonGameView>}
+                            {!isAllCardVisible() && <ButtonGameView style={{marginBottom: 150}}>
+                                {showElements && <ButtonGameText >Cacher les éléments</ButtonGameText>}
+                                {!showElements && <ButtonGameText>Afficher les éléments</ButtonGameText>}
+                            </ButtonGameView>}
+                        </TouchableOpacity>}
 
                         {isAllCardVisible() && <TouchableOpacity onPress={()=> handleHideAllCards()}>
-                            <ButtonGameView style={{marginBottom: currentItemIndex < userCards.length - 1 ? 130 : 0}}>
+                            <ButtonGameView style={{marginBottom: !isHistoryMode && currentItemIndex < userCards.length - 1 ? 130 : 0}}>
                             <CopilotStep 
                             text="Pour commencer le jeu, cliquez sur ce bouton qui retournera face cachée toutes les cartes. Pour vous aider, une question vous sera posée. Vous pourrez de nouveau cliquer sur la carte pour la réafficher. Faites-le pour chaque carte."
                             order={4}
@@ -438,12 +602,16 @@ const PlayPregame = (props) => {
                                 <ButtonGameText>Retourner toutes les cartes</ButtonGameText>
                             </ButtonGameView>
                         </TouchableOpacity>}
-                        {currentItemIndex === userCards.length - 1 && isAllCardVisible() && <TouchableOpacity onPress={()=> handleEndGame()}>
+                        {!isHistoryMode && currentItemIndex === userCards.length - 1 && isAllCardVisible() && <TouchableOpacity onPress={()=> handleEndGame()}>
                             <ButtonGameView style={{marginBottom: 130}}>
                                 <ButtonGameText>Terminer le jeu</ButtonGameText>
                             </ButtonGameView>
                         </TouchableOpacity>}
-
+                        {isHistoryMode && <TouchableOpacity onPress={()=> handleEndGame()}>
+                            <ButtonGameView style={{marginBottom: 130}}>
+                                <ButtonGameText>Terminer le jeu</ButtonGameText>
+                            </ButtonGameView>
+                        </TouchableOpacity>}
                     </EndGameButton></>}
                     {isPrePlayHint && !isInputVisible(currentItemIndex) &&
                         <HideTextContainer>
@@ -456,12 +624,14 @@ const PlayPregame = (props) => {
                         </HideTextContainer>
                     }
                     </CardForm>
+                {/* </>} */}
+                    
                 </PlayContent>
                 </ScrollView>
                 </KeyboardAvoidingView>
             </SafeAreaView>
         </Container>);
-}
+});
 
 export default copilot({overlay: "svg", animated: true, verticalOffset: Platform.OS ==='ios'? 0 : 30, labels: {
     previous: "Précédent",

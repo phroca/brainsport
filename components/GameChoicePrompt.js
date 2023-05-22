@@ -50,7 +50,7 @@ const PromptContentContainer = styled.View`
 
 const PromptContentHeaderContainer = styled.View`
     justify-content: center;
-    width: ${widthContent -40}px;
+    width: ${widthContent - 40}px;
     align-items: center;
     margin-top: 10px;
     margin-bottom: 10px;
@@ -208,7 +208,7 @@ const GameChoicePrompt = (props, ref) => {
                     </Header>
                     <PromptContentHeaderContainer>
                     <PromptContentTitle>
-                        Vous avez enregistré {informationDataCard.cardDoneLength} cartes. Vous pouvez commencer à jouer.
+                        Vous avez enregistré {informationDataCard.cardDoneLength} cartes. Vous pouvez commencer à vous entrainer.
                     </PromptContentTitle>
                     </PromptContentHeaderContainer>
                     

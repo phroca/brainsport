@@ -44,9 +44,17 @@ const PromptContentContainer = styled.View`
     justify-content: center;
 `;
 
+const PromptContentHeaderContainer = styled.View`
+    justify-content: center;
+    width: ${widthContent - 40}px;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+`;
+
 const PromptContentTitle = styled.Text`
     color: #000000;
-    font-size: 20px;
+    font-size: 16px;
   font-weight: bold;
   margin-bottom: 20px;
 `;
@@ -140,17 +148,19 @@ const TabChoicePrompt = (props, ref) => {
                             </TouchableOpacity>
                         </CloseButton>
                     </Header>
-                    <PromptContentTitle>
-                        Sélectionnez le type d'aprentissage
-                    </PromptContentTitle>
+                    <PromptContentHeaderContainer>
+                        <PromptContentTitle>
+                            Vous pouvez commencer à jouer et tester les éléments.
+                        </PromptContentTitle>
+                    </PromptContentHeaderContainer>
                     <PromptContentButtonChoicesContainer>
-                        <TouchableOpacity onPress={() => handlePlayFillGame()}>
+                        {/* <TouchableOpacity onPress={() => handlePlayFillGame()}>
                             <PromptContentButton>
                                 <PromptContentButtonText>
                                     Défiler les cartes simplement
                                 </PromptContentButtonText>
                             </PromptContentButton>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                         <TouchableOpacity onPress={() => handlePlayRealGame()}>
                             <PromptContentButton >
                                 <PromptContentButtonText >
