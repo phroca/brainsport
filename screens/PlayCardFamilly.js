@@ -28,8 +28,8 @@ const Header = styled.View`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 50px;
     margin-bottom: 30px;
+    margin-top: 20px;
     flex-direction: row;
 `;
 
@@ -57,9 +57,9 @@ const FlatView = styled.View`
 `;
 
 const TitleChooseContainer = styled.View`
-height: 40px;
+    height: 40px;
     align-items: center;
-    bottom: 150px;
+    bottom: ${props=> props.bottom}px;
 `;
 
 const TitleChoose = styled.Text`
@@ -71,7 +71,7 @@ const TitleChoose = styled.Text`
 const ResponseCardContainer = styled.View`
     justify-content: center;
     align-items: center;
-    bottom: 120px;
+    bottom: 190px;
 `;
 
 const ResponseLabel =styled.Text`
@@ -87,6 +87,11 @@ const ChronoButton = styled.View`
 `;
 
 const ButtonContainer = styled.View`
+    justify-content: center;
+    align-items: center;
+    bottom: 100px;
+`;
+const ButtonMidContainer = styled.View`
     justify-content: center;
     align-items: center;
     bottom: 100px;
@@ -127,10 +132,33 @@ const TouchableBtnNext = styled.TouchableOpacity`
     border-radius: 10px;
 
 `;
+const TouchableBtnMid = styled.TouchableOpacity`
+    height: 50px;
+    width: ${widthContent / 2 - 5}px;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    margin: 0 5px;
+`;
+const TouchableBtnMidValidate = styled.TouchableOpacity`
+    height: 50px;
+    width: ${widthContent / 2 - 5}px;
+    justify-content: center;
+    align-items: center;
+    background-color: #A138F2;
+    border-radius: 10px;
+    margin: 0 5px;
+`;
 
 const TextContinue = styled.Text`
     text-transform: uppercase;
     color: #000000;
+    font-weight: bold;
+`;
+const TextValidate = styled.Text`
+    text-transform: uppercase;
+    color: #FFFFFF;
     font-weight: bold;
 `;
 const TextFinish = styled.Text`
@@ -159,6 +187,34 @@ const TextProgress = styled.Text`
     bottom: 70px;
 `;
 
+
+const TextInput = styled.TextInput`
+  border: 1px solid #53565f;
+  width: ${widthContent}px;
+  height: 60px;
+  border-radius: 10px;
+  font-size: 17px;
+  color: #FFFFFF;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-top: 20px;
+  background: #3c4560;
+`;
+
+const InputContainer = styled.View`
+    justify-content: center;
+    align-items: center;
+    bottom: 140px;
+`
+
+const HistoryModeContainer = styled.View`
+    width: ${widthContent/8}px;
+    align-items: center;
+`;
+
+const ButtonGroup = styled.View`
+    flex-direction: row;
+`;
 const PlayCardFamilly = ({navigation, route}) => {
     const [preSec, setPreSec] = useState(5);
     const [sec, setSec] = useState(0);
@@ -167,6 +223,7 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [ cardsPlay, setCardsPlay] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [currentQuestion, setCurrentQuestion] = useState("");
+    const [currentResult, setCurrentResult] = useState("");
     const [isFinished, setFinished] = useState(false);
     const [currentListChoose, setCurrentListChoose] = useState(listChoose);
     const [results, setResults] = useState([]);
@@ -174,6 +231,7 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const [progressionPercentage, setProgressionPercentage] = useState(0);
     const [flagReady, setFlagReady] = useState(false);
+    const [isVoice, setIsVoice] = useState(true);
 
     useEffect(()=> {
         let chrono = null
@@ -211,6 +269,7 @@ const PlayCardFamilly = ({navigation, route}) => {
         }
         setCurrentQuestion(currentListChoose[0]);
         const shuffledArray = famillyToPlay.sort((a, b) => 0.5 - Math.random());
+        console.log(famillyToPlay);
         setCardsPlay(shuffledArray);
     }, [])
 
@@ -247,7 +306,6 @@ const PlayCardFamilly = ({navigation, route}) => {
             if(resultOut === currentItem[currentQuestionLowercase].toLowerCase()) {
                 console.log("REUSSI PASSAGE AU SUIVANT");
                 handleNextOnList();
-                
                 setResults([]);
             }
         }
@@ -320,6 +378,15 @@ const PlayCardFamilly = ({navigation, route}) => {
         handleStartSpeech();
     }
 
+    const handleValidateCurrentResult = () => {
+        const currentItem = cardsPlay[currentItemIndex];
+        const currentQuestionLowercase = currentQuestion.toLowerCase();
+        if(currentResult.toLowerCase() === currentItem[currentQuestionLowercase].toLowerCase()) {
+            console.log("REUSSI PASSAGE AU SUIVANT");
+            handleNextOnList();
+            setCurrentResult("");
+        }
+    }
     const goNextItem = () => {
         const nextItemIndex = currentItemIndex + 1;
         const offset = nextItemIndex * screenWidth;
@@ -347,6 +414,18 @@ const PlayCardFamilly = ({navigation, route}) => {
     const handleStopSpeech = async () => {
         await Voice.stop();
     }
+
+    const handleToggleModeVoice = async() => {
+        if(isVoice === true){
+            handleStopSpeech();
+            setIsVoice(false);
+        } else {
+            handleStartSpeech();
+            setIsVoice(true);
+        }
+        
+    }
+
     return(
     <Container source={require("../assets/brainsport-bg.png")}>
         <StatusBar style="auto" />
@@ -361,6 +440,11 @@ const PlayCardFamilly = ({navigation, route}) => {
                 <ChronoText>:</ChronoText>
                 <ChronoText>{padToTwo(sec%60)}</ChronoText>
             </ChronoContainer>
+            <HistoryModeContainer>
+                <TouchableOpacity onPress={() => handleToggleModeVoice()}>
+                    <Ionicons name={isVoice ? "mic-circle-outline" : "mic-off-circle-outline"} size={30} color="white" />
+                </TouchableOpacity>
+            </HistoryModeContainer>
             <CloseButton>
                 <TouchableOpacity onPress={() => navigation.push("Accueil Preliminaire")}>
                     <MaterialCommunityIcons name="close-circle-outline" size={24} color="#ffffff7b"  />
@@ -388,27 +472,49 @@ const PlayCardFamilly = ({navigation, route}) => {
                 </>);
             }}
             />
-            <TitleChooseContainer>
+            <TitleChooseContainer bottom={isVoice ? 220 : 170}>
                 <TitleChoose>{currentQuestion} ?</TitleChoose>
             </TitleChooseContainer>
-            <ResponseCardContainer>
+            {isVoice &&<ResponseCardContainer>
             { resultCurrentfromVoice === "" && 
-            <ContainerNoResult>
-                <ContainerVoice>
-                    <Ionicons name="mic" size={24} color="#A138F2" /> 
-                </ContainerVoice>
-            <ResponseLabel>Je vous écoute...</ResponseLabel>
-            </ContainerNoResult>
+                <ContainerNoResult>
+                    <ContainerVoice>
+                        <Ionicons name="mic" size={24} color="#A138F2" /> 
+                    </ContainerVoice>
+                <ResponseLabel>Je vous écoute...</ResponseLabel>
+                </ContainerNoResult>
             }
             { resultCurrentfromVoice !== "" && <ResponseLabel>{resultCurrentfromVoice}</ResponseLabel>}
-            </ResponseCardContainer>
+            </ResponseCardContainer>}
+            {!isVoice && <InputContainer>
+                <TextInput onChangeText={(e)=> setCurrentResult(e)} placeholder={currentQuestion} placeholderTextColor="#FFFFFF"/>
+            </InputContainer>}
             { !(currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3) &&
-            <ButtonContainer>
-                <TouchableBtnNext onPress={() => handleNextOnList()}>
-                <TextContinue>passer au suivant</TextContinue>
-                    
-                </TouchableBtnNext>
-            </ButtonContainer>}
+                <>{isVoice && 
+                <ButtonContainer>
+                    <TouchableBtnNext onPress={() => handleNextOnList()}>
+                    <TextContinue>passer au suivant</TextContinue>
+                        
+                    </TouchableBtnNext>
+                </ButtonContainer>}
+                {!isVoice && 
+                <ButtonGroup>
+                    <ButtonMidContainer>
+                        <TouchableBtnMidValidate onPress={() => handleValidateCurrentResult()}>
+                        <TextValidate>Valider</TextValidate>
+                            
+                    </TouchableBtnMidValidate>
+                    </ButtonMidContainer>
+                    <ButtonMidContainer>
+                        <TouchableBtnMid onPress={() => handleNextOnList()}>
+                        <TextContinue>Passer</TextContinue>
+                            
+                    </TouchableBtnMid>
+                    </ButtonMidContainer>
+                </ButtonGroup>
+                    }
+                </>
+            }
             <ChronoButton>
             {currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3 &&
                 <TouchableBtnFinish onPress={()=> stopChrono()}>

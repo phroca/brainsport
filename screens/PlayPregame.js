@@ -9,6 +9,9 @@ import { copilot, walkthroughable, CopilotStep } from "react-native-copilot";
 import StepNumberComponent from '../components/stepper/StepNumberComponent';
 import TooltipComponent from '../components/stepper/TooltipComponent';
 import CardService from "../services/Card.service";
+import { useDispatch, useSelector } from "react-redux";
+import { closeHistory, openHistory } from "../slices/historySlice";
+import HistoryModal from "../components/HistoryModal";
 
 const {width} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -34,6 +37,10 @@ const Header = styled.View`
 const ChronoContainer = styled.View`
     width: ${widthContent/8}px;
     flex-direction: row;
+`;
+const ShowChronoContainer = styled.View`
+    width: ${widthContent/8}px;
+    margin-left: 5px;
 `;
 
 const ChronoText = styled.Text`
@@ -231,6 +238,9 @@ const PlayPregame = memo((props) => {
     const ref = useRef(null);
     const WalkthroughableStepView = walkthroughable(StepView);
     const [historyCards, setHistoryCards] = useState([]);
+    const [showChrono, setShowChrono] = useState(true);
+    const history = useSelector(state => state.history.value)
+    const dispatch = useDispatch();
 
     useEffect(() => {
         let history = [];
@@ -344,8 +354,11 @@ const PlayPregame = memo((props) => {
         
     }
     const handleEndGame = () => {
-        stopChrono();
-        //props.navigation.push("Accueil Preliminaire");
+        if(showChrono === true) {
+            stopChrono();
+        } else {
+            props.navigation.push("Accueil Preliminaire");
+        }
     }
 
     const isCardVisible = (keyIn) =>{
@@ -367,6 +380,14 @@ const PlayPregame = memo((props) => {
             return card;
         })
         setCardVisibility(hideAllCardVisibility);
+    }
+
+    const handleHideAllHistoryCards = () => {
+        const hideAllCardHistoryVisibility = cardHistoryVisibility.map((card) => {
+            card.isVisible=false;
+            return card;
+        })
+        setCardHistoryVisibility(hideAllCardHistoryVisibility);
     }
 
     const isAllCardVisible =() => {
@@ -402,7 +423,8 @@ const PlayPregame = memo((props) => {
         });
     }
     const handleToggleMode =() => {
-        setIsHistoryMode(isHistoryMode => !isHistoryMode);
+        dispatch(openHistory());
+        
     }
     const handleToggleVisibilityHistoryGame = (keyIn, index) => {
         //console.log("CARD VISIBILTY", cardHistoryVisibility);
@@ -422,15 +444,46 @@ const PlayPregame = memo((props) => {
 
         setCardHistoryVisibility(nexCurrentCardVisibility);
     }
+
+    const handleContinueSamePlay = () => {
+        dispatch(closeHistory());
+    }
+
+    const handleChangePlay = () => {
+        setFinished(true);
+        setIsHistoryMode(isHistoryMode => !isHistoryMode);
+        setSec(0);
+        setFinished(false);
+        dispatch(closeHistory());
+    }
+
+    const handleToggleShowChrono = () => {
+        if(showChrono === true){
+            setFinished(true);
+            setSec(0);
+            setShowChrono(false)
+        } else {
+            setFinished(false);
+            setShowChrono(true)
+        }
+        
+    }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
             <Header>
                 <ChronoContainer>
-                    <ChronoText>{padToTwo(Math.trunc(sec/60))}</ChronoText>
+                    <ChronoText>{showChrono ? padToTwo(Math.trunc(sec/60)) : "**"}</ChronoText>
                     <ChronoText>:</ChronoText>
-                    <ChronoText>{padToTwo(sec%60)}</ChronoText>
+                    <ChronoText>{showChrono ? padToTwo(sec%60) : "**"}</ChronoText>
+                    <ShowChronoContainer>
+                        <TouchableOpacity onPress={()=> handleToggleShowChrono()}>
+                        {!showChrono && <Ionicons name="eye-off-outline" size={16} color="#FFFFFF" />}
+                        {showChrono && <Ionicons name="eye-outline" size={16} color="#FFFFFF" />}
+                    </TouchableOpacity>
+                </ShowChronoContainer>
                 </ChronoContainer>
+                
                 <HistoryModeContainer>
                     <TouchableOpacity onPress={() => handleToggleMode()}>
                         <AntDesign name={isHistoryMode ? "appstore1" : "appstore-o"} size={20} color="white" />
@@ -584,8 +637,8 @@ const PlayPregame = memo((props) => {
                             </ButtonGameView>}
                         </TouchableOpacity>}
 
-                        {isAllCardVisible() && <TouchableOpacity onPress={()=> handleHideAllCards()}>
-                            <ButtonGameView style={{marginBottom: !isHistoryMode && currentItemIndex < userCards.length - 1 ? 130 : 0}}>
+                        {!isHistoryMode && <TouchableOpacity onPress={()=> handleHideAllCards()}>
+                        {isAllCardVisible() && <ButtonGameView style={{marginBottom: !isHistoryMode && currentItemIndex < userCards.length - 1 ? 130 : 0}}>
                             <CopilotStep 
                             text="Pour commencer le jeu, cliquez sur ce bouton qui retournera face cachée toutes les cartes. Pour vous aider, une question vous sera posée. Vous pourrez de nouveau cliquer sur la carte pour la réafficher. Faites-le pour chaque carte."
                             order={4}
@@ -600,7 +653,12 @@ const PlayPregame = memo((props) => {
                             </CopilotStep>
                             
                                 <ButtonGameText>Retourner toutes les cartes</ButtonGameText>
-                            </ButtonGameView>
+                            </ButtonGameView>}
+                        </TouchableOpacity>}
+                        {isHistoryMode && <TouchableOpacity onPress={()=> handleHideAllHistoryCards()}>
+                            {isAllCardHistoryVisible() && <ButtonGameView style={{marginBottom: !isHistoryMode && currentItemIndex < userCards.length - 1 ? 130 : 0}}>                           
+                                <ButtonGameText>Retourner toutes les cartes</ButtonGameText>
+                            </ButtonGameView>}
                         </TouchableOpacity>}
                         {!isHistoryMode && currentItemIndex === userCards.length - 1 && isAllCardVisible() && <TouchableOpacity onPress={()=> handleEndGame()}>
                             <ButtonGameView style={{marginBottom: 130}}>
@@ -613,7 +671,7 @@ const PlayPregame = memo((props) => {
                             </ButtonGameView>
                         </TouchableOpacity>}
                     </EndGameButton></>}
-                    {isPrePlayHint && !isInputVisible(currentItemIndex) &&
+                    {isPrePlayHint && !isHistoryMode && !isInputVisible(currentItemIndex) &&
                         <HideTextContainer>
                             <HideText>
                                 {currentItemIndex % 4 == 0 && "Quel est le personnage de cette histoire ?"}
@@ -630,6 +688,7 @@ const PlayPregame = memo((props) => {
                 </ScrollView>
                 </KeyboardAvoidingView>
             </SafeAreaView>
+            <HistoryModal onContinuePressed={() => handleContinueSamePlay()} onValidateChange={() => handleChangePlay()}/>
         </Container>);
 });
 
