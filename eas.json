@@ -20,6 +20,14 @@
                 }
             }
         },
+        "dev-ios-real": {
+            "ios": {
+                "image": "latest",
+                "cache": {
+                    "disabled": true
+                }
+            }
+        },
         "preview": {
             "distribution": "internal",
             "android": {
