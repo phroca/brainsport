@@ -1,7 +1,4 @@
 import cardStructure from "../card-structure.json"
-import { DataStore } from '@aws-amplify/datastore';
-import { Card } from '../src/models';
-import { PackCard } from '../src/models';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
@@ -46,34 +43,6 @@ const terminateCitation = async() => {
     }
 }
 
-/**
- * 
- * @param {*} userId 
- */
-const initCardCreation = async(userId)=> {
-    cardStructure.couleurs.forEach((couleur)=> {
-        cardStructure.valeurs.forEach((valeur)=>{
-            DataStore.save(
-                new Card({
-                    "valeur": valeur.valeur,
-                    "couleur": couleur,
-                    "personnage": "",
-                    "verbe": "",
-                    "objet": "",
-                    "lieu": "",
-                    "conditions": valeur.conditions,
-                    "packcardID": "a3f4095e-39de-43d2-baf4-f8c16f0f6f4d"
-                })
-            );
-        });
-    });
-    DataStore.save(
-        new PackCard({
-            "userId": userId,
-            "Cards": []
-        })
-    );
-}
 
 /**
  * 
@@ -121,18 +90,6 @@ const getUserCardsMock = async() => {
     }
 }
 
-/**
- * 
- * @returns 
- */
-const getPreplayUserDataCard = async() => {
-    try{
-        const jsonValue = await AsyncStorage.getItem('@user_PreplayCards')
-        return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch(e){
-        console.log(e);
-    }
-}
 /**
  * 
  */
@@ -367,52 +324,6 @@ const initFamillyProgress = async() => {
  * 
  * @returns 
  */
-const getPreplayFamillyProgress = async() => {
-    try{
-        const jsonValue = await AsyncStorage.getItem('@user_PreplayFamilyprogress')
-        return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch(e){
-        console.log(e);
-    }
-}
-
-/**
- * 
- */
-const initPreplayFamillyProgress = async() => {
-    try{
-        const famillyProgress = 
-        {   
-            "carreau": {
-                "eightFirstCardFilled": true,
-                "allCardFilled": true
-            },
-            "coeur": {
-                "eightFirstCardFilled": true,
-                "allCardFilled": true
-            },
-            "trefle": {
-                "eightFirstCardFilled": true,
-                "allCardFilled": true
-            },          
-            "pique": {
-                "eightFirstCardFilled": true,
-                "allCardFilled": true
-            },
-        };
-        
-        const jsonValue = JSON.stringify(famillyProgress);
-        await AsyncStorage.setItem('@user_PreplayFamilyprogress', jsonValue);
-        return famillyProgress;
-    } catch(e){
-        console.log(e);
-    }
-}
-
-/**
- * 
- * @returns 
- */
 const getFamillyProgress = async() => {
     try{
         const jsonValue = await AsyncStorage.getItem('@user_Familyprogress')
@@ -449,35 +360,9 @@ const updateFamillyProgress = async(famillyProgressIn, famillyCard, stringTypeCa
         console.log(e);
     }
 }
-/**
- * 
- * @param {*} famillyProgressIn 
- * @param {*} famillyCard 
- * @param {*} flagFamillyRemplie 
- */
-const updatePreplayFamillyProgress = async(famillyProgressIn, famillyCard, flagFamillyRemplie) => {
-    try{
-        let famillyProgress = {...famillyProgressIn};
-        if(famillyCard === "carreau") {
-            famillyProgress.carreau = flagFamillyRemplie;
-        }
-        if(famillyCard === "coeur") {
-            famillyProgress.coeur = flagFamillyRemplie;
-        }
-        if(famillyCard === "trefle") {
-            famillyProgress.trefle = flagFamillyRemplie;
-        }
-        if(famillyCard === "pique") {
-            famillyProgress.pique = flagFamillyRemplie;
-        }
-        const jsonValue = JSON.stringify(famillyProgress);
-        await AsyncStorage.setItem('@user_PreplayFamilyprogress', jsonValue);
-        return famillyProgress;
-    } catch(e){
-        console.log(e);
-    }
-}
 
+// TODO 
+// Enlever famillyplayed : deprecated
 const saveProgressionTime = async({timeInSec, famillyPlayed}) => {
     const progress = {
         "time": timeInSec,
@@ -549,8 +434,6 @@ const clearAll = async () => {
 
 const clearPregameData = async() => {
     try {
-        await AsyncStorage.removeItem("@user_PreplayFamilyprogress");
-        await AsyncStorage.removeItem("@user_PreplayCards");
         await AsyncStorage.removeItem("@user_PrePlayData");
     } catch (error) {
         
@@ -562,7 +445,6 @@ const CardService ={
     initCitation,
     getCitation,
     terminateCitation,
-    initCardCreation,
     initCardCreationMock,
     getUserCardsMock,
     getPrePlayData,
@@ -581,10 +463,6 @@ const CardService ={
     initFamillyProgress,
     getFamillyProgress,
     updateFamillyProgress,
-    getPreplayUserDataCard,
-    getPreplayFamillyProgress,
-    initPreplayFamillyProgress,
-    updatePreplayFamillyProgress,
     getProgressionTime,
     saveProgressionTime,
     saveProgressionHistoryTime,

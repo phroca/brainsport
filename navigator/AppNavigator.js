@@ -9,6 +9,10 @@ import ConfirmationSignUpScreen from '../screens/ConfirmationSignUpScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import ForgotPasswordEmailSubmitScreen from '../screens/ForgotPasswordEmailSubmitScreen';
 import CardService from '../services/Card.service';
+import ChallengeScreen from '../screens/communaute/ChallengeScreen';
+import EventScreen from '../screens/communaute/EventScreen';
+import CreateGroupSreen from '../screens/CreateGroupScreen';
+import GroupScreen from '../screens/communaute/GroupScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +40,11 @@ const AppNavigator = () => {
                 <Stack.Screen name="Confirmation Code" component={ConfirmationSignUpScreen} />
                 <Stack.Screen name="Mdp Oublié" component={ForgotPasswordScreen} />
                 <Stack.Screen name="Changement Mdp" component={ForgotPasswordEmailSubmitScreen} />
+                <Stack.Screen name="Challenge" component={ChallengeScreen} />
+                <Stack.Screen name="Event" component={EventScreen} />
+                <Stack.Screen name="CreerGroupe" component={CreateGroupSreen} />
+                <Stack.Screen name="Group" component={GroupScreen} />
+
             </Stack.Navigator>
         );
 }

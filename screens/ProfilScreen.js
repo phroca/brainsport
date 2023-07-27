@@ -279,11 +279,6 @@ const ProfilScreen = ({navigation}) => {
     navigation.navigate("Avatar");
   }
   const handleLibrary = () => {
-    const currentUserDataCardElementInProgressFiltered = currentUserDataCard.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
-    const currentLibraryCard = {
-      "userId": currentUserDataCard.userId,
-       "cards": currentUserDataCardElementInProgressFiltered
-    }
     navigation.push("Bibliothèque", {userCards: currentUserDataCard});
   }
 

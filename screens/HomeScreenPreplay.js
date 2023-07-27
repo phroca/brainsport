@@ -7,7 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
-import Auth from "@aws-amplify/auth";
+import {Auth} from "aws-amplify";
 import CardService from '../services/Card.service';
 import { Ionicons } from '@expo/vector-icons';
 import CheckBox from '../components/CheckBox';
@@ -17,6 +17,8 @@ import { copilot, walkthroughable, CopilotStep } from "react-native-copilot";
 import StepNumberComponent from '../components/stepper/StepNumberComponent';
 import TooltipComponent from '../components/stepper/TooltipComponent';
 import TabChoicePrompt from '../components/TabChoicePrompt';
+
+import UserService from '../services/User.service';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -203,13 +205,27 @@ const HomeScreenPreplay = (props) => {
     const [flagUserDataCard, setFlagUserDataCard] = useState(false);
     const [flagFamillyProgress, setFlagFamillyProgress] = useState(false);
     const [username, setUsername] = useState("");
+    const [userId, setUserId] = useState("");
     useEffect(()=> {
       (async() => {
         const user = await Auth.currentAuthenticatedUser();
         setUsername(user?.attributes?.given_name);
+        setUserId(user?.attributes?.sub);
+        UserService.getUserByUserId(user?.attributes?.sub).then((value) => {
+          if(value?.data.length < 1){
+            UserService.saveUser({userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name}).then((value) => {
+              console.log("first synchro done.");
+            }).catch((error) => {
+              console.error(`Error fetching Cognito User ${error}`);
+            })
+          } 
+        })
       })();
     },[])
   
+
+    // Flag pour detecter si on a passé l'etape de la première 
+    // découverte
     const [prePlayDataIn, setPrePlayDataIn] = useState(true);
     useEffect(()=> {
       CardService.getPrePlayData().then((preplayData) => {
@@ -228,32 +244,65 @@ const HomeScreenPreplay = (props) => {
     useFocusEffect(
       useCallback(() => {
         if(!flagUserDataCard){
-          CardService.getUserCardsMock().then((userCardsData) => {
-            setCurrentUSerDataCard(userCardsData);
-            const userCardDone = currentUSerDataCard.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
-            setUserCardSaved(userCardDone);
-            const userCardDoneLength = userCardDone.length;
-            const moduloUserCardDone = userCardDoneLength % 4;      
-            const numberCardToPlayForHistory = (userCardDoneLength - moduloUserCardDone);
-            const numberOfHistoriesToPlay = Math.floor(numberCardToPlayForHistory / 4);
-            setInformationDataCard({
-              ...informationDataCard,
-              cardDoneLength: userCardDoneLength,
-              numberCardToPlayForHistory: numberCardToPlayForHistory,
-              numberOfHistoriesToPlay: numberOfHistoriesToPlay
-            });
-          });
+          
+            if(userId !== "") {
+              
+              UserService.getDataCard(userId).then((value) => {
+                if(value?.data.length < 1) {
+                  CardService.getUserCardsMock().then((userCardsData) => {
+                    setCurrentUSerDataCard(userCardsData);
+                    UserService.saveDataCard({userId, userDatacard: JSON.stringify(userCardsData["cards"])}).then((value)=> {
+                      console.log("first synchro done.");
+                    });
+                  }).catch((error) => {
+                    console.error(`Error fetching Data card ${error}`);
+                  })
+                } else {
+                  const dataRaw = value?.data[0];
+                  const userDataFromServer= JSON.parse(dataRaw.cards);
+                  setCurrentUSerDataCard({"userId": value.data.userId, "cards": userDataFromServer})
+                }
+                const userCardDone = currentUSerDataCard.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
+                setUserCardSaved(userCardDone);
+                const userCardDoneLength = userCardDone.length;
+                const moduloUserCardDone = userCardDoneLength % 4;  
+                const numberCardToPlayForHistory = (userCardDoneLength - moduloUserCardDone);
+                const numberOfHistoriesToPlay = Math.floor(numberCardToPlayForHistory / 4);
+                setInformationDataCard({
+                  ...informationDataCard,
+                  cardDoneLength: userCardDoneLength,
+                  numberCardToPlayForHistory: numberCardToPlayForHistory,
+                  numberOfHistoriesToPlay: numberOfHistoriesToPlay
+                });
+              }).catch((error) => {
+                console.log('Error getting data cards', error);
+              });
+            }
         }
         return () => setFlagUserDataCard(true)
-      },[currentUSerDataCard])
+      },[currentUSerDataCard, userId])
     );
 
     useFocusEffect(
       useCallback(() => {
-        CardService.getStepperBeforePlay().then((stepData) => {
-          if(stepData?.initHomeScreen) props.start();
-        })
-      },[])
+        if(userId !== "") {
+          UserService.getUserStepperData(userId).then((value) => {
+            if(value?.data.length < 1) {
+              CardService.getStepperBeforePlay().then((stepData) => {
+                UserService.saveUserStepperData({userId, initHomeScreen: stepData?.initHomeScreen, initCardAssociation: stepData?.initCardAssociation, initPrePlay: stepData?.initPrePlay, initPlayGame: stepData?.initPlayGame}).then((value) =>{
+                  console.log("first synchro done.");
+                })
+                if(stepData?.initHomeScreen) props.start();
+              })
+            } else {
+              const dataRaw = value?.data[0];
+              const userDataFromServer= JSON.parse(dataRaw.initHomeScreen);
+              if(userDataFromServer) props.start();
+            }
+          })
+        }
+        
+      },[userId])
     );
     
     
@@ -278,13 +327,29 @@ const HomeScreenPreplay = (props) => {
     useFocusEffect(
     useCallback(()=> {
       if(!flagFamillyProgress){
-        CardService.getFamillyProgress().then((famillyProgressData) => {
-          setCurrentFamillyProgress(famillyProgressData);
-        });
+        if(userId !== "") {
+          UserService.getUserFamillyProgressData(userId).then((value) => {
+            if(value?.data.length < 1 ) {
+              CardService.getFamillyProgress().then((famillyProgressData) => {
+                setCurrentFamillyProgress(famillyProgressData);
+                UserService.saveUserFamillyProgressData({userId, famillyProgress: JSON.stringify(famillyProgressData)}).then((value)=> {
+                  console.log("first synchro done.");
+                })
+              });
+            } else {
+              const dataRaw = value?.data[0];
+              const userDataFromServer= JSON.parse(dataRaw.famillyProgress);
+              console.log(userDataFromServer);
+              setCurrentFamillyProgress(userDataFromServer);
+            }
+          })
+          
+        }
+        
       }
       
       return () => setFlagFamillyProgress(true)
-    },[currentFamillyProgress])
+    },[currentFamillyProgress, userId])
     );
     
     const WalkthroughablePlayCard = walkthroughable(AnimatedPlayCard);

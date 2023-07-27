@@ -198,7 +198,7 @@ const handleGotoHomePrecreation = async() => {
                 if(stepValue){
                     CardService.initPrePlayHintData().then((preplayHintValue) => {
                         if(preplayHintValue === false){
-                            CardService.initCardCreationMock(user?.pool?.userPoolId).then((data) => {
+                            CardService.initCardCreationMock(user?.attributes?.sub).then((data) => {
                                 if(data) {
                                     CardService.initFamillyProgress().then((famillyprogressData) => {
                                         if(famillyprogressData) navigation.push("Accueil Preliminaire");
