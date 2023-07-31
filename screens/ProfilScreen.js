@@ -7,6 +7,9 @@ import Toast from 'react-native-toast-message';
 import { Auth } from 'aws-amplify';
 import { Ionicons } from '@expo/vector-icons';
 import CheckBox from "../components/CheckBox";
+import UserService from "../services/User.service";
+import { useSelector } from "react-redux";
+import moment from "moment";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -179,46 +182,48 @@ const TipSwitch = styled.Switch`
 
 const ProfilScreen = ({navigation}) => {
   const [listProgress, setListProgress] = useState([]);
-  const [prePlayDataIn, setPrePlayDataIn] = useState(null);
+  const [consecutiveDays, setConsecutiveDays] = useState(0);
+  //const [prePlayDataIn, setPrePlayDataIn] = useState(null);
   let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
   const [flagUserDataCard, setFlagUserDataCard] = useState(false);
   const [currentUserDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
   const [isAppFirstLaunched, setIsAppFirstLaunched] = useState(null);
-  const [currentStepper, setCurrentStepper] = useState({});
   const [isInitHomeEnabled, setIsInitHomeEnabled] = useState(false);
   const [isInitCardAssociation, setIsInitCardAssociation] = useState(false);
   const [isInitPrePlay, setIsInitPrePlay] = useState(false);
   const [isPrePlayHint, setIsPrePlayHint] = useState(false);
+  const user = useSelector(state => state.user.value);
 
   useFocusEffect(
     useCallback(() => {
-      CardService.getStepperBeforePlay().then((stepData) => {
-        if(stepData) {
-          setCurrentStepper(stepData);
+      UserService.getUserStepperData(user).then((value) => {
+        if(value?.data) {
+          const stepData = value?.data[0];
           setIsInitHomeEnabled(stepData?.initHomeScreen);
           setIsInitCardAssociation(stepData?.initCardAssociation);
           setIsInitPrePlay(stepData?.initPrePlay);
+          setIsPrePlayHint(stepData?.prePlayHint);
         }
-      });
-      CardService.getPrePlayHintData().then((hintData) => {
-        setIsPrePlayHint(hintData);
-      });
+      })
     },[])
   );
 
   useEffect(() => {
-    CardService.getProgressionTime().then((result) => {
-      if(result) {
-        setListProgress(result);
+    UserService.getProgressionTime(user).then((value) => {
+      if(value.data){
+        setListProgress(value.data);
+        calculateConsecutiveDays(value.data);
       }
-    })
-  }, []);
+    });
+  }, [consecutiveDays]);
 
   useFocusEffect(
     useCallback(() => {
       if(!flagUserDataCard){
-        CardService.getUserCardsMock().then((userCardsData)=> {
-          setCurrentUserDataCard(userCardsData);
+        UserService.getDataCard(user).then((value) => {
+          const dataRaw = value?.data[0];
+          const userDataFromServer= JSON.parse(dataRaw.cards);
+          setCurrentUserDataCard({"userId": dataRaw.userId, "cards": userDataFromServer});
         });
       }
       return () => setFlagUserDataCard(true)
@@ -233,14 +238,14 @@ const ProfilScreen = ({navigation}) => {
         text2:  "Les données utilisateurs sont bien réinitialisées."
       });
     });
-  };
-
-
-  useEffect(() => {
-    CardService.getPrePlayData().then((preplayData) => {
-      setPrePlayDataIn(preplayData);
+    UserService.clearAll(user).then(() => {
+      Toast.show({
+        type: 'success',
+        text1: 'Réinitalisation réussie',
+        text2:  "Les données utilisateurs sont bien réinitialisées."
+      });
     })
-  }, [prePlayDataIn]);
+  };
 
   useEffect(()=> {
     CardService.getCitation().then((value) => {
@@ -275,54 +280,56 @@ const ProfilScreen = ({navigation}) => {
     if (arraySorted.length === 0) return 0;
     return arraySorted[arraySorted.length -1];
   }
+
+  const calculateConsecutiveDays = (valueData) => {
+    const dates = new Set();
+    const numberConsecutive = [];
+    valueData.forEach(elt => {
+      const dateTemp = moment(elt.datePlayed)
+      dates.add(dateTemp.format("L"));
+    })
+    const consecutiveDates = Array.from(dates).reduce((acc, date) => {
+      const group = acc[acc.length - 1];
+      if (moment(date).diff(moment(group[group.length - 1] || date), 'days') > 1) {
+        acc.push([date])
+      } else {
+        group.push(date);
+      }
+      return acc;
+    }, [[]]);
+    consecutiveDates.forEach(elt => {
+      numberConsecutive.push(elt.length);
+    })
+    setConsecutiveDays(Math.max(...numberConsecutive));
+  }
   const handleAvatar = () => {
     navigation.navigate("Avatar");
   }
+
   const handleLibrary = () => {
     navigation.push("Bibliothèque", {userCards: currentUserDataCard});
   }
 
-  const handleTogglePregame = async() => {
-    if(prePlayDataIn == true){
-      CardService.terminatePreplayData().then(() => {
-        setPrePlayDataIn(false);
-        disconnect();
-      });
-    } else {
-      CardService.initPrePlayData().then(() => {
-        setPrePlayDataIn(true);
-        disconnect();
-      });
-    }
-  }
-
-  const handleReinitPregame = () => {
-    CardService.clearPregameData().then(()=> {
-      Toast.show({
-        type: 'success',
-        text1: 'Réinitalisation réussie',
-        text2:  "Les données utilisateurs sont bien réinitialisées."
-      });
-    });
-  }
-
-
   const toggleSwitchInitHome = (value) => {
-    CardService.updateStepperBeforePlay("initHomeScreen", value);
+    UserService.updateInitHomeScreen({userId: user, initHomeScreen: value});
     setIsInitHomeEnabled(value);
   }
+
   const toggleSwitchInitCardAssociation = (value) => {
-    CardService.updateStepperBeforePlay("initCardAssociation", value);
+    UserService.updateInitCardAssociation({userId: user, initHomeScreen: value});
     setIsInitCardAssociation(value);
   }
+  
   const toggleSwitchInitPrePlay = (value) => {
-    CardService.updateStepperBeforePlay("initPrePlay", value);
+    UserService.updateInitPrePlay({userId: user, initHomeScreen: value});
     setIsInitPrePlay(value);
   }
+
   const toggleSwitchPrePlayHint = (value) => {
-    CardService.updatePrePlayHintData(value);
+    UserService.updatePrePlayHint({userId: user, prePlayHint: value});
     setIsPrePlayHint(value);
   }
+
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
         <SafeAreaView>
@@ -340,7 +347,7 @@ const ProfilScreen = ({navigation}) => {
                 <ProgresCards>
                 <ProgresCard>
                   <ProgresNumber>
-                      0
+                      {consecutiveDays}
                   </ProgresNumber>
                   <ProgresLabel>
                     jours

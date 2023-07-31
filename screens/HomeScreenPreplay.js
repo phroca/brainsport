@@ -19,6 +19,8 @@ import TooltipComponent from '../components/stepper/TooltipComponent';
 import TabChoicePrompt from '../components/TabChoicePrompt';
 
 import UserService from '../services/User.service';
+import { useDispatch } from 'react-redux';
+import { updateUser } from '../slices/userSlice';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -206,33 +208,9 @@ const HomeScreenPreplay = (props) => {
     const [flagFamillyProgress, setFlagFamillyProgress] = useState(false);
     const [username, setUsername] = useState("");
     const [userId, setUserId] = useState("");
-    useEffect(()=> {
-      (async() => {
-        const user = await Auth.currentAuthenticatedUser();
-        setUsername(user?.attributes?.given_name);
-        setUserId(user?.attributes?.sub);
-        UserService.getUserByUserId(user?.attributes?.sub).then((value) => {
-          if(value?.data.length < 1){
-            UserService.saveUser({userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name}).then((value) => {
-              console.log("first synchro done.");
-            }).catch((error) => {
-              console.error(`Error fetching Cognito User ${error}`);
-            })
-          } 
-        })
-      })();
-    },[])
-  
-
     // Flag pour detecter si on a passé l'etape de la première 
     // découverte
     const [prePlayDataIn, setPrePlayDataIn] = useState(true);
-    useEffect(()=> {
-      CardService.getPrePlayData().then((preplayData) => {
-        setPrePlayDataIn(preplayData);
-      })
-    },[prePlayDataIn]);
-  
     const [currentUSerDataCard, setCurrentUSerDataCard] = useState({"userId": "", "cards": []})
     const [userCardSaved, setUserCardSaved] = useState([]);
     const [informationDataCard, setInformationDataCard] = useState({
@@ -241,71 +219,6 @@ const HomeScreenPreplay = (props) => {
         "numberOfHistoriesToPlay": 0
 
     })
-    useFocusEffect(
-      useCallback(() => {
-        if(!flagUserDataCard){
-          
-            if(userId !== "") {
-              
-              UserService.getDataCard(userId).then((value) => {
-                if(value?.data.length < 1) {
-                  CardService.getUserCardsMock().then((userCardsData) => {
-                    setCurrentUSerDataCard(userCardsData);
-                    UserService.saveDataCard({userId, userDatacard: JSON.stringify(userCardsData["cards"])}).then((value)=> {
-                      console.log("first synchro done.");
-                    });
-                  }).catch((error) => {
-                    console.error(`Error fetching Data card ${error}`);
-                  })
-                } else {
-                  const dataRaw = value?.data[0];
-                  const userDataFromServer= JSON.parse(dataRaw.cards);
-                  setCurrentUSerDataCard({"userId": value.data.userId, "cards": userDataFromServer})
-                }
-                const userCardDone = currentUSerDataCard.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
-                setUserCardSaved(userCardDone);
-                const userCardDoneLength = userCardDone.length;
-                const moduloUserCardDone = userCardDoneLength % 4;  
-                const numberCardToPlayForHistory = (userCardDoneLength - moduloUserCardDone);
-                const numberOfHistoriesToPlay = Math.floor(numberCardToPlayForHistory / 4);
-                setInformationDataCard({
-                  ...informationDataCard,
-                  cardDoneLength: userCardDoneLength,
-                  numberCardToPlayForHistory: numberCardToPlayForHistory,
-                  numberOfHistoriesToPlay: numberOfHistoriesToPlay
-                });
-              }).catch((error) => {
-                console.log('Error getting data cards', error);
-              });
-            }
-        }
-        return () => setFlagUserDataCard(true)
-      },[currentUSerDataCard, userId])
-    );
-
-    useFocusEffect(
-      useCallback(() => {
-        if(userId !== "") {
-          UserService.getUserStepperData(userId).then((value) => {
-            if(value?.data.length < 1) {
-              CardService.getStepperBeforePlay().then((stepData) => {
-                UserService.saveUserStepperData({userId, initHomeScreen: stepData?.initHomeScreen, initCardAssociation: stepData?.initCardAssociation, initPrePlay: stepData?.initPrePlay, initPlayGame: stepData?.initPlayGame}).then((value) =>{
-                  console.log("first synchro done.");
-                })
-                if(stepData?.initHomeScreen) props.start();
-              })
-            } else {
-              const dataRaw = value?.data[0];
-              const userDataFromServer= JSON.parse(dataRaw.initHomeScreen);
-              if(userDataFromServer) props.start();
-            }
-          })
-        }
-        
-      },[userId])
-    );
-    
-    
     const [currentFamillyProgress, setCurrentFamillyProgress] = useState({   
       "carreau": {
           "eightFirstCardFilled": false,
@@ -324,6 +237,114 @@ const HomeScreenPreplay = (props) => {
           "allCardFilled": false
       },
     });
+    const dispatch = useDispatch();
+
+
+    useEffect(()=> {
+      (async() => {
+        const user = await Auth.currentAuthenticatedUser();
+        setUsername(user?.attributes?.given_name);
+        setUserId(user?.attributes?.sub);
+        dispatch(updateUser({userId: user?.attributes?.sub}));
+        UserService.getUserByUserId(user?.attributes?.sub).then((value) => {
+          if(value?.data.length < 1){
+            UserService.saveUser({userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name}).then((value) => {
+              console.log("first synchro done.");
+            }).catch((error) => {
+              console.error(`Error fetching Cognito User ${error}`);
+            })
+          } 
+        })
+      })();
+    },[])
+
+    useFocusEffect(
+      useCallback(() => {
+        if(!flagUserDataCard){         
+            if(userId !== "") {
+              UserService.getDataCard(userId).then((value) => {
+                if(value?.data.length < 1) {
+                  CardService.getUserCardsMock().then((userCardsData) => {
+                    if(userCardsData){
+                      setCurrentUSerDataCard(userCardsData);
+                      UserService.saveDataCard({userId, userDatacard: JSON.stringify(userCardsData["cards"])}).then((value)=> {
+                        console.log("first synchro done.");
+                      });
+                      const userCardDone = userCardsData.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
+                      setUserCardSaved(userCardDone);
+                      const userCardDoneLength = userCardDone.length;
+                      const moduloUserCardDone = userCardDoneLength % 4;  
+                      const numberCardToPlayForHistory = (userCardDoneLength - moduloUserCardDone);
+                      const numberOfHistoriesToPlay = Math.floor(numberCardToPlayForHistory / 4);
+                      setInformationDataCard({
+                        ...informationDataCard,
+                        cardDoneLength: userCardDoneLength,
+                        numberCardToPlayForHistory: numberCardToPlayForHistory,
+                        numberOfHistoriesToPlay: numberOfHistoriesToPlay
+                      });
+                    }
+                  }).catch((error) => {
+                    console.error(`Error fetching Data card ${error}`);
+                  })
+                } else {
+                  const dataRaw = value?.data[0];
+                  const userDataFromServer= JSON.parse(dataRaw.cards);
+                  setCurrentUSerDataCard({"userId": dataRaw.userId, "cards": userDataFromServer});
+                  const userCardDone = userDataFromServer.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
+                  setUserCardSaved(userCardDone);
+                  const userCardDoneLength = userCardDone.length;
+                  const moduloUserCardDone = userCardDoneLength % 4;  
+                  const numberCardToPlayForHistory = (userCardDoneLength - moduloUserCardDone);
+                  const numberOfHistoriesToPlay = Math.floor(numberCardToPlayForHistory / 4);
+                  setInformationDataCard({
+                    ...informationDataCard,
+                    cardDoneLength: userCardDoneLength,
+                    numberCardToPlayForHistory: numberCardToPlayForHistory,
+                    numberOfHistoriesToPlay: numberOfHistoriesToPlay
+                  });
+                }
+                
+              }).catch((error) => {
+                console.log('Error getting data cards', error);
+              });
+            }
+        }
+        return () => setFlagUserDataCard(true)
+      },[currentUSerDataCard, userId])
+    );
+
+    useFocusEffect(
+      useCallback(() => {
+        if(userId !== "") {
+          UserService.getUserStepperData(userId).then((value) => {
+            if(value?.data.length < 1) {
+              CardService.getStepperBeforePlay().then((stepData) => {
+                CardService.getPrePlayData().then((preplayData) => {
+                  if(stepData && preplayData){
+                    UserService.saveUserStepperData({userId, initHomeScreen: stepData?.initHomeScreen, initCardAssociation: stepData?.initCardAssociation, initPrePlay: stepData?.initPrePlay, initPlayGame: stepData?.initPlayGame, prePlayData: preplayData}).then((value) =>{
+                      console.log("first synchro done.");
+                      //ETAPE DE PREMIER LANCEMENT DE L'APPLI SI PAS SYNCHRONISATION AVEC BBDD
+                      setPrePlayDataIn(preplayData);
+                      if(stepData?.initHomeScreen) props.start();
+                    })
+                  } else {
+                    setPrePlayDataIn(false);
+                  }
+                }) 
+              })
+              
+            } else {
+              //ETAPE DE PREMIER LANCEMENT DE L'APPLI SI  SYNCHRONISATION AVEC BBDD
+              const dataRaw = value?.data[0];
+              setPrePlayDataIn(dataRaw.prePlayData);
+              if(dataRaw.initHomeScreen) props.start();
+            }
+          })
+        }
+        
+      },[userId])
+    );
+    
     useFocusEffect(
     useCallback(()=> {
       if(!flagFamillyProgress){
@@ -331,15 +352,16 @@ const HomeScreenPreplay = (props) => {
           UserService.getUserFamillyProgressData(userId).then((value) => {
             if(value?.data.length < 1 ) {
               CardService.getFamillyProgress().then((famillyProgressData) => {
-                setCurrentFamillyProgress(famillyProgressData);
-                UserService.saveUserFamillyProgressData({userId, famillyProgress: JSON.stringify(famillyProgressData)}).then((value)=> {
-                  console.log("first synchro done.");
-                })
+                if(famillyProgressData) {
+                  setCurrentFamillyProgress(famillyProgressData);
+                  UserService.saveUserFamillyProgressData({userId, famillyProgress: JSON.stringify(famillyProgressData)}).then((value)=> {
+                    console.log("first synchro done.");
+                  })
+                }
               });
             } else {
               const dataRaw = value?.data[0];
               const userDataFromServer= JSON.parse(dataRaw.famillyProgress);
-              console.log(userDataFromServer);
               setCurrentFamillyProgress(userDataFromServer);
             }
           })
@@ -366,8 +388,11 @@ const HomeScreenPreplay = (props) => {
           toValue: 1,
           useNativeDriver: true
         }).start(() => {
-          CardService.getStepperBeforePlay().then((stepData) => {
-            if(stepData?.initHomeScreen) props.start();
+          UserService.getUserStepperData(userId).then((value) => {
+            if(value?.data) {
+              const dataRaw = value?.data[0];
+              if(dataRaw.initHomeScreen) props.start();
+            }
           })
         })
       });
@@ -399,7 +424,7 @@ const HomeScreenPreplay = (props) => {
 
     useEffect(()=> {
       props.copilotEvents.on("stop", () => {
-        CardService.updateStepperBeforePlay("initHomeScreen", false);
+        UserService.updateInitHomeScreen({userId: user, initHomeScreen: false});
       });
 
       return () => {
@@ -409,33 +434,17 @@ const HomeScreenPreplay = (props) => {
     
     const promptGameRef = useRef();
 
-
-    const [randomGame, setRandomGame] = useState(false);
-    
-    const handleSelectFamilly = (couleur) => {
-      const famillyFiltered = currentUSerDataCard.cards.filter(elt=> elt.couleur === couleur);
-      props.navigation.navigate("Card Association Read Only", { userCards: famillyFiltered });
-    }
-
-   const handlePlayPreplayGame = () => {
+    const handlePlayPreplayGame = () => {
      promptGameRef.current.setVisible(true);
-    /*const cardCopyToShuffle = JSON.parse(JSON.stringify(currentUSerDataCard));
-    const shuffledArrayforPlayGame = cardCopyToShuffle.cards.sort((a, b) => 0.5 - Math.random());
-    props.navigation.navigate("PlayPregame", {userCards: shuffledArrayforPlayGame.slice(0,7)});*/
     }
 
     const promptTabRef = useRef();
     const handleGoToMainHome = () => {
       promptTabRef.current.setVisible(true);
-      
-      // CardService.terminatePreplayData().then((value) =>{
-      //   if(value !== null) props.navigation.navigate("Accueil-Alt");
-      // });
     }
 
 
     const handleModifyFamilly = (color) => {
-      const cardFamillyFilterToModify = currentUSerDataCard.cards.filter(elt => elt.couleur === color);
       props.navigation.push("Card Association Par Famille", { userCardsFull: currentUSerDataCard, famillyProgress: currentFamillyProgress, color: color });
     }
     const checkAbleToTrain = () => {
@@ -456,7 +465,7 @@ const HomeScreenPreplay = (props) => {
       const cardFamillyProgress = cardFamilly.filter(element => elementCarteRemplie(element)).length;
       return cardFamillyProgress + " / " + cardFamilly.length;
     }
-  return prePlayDataIn === null ?( 
+  return prePlayDataIn === false ?( 
           <Container source={require("../assets/brainsport-bg.png")}>   
             <StatusBar style="auto" />
               <SafeAreaView>
@@ -481,7 +490,7 @@ const HomeScreenPreplay = (props) => {
             </SafeAreaView>
           </Container>
 
-  ) : prePlayDataIn === true ? ( 
+  ) : ( 
     <Container source={require("../assets/brainsport-bg.png")}>   
       <StatusBar style="auto" />
         <SafeAreaView>
@@ -671,31 +680,7 @@ const HomeScreenPreplay = (props) => {
             <GameChoicePrompt ref={promptGameRef} userCardSaved={userCardSaved} informationDataCard={informationDataCard} navigation={props.navigation}/>
             <TabChoicePrompt ref={promptTabRef} famillyProgress={currentFamillyProgress} currentUSerDataCard={currentUSerDataCard} navigation={props.navigation}/>
         </SafeAreaView>      
-    </Container>) : ( 
-          <Container source={require("../assets/brainsport-bg.png")}>   
-            <StatusBar style="auto" />
-              <SafeAreaView>
-                <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
-                  <TitleBar>
-                      <Title>Bonjour {username} !</Title>
-                  </TitleBar>
-                  <Subtitle >
-                  Vous avez réussi, Bravo ! Vous êtes prêt(e), à passer à l’étape 
-                  suivante : Créer votre propre tableau.
-                  </Subtitle>
-                
-                  <ButtonFooter>
-                    <TouchableOpacity onPress={()=> props.navigation.push("Accueil")}>
-                      <ButtonView>
-                        <ButtonText>Aller à la création du tableau</ButtonText>
-                      </ButtonView>
-                    </TouchableOpacity>
-                  </ButtonFooter>
-              </ScrollView>
-            </SafeAreaView>
-          </Container>
-
-  );
+    </Container>);
 }
 
 

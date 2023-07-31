@@ -9,6 +9,7 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { Text } from "react-native";
 import CommunityService from "../../services/Community.service";
 import UserCard from "../../components/UserCard";
+import UserConversation from "../../components/UserConversation";
 
 
 const {width, height} = Dimensions.get("screen");
@@ -83,14 +84,67 @@ const AvatarText = styled.Text`
     font-weight: bold;
     color: white;
 `;
-const DiscussionActionContainer = styled.View`
+
+/**
+ * ==================
+ * CLASSEMENT CSS
+ * ==================
+ */
+
+const ClassementSection = styled.View`
+    padding: 20px;
+`;
+
+const ClassementUserCardContainer = styled.View`
+    margin-top: 5px;
     margin-bottom: 5px;
+`;
+
+const ClassementRoute = ({groupId}) => {
+    const [userList, setUserList] = useState([]);
+    useEffect(()=> {
+        CommunityService.getGroupUsersByGroupId(groupId).then((value) => {
+            if(value?.data.length > 0) {
+                setUserList(value?.data);
+            }
+        });
+    },[])
+    return (
+        <View style={{ flex: 1, backgroundColor: '#0f0f0f' }}>
+        <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
+            <ClassementSection>
+                    {userList.map((item, index) => (
+                        <ClassementUserCardContainer>
+                            <UserCard
+                            key={"classement"+index+"" + item._id}
+                            rewardPoints={item.rewardPoints}
+                            firstName={item.firstName}
+                            color={item.colorProfil}
+                            />
+                        </ClassementUserCardContainer>
+                    ))}
+            </ClassementSection>
+        </ScrollView>
+        </View>
+    )};
+  
+
+/**
+ * ==================
+ * DISCUSSION CSS
+ * ==================
+ */
+
+const DiscussionActionContainer = styled.View`
+    padding-top: 5px;
+    padding-bottom: 5px;
     width: 100%;
     position: absolute;
     bottom: 0;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    background-color: #000000;
 `;
 
 const DiscussionTextInput = styled.TextInput`
@@ -106,77 +160,18 @@ const DiscussionTextInput = styled.TextInput`
 
 `;
 
+const DiscussionUserContainer = styled.View`
+    margin-top: 5px;
+    margin-bottom: 5px;
+`;
+
 const DiscussionMessages = styled.View`
     width: ${widthContent}px;
     margin-right: 10px;
+    padding-bottom: 60px;
 `;
 
-const AProposDescriptionSection = styled.View`
-    margin: 20px;
-`;
-const AProposDescriptionTitle = styled.Text`
-  font-size: 14px;
-  font-weight: bold;
-  width: 100%;
-  color: white;
-  text-transform:uppercase;
-`;
-const AProposDescriptionCreatorTitle = styled.Text`
-  font-size: 18px;
-  font-weight: bold;
-  width: 100%;
-  color: white;
-
-`;
-
-const Separator = styled.View`
-    height: .5px;
-    border: .2px solid gray;
-    margin: 20px;
-`
-const AProposDescriptionContent = styled.Text`
-    margin-top: 10px;
-    margin-bottom: 10px;
-  font-size: 12px;
-  font-weight: bold;
-  width: 100%;
-  color: rgba(255,255,255,0.5);
-`;
-
-const ButtonView = styled.View`
-`;
-
-
-const ClassementSection = styled.View`
-    
-`;
-const ClassementRoute = ({groupId}) => {
-
-    const [userList, setUserList] = useState([]);
-    useEffect(()=> {
-        CommunityService.getGroupUsersByGroupId(groupId).then((value) => {
-            if(value?.data.length > 0) {
-
-                setUserList(value?.data);
-            }
-        });
-    },[])
-    return (
-        <View style={{ flex: 1, backgroundColor: '#0f0f0f' }}>
-        <ClassementSection>
-                {userList.map((item, index) => (
-                    <UserCard
-                    key={"classement"+index+"" + item._id}
-                    rewardPoints={item.rewardPoints}
-                    firstName={item.firstName}
-                    color={item.colorProfil}
-                    />
-                ))}
-        </ClassementSection>
-        </View>
-    )};
-  
-  const DiscussionRoute = ({groupData, currentUserId}) => {
+const DiscussionRoute = ({groupData, currentUserId}) => {
     const [message, setMessage] = useState("");
     const [messageList, setMessageList] = useState([]);
     useEffect(()=> {
@@ -204,16 +199,23 @@ const ClassementRoute = ({groupId}) => {
             });
         })
     }
-    
+
     return (
     <View style={{ flex: 1, backgroundColor: '#0f0f0f'}}>
-    <DiscussionMessages>
-        {messageList.map((item, index) => (
-            <Text style={{color: "white"}}key={index}>
-                {item.message}
-            </Text>
-        ))}
-    </DiscussionMessages>
+    <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
+        <DiscussionMessages>
+            {messageList.map((item, index) => (
+                <DiscussionUserContainer>
+                    <UserConversation
+                        color={item.colorProfil}
+                        dateOfCreation={item.dateEnvoi}
+                        firstName={item.firstName}
+                        message={item.message}
+                    />
+                </DiscussionUserContainer>
+            ))}
+        </DiscussionMessages>
+    </ScrollView>
     <DiscussionActionContainer>
         <DiscussionTextInput placeholder="Message..." onChangeText={(e) => setMessage(e)}/>
         <TouchableOpacity onPress={()=> handleSendMessage()}>
@@ -224,9 +226,52 @@ const ClassementRoute = ({groupId}) => {
     </DiscussionActionContainer>
     </View>
     )
-    };
+};
 
-  const AProposRoute = ({description}) => (
+    /**
+ * ==================
+ * A PROPOS CSS
+ * ==================
+ */
+
+const AProposDescriptionSection = styled.View`
+    margin: 20px;
+`;
+
+const AProposDescriptionTitle = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  width: 100%;
+  color: white;
+  text-transform:uppercase;
+`;
+
+const AProposDescriptionCreatorTitle = styled.Text`
+  font-size: 18px;
+  font-weight: bold;
+  width: 100%;
+  color: white;
+`;
+
+const Separator = styled.View`
+    height: .5px;
+    border: .2px solid gray;
+    margin: 20px;
+`
+
+const AProposDescriptionContent = styled.Text`
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    width: 100%;
+    color: rgba(255,255,255,0.5);
+`;
+
+const ButtonView = styled.View`
+`;
+
+const AProposRoute = ({description, creator}) => (
     <View style={{ flex: 1, backgroundColor: '#0f0f0f' }}>
     <AProposDescriptionSection>
         <AProposDescriptionTitle>Description</AProposDescriptionTitle>
@@ -235,24 +280,24 @@ const ClassementRoute = ({groupId}) => {
     <Separator />
     <AProposDescriptionSection>
         <AProposDescriptionCreatorTitle>Créateur</AProposDescriptionCreatorTitle>
-        <AProposDescriptionContent>à venir...</AProposDescriptionContent>
+        <AProposDescriptionContent>{creator}</AProposDescriptionContent>
     </AProposDescriptionSection>
     </View>
-  );
-  
+);
 
-  const renderTabBar = props => (
+const renderTabBar = props => (
     <TabBar
-      {...props}
-      indicatorStyle={{ backgroundColor: 'white' }}
-      style={{ backgroundColor: '#0f0f0f' }}
-      renderLabel={({ route, focused, color }) => (
+        {...props}
+        indicatorStyle={{ backgroundColor: 'white' }}
+        style={{ backgroundColor: '#0f0f0f' }}
+        renderLabel={({ route, focused, color }) => (
         <Text style={{ color, margin: 8 }}>
         {route.title}
         </Text>
-  )}
+    )}
     />
-  );
+);
+
 const GroupScreen = (props) => {
     const {groupData, currentUserId} = props.route.params;
     const initials = useInitials(groupData?.title);
@@ -269,7 +314,7 @@ const GroupScreen = (props) => {
           case 'second':
             return <DiscussionRoute groupData={groupData} currentUserId={currentUserId}/>;
           case 'third':
-            return <AProposRoute description={groupData?.description} />;
+            return <AProposRoute description={groupData?.description} creator={groupData?.userOwner} />;
           default:
             return null;
         }

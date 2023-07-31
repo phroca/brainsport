@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components/native";
-import { Alert, Dimensions, Animated } from "react-native";
-import { Button, Keyboard, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
+import { Dimensions } from "react-native";
+import { TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import Toast from 'react-native-toast-message';
 import { Auth } from 'aws-amplify';
 import Loading from "../components/Loading";
-import CardService from "../services/Card.service";
 import { Ionicons } from '@expo/vector-icons';
 
 const screenWidth = Dimensions.get('window').width;

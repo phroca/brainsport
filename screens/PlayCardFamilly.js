@@ -4,8 +4,9 @@ import { Animated, ScrollView, TouchableOpacity, Dimensions, Text } from "react-
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
-import CardService from "../services/Card.service";
 import Voice from '@react-native-voice/voice';
+import UserService from "../services/User.service";
+import { useSelector } from "react-redux";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -232,6 +233,8 @@ const PlayCardFamilly = ({navigation, route}) => {
     const [progressionPercentage, setProgressionPercentage] = useState(0);
     const [flagReady, setFlagReady] = useState(false);
     const [isVoice, setIsVoice] = useState(true);
+    const currentResultRef = useRef(null);
+    const user = useSelector(state => state.user.value);
 
     useEffect(()=> {
         let chrono = null
@@ -251,6 +254,7 @@ const PlayCardFamilly = ({navigation, route}) => {
 
     const ref = useRef(null);
     let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
+
     useEffect(()=> {
         let int = null;
         if(isFinished === false && flagReady ===true){
@@ -269,8 +273,11 @@ const PlayCardFamilly = ({navigation, route}) => {
         }
         setCurrentQuestion(currentListChoose[0]);
         const shuffledArray = famillyToPlay.sort((a, b) => 0.5 - Math.random());
-        console.log(famillyToPlay);
         setCardsPlay(shuffledArray);
+        return () => {
+            setCardsPlay([]);
+            setCurrentQuestion("");
+        }
     }, [])
 
     useEffect(()=> {
@@ -298,18 +305,20 @@ const PlayCardFamilly = ({navigation, route}) => {
     }, [])
 
     useEffect(() => {
+        console.log("RESULTS" + results);
         if(results.length > 0 && cardsPlay !== null) {
             const resultOut = results[results.length -1].toLowerCase();
             const currentItem = cardsPlay[currentItemIndex];
             const currentQuestionLowercase = currentQuestion.toLowerCase();
             setResultCurrentfromVoice(resultOut);
             if(resultOut === currentItem[currentQuestionLowercase].toLowerCase()) {
-                console.log("REUSSI PASSAGE AU SUIVANT");
                 handleNextOnList();
                 setResults([]);
             }
         }
-        
+        return () => {
+            setResults([]);
+        }
     },[results]);
 
     const reset = () => {
@@ -339,26 +348,9 @@ const PlayCardFamilly = ({navigation, route}) => {
         const currentIndex = Math.round(contentOffsetX / screenWidth);
         setCurrentItemIndex(currentIndex);
     };
-    // const handlePrevCard = () => {
-    //     const prevItemIndex = currentItemIndex > 0 ? currentItemIndex - 1 : 0;
-    //     const offset = prevItemIndex * width;
-    //     ref?.current?.scrollToOffset({offset});
-    //     setCurrentItemIndex(prevItemIndex);
-    // }
-    // const handleNextCard = () => {
-    //     const nextItemIndex = currentItemIndex < cardsPlay.length - 1 ? currentItemIndex + 1 : cardsPlay.length - 1;
-    //     const offset = nextItemIndex * width;
-    //     ref?.current?.scrollToOffset({offset});      
-    //     setCurrentItemIndex(nextItemIndex);
-    // }
 
     const handleNextOnList = () => {
         let id = currentQuestionIndex;
-        //if(id === 0 || currentItemIndex !== 0) goNextItem();
-        // const currentItem = cardsPlay[currentItemIndex];
-        // const currentQuestionLowercase = currentQuestion.toLowerCase();
-        
-        // console.log("VALEUR DE " + currentQuestionLowercase + " => " + currentItem[currentQuestionLowercase]);
         
         if(id === 3 ) {
             if(currentItemIndex !== cardsPlay.length -1){
@@ -382,9 +374,11 @@ const PlayCardFamilly = ({navigation, route}) => {
         const currentItem = cardsPlay[currentItemIndex];
         const currentQuestionLowercase = currentQuestion.toLowerCase();
         if(currentResult.toLowerCase() === currentItem[currentQuestionLowercase].toLowerCase()) {
-            console.log("REUSSI PASSAGE AU SUIVANT");
             handleNextOnList();
             setCurrentResult("");
+        } else {
+            setCurrentResult("");
+            currentResultRef.current.value = "";
         }
     }
     const goNextItem = () => {
@@ -398,8 +392,11 @@ const PlayCardFamilly = ({navigation, route}) => {
     const stopChrono = () => {
         setFinished(true);
         handleStopSpeech();
-        CardService.saveProgressionTime({timeInSec: sec, famillyPlayed: famillyToPlay}).then(() => {
-            navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé le jeu en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
+        const datePlayed  = new Date().getTime();
+        const typePlayObj = { type: "TRAINING", nbCards: famillyToPlay.length};
+        const typePlay = JSON.stringify(typePlayObj);
+        UserService.saveProgressionTime({userId: user, typePlay, time: sec, datePlayed}).then((result) =>{
+            if(result.data)  navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé le jeu en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
         });
     }
 
@@ -487,7 +484,7 @@ const PlayCardFamilly = ({navigation, route}) => {
             { resultCurrentfromVoice !== "" && <ResponseLabel>{resultCurrentfromVoice}</ResponseLabel>}
             </ResponseCardContainer>}
             {!isVoice && <InputContainer>
-                <TextInput onChangeText={(e)=> setCurrentResult(e)} placeholder={currentQuestion} placeholderTextColor="#FFFFFF"/>
+                <TextInput ref={currentResultRef} value={currentResult} onChangeText={(e)=> setCurrentResult(e)} placeholder={currentQuestion} placeholderTextColor="#FFFFFF"/>
             </InputContainer>}
             { !(currentItemIndex === cardsPlay.length -1 && currentQuestionIndex === 3) &&
                 <>{isVoice && 

@@ -1,14 +1,10 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons  } from "@expo/vector-icons";
 import { BlurView } from 'expo-blur';
-import HomeScreen from "../screens/HomeScreen";
 import FormationScreen from '../screens/FormationScreen';
 import CommunauteScreen from '../screens/CommunauteScreen';
-import ProfilScreen from '../screens/ProfilScreen';
-import ProgresScreen from '../screens/ProgresScreen';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import HomeNavigator from './HomeNavigator';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ProfilNavigator from './ProfilNavigator';
 
 const activeColor = "#A138F2";

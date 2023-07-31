@@ -6,11 +6,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
-import CardService from "../services/Card.service";
 import AudioRecordModal from "../components/AudioRecordModal";
 import { useDispatch, useSelector } from "react-redux";
 import Voice from '@react-native-voice/voice';
 import { useFocusEffect } from "@react-navigation/core";
+import UserService from "../services/User.service";
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -166,6 +166,7 @@ const LibraryCardScreen = ({route, navigation}) => {
     const audio = useSelector(state => state.audio.value)
     const dispatch = useDispatch();
     const [resultAudio, setResultAudio] = useState("");
+    const [flagUserCardProgressFiltered, setFlagUserCardProgressFiltered] = useState(false)
     useEffect(()=> {
         setPropertiesFromIndex(0);
     },[]);
@@ -253,7 +254,7 @@ const LibraryCardScreen = ({route, navigation}) => {
 
     const handleSaveCurrentCard = () =>{
         setloadingSaveCard(true);
-        CardService.saveCard(userCards, currentItemIndex, personnage, verbe, objet, lieu).then(()=> {
+        UserService.saveOneCard(userCards, currentItemIndex, personnage, verbe, objet, lieu).then(()=> {
             setloadingSaveCard(false);
             Toast.show({
               type: 'success',

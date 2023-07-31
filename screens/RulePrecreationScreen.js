@@ -1,11 +1,10 @@
 import { StatusBar } from "expo-status-bar";
-import Auth from "@aws-amplify/auth";
+import {Auth} from "aws-amplify";
 import React, { useRef, useState } from "react";
-import { Animated, View, Dimensions } from "react-native";
+import { Animated, Dimensions } from "react-native";
 import styled from "styled-components/native";
-import { TouchableOpacity } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
-import CardService from "../services/Card.service";
+import UserService from "../services/User.service";
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width  - 50;
@@ -192,21 +191,21 @@ const skip = () => {
 
 const handleGotoHomePrecreation = async() => {
     const user = await Auth.currentAuthenticatedUser();
-    CardService.initPrePlayData().then((value)=> {
-        if(value){
-            CardService.initStepperBeforePlay().then((stepValue)=> {
-                if(stepValue){
-                    CardService.initPrePlayHintData().then((preplayHintValue) => {
-                        if(preplayHintValue === false){
-                            CardService.initCardCreationMock(user?.attributes?.sub).then((data) => {
-                                if(data) {
-                                    CardService.initFamillyProgress().then((famillyprogressData) => {
-                                        if(famillyprogressData) navigation.push("Accueil Preliminaire");
-                                    });
-                                }
-                            });
-                        }
-                    })
+    const userId = user?.attributes?.sub;
+    UserService.saveUserStepperData({userId}).then((result)=> {
+        if(result?.data){
+            UserService.getUserStepperData(userId).then((result) => {
+                if(result?.data){
+                    const stepperData = JSON.parse(result?.data[0]);
+                    if(stepperData.prePlayHint === false) {
+                        UserService.saveDataCard(userId).then((result) => {
+                            if(result?.data){
+                                UserService.saveUserFamillyProgressData(userId).then((result) => {
+                                    if(result?.data) navigation.push("Accueil Preliminaire");
+                                });
+                            }
+                        });
+                    }
                 }
             });
         }

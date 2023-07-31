@@ -441,6 +441,36 @@ const clearPregameData = async() => {
 
     console.log('Clear Done.')
 }
+
+
+const saveCardsToLocalStorage = async(userCards) => {
+    try{
+        const jsonValue = JSON.stringify(userCards);
+        AsyncStorage.setItem('@user_Cards', jsonValue);
+    } catch(e){
+        console.log(e);
+    }
+    
+}
+const saveFamillyProgressToLocalStorage = async(famillyProgress) => {
+    try{
+        const jsonValue = JSON.stringify(famillyProgress);
+        await AsyncStorage.setItem('@user_Familyprogress', jsonValue);
+    } catch(e){
+        console.log(e);
+    }
+    
+}
+const saveStepperDataToLocalStorage = async(stepperData) => {
+    try{
+        const jsonValue = JSON.stringify(stepperData);
+        await AsyncStorage.setItem('@user_StepperData', jsonValue)
+    } catch(e){
+        console.log(e);
+    }
+    
+}
+
 const CardService ={
     initCitation,
     getCitation,
@@ -467,6 +497,9 @@ const CardService ={
     saveProgressionTime,
     saveProgressionHistoryTime,
     getProgressionHistoryTime,
+    saveCardsToLocalStorage,
+    saveFamillyProgressToLocalStorage,
+    saveStepperDataToLocalStorage,
     clearPregameData,
     clearAll
 };

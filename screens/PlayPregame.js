@@ -8,10 +8,10 @@ import Card from "../components/Card";
 import { copilot, walkthroughable, CopilotStep } from "react-native-copilot";
 import StepNumberComponent from '../components/stepper/StepNumberComponent';
 import TooltipComponent from '../components/stepper/TooltipComponent';
-import CardService from "../services/Card.service";
 import { useDispatch, useSelector } from "react-redux";
 import { closeHistory, openHistory } from "../slices/historySlice";
 import HistoryModal from "../components/HistoryModal";
+import UserService from "../services/User.service";
 
 const {width} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -239,7 +239,8 @@ const PlayPregame = memo((props) => {
     const WalkthroughableStepView = walkthroughable(StepView);
     const [historyCards, setHistoryCards] = useState([]);
     const [showChrono, setShowChrono] = useState(true);
-    const history = useSelector(state => state.history.value)
+    const history = useSelector(state => state.history.value);
+    const user = useSelector(state => state.user.value);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -278,13 +279,18 @@ const PlayPregame = memo((props) => {
     useEffect(()=> {
         //Copilot reloading properly
         setTimeout(() => {
-            CardService.getStepperBeforePlay().then((stepData) => {
-                if(stepData?.initPrePlay) props.start();
-            });
+            UserService.getUserStepperData(user).then((value) => {
+                if(value?.data) {
+                  const dataRaw = value?.data[0];
+                  const userDataFromServer= JSON.parse(dataRaw);
+                  setIsPrePlayHint(userDataFromServer.prePlayHint);
+                  if(userDataFromServer.initPrePlay) props.start();
+                }
+              });
         }, 500);
         
         props.copilotEvents.on("stop", () => {
-            CardService.updateStepperBeforePlay("initPrePlay", false);
+            UserService.updateInitPrePlay({userId: user, initPrePlay: false});
         });
 
         return () => {
@@ -292,11 +298,6 @@ const PlayPregame = memo((props) => {
         }
     },[]);
 
-    useEffect(() => {
-        CardService.getPrePlayHintData().then((dataHint) => {
-            setIsPrePlayHint(dataHint);
-        });
-    }, [])
     const updateCurrentItemIndex = element => {
         const contentOffsetX = element.nativeEvent.contentOffset.x;
         const currentIndex = Math.round(contentOffsetX / width);
@@ -418,8 +419,13 @@ const PlayPregame = memo((props) => {
 
     const stopChrono = () => {
         setFinished(true);
-        CardService.saveProgressionHistoryTime({timeInSec: sec, userCards: userCards}).then(() => {
-            props.navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé le l'entrainement en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
+        const datePlayed  = new Date().getTime();
+        const typePlayObj = { type: "TRAINING", nbCards: userCards.length};
+        const typePlay = JSON.stringify(typePlayObj);
+        UserService.saveProgressionTime({userId: user, typePlay, time: sec, datePlayed}).then((result) =>{
+            if(result.data){
+                props.navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé l'entraînement en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
+            }
         });
     }
     const handleToggleMode =() => {

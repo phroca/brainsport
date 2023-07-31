@@ -32,9 +32,44 @@ const getDataCard = async(userId) => {
     }
         
 }
-const saveDataCard = async({userId, userDatacard}) => {
+
+const saveOneCard = async(userCardsIn, currentCardIndexIn, personnage, verbe, objet, lieu) => {
     try {
-        return axios.put(API + "/userdatacard", {userId, cards: userDatacard})
+        let userCards = {...userCardsIn};
+        userCards.cards[currentCardIndexIn].personnage = personnage;
+        userCards.cards[currentCardIndexIn].verbe = verbe;
+        userCards.cards[currentCardIndexIn].objet = objet;
+        userCards.cards[currentCardIndexIn].lieu = lieu;
+        const jsonValue = JSON.stringify(userCards.cards);
+        return axios.post(API + "/userdatacard/" + userCards.userId, {cards: jsonValue});
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
+const saveDataCard = async(userId) => {
+    try {
+        const userCards = {userId: userId, cards: []};
+        cardStructure.couleurs.forEach((couleur)=> {
+            cardStructure.valeurs.forEach((valeur)=>{
+                    const card = {
+                        "valeur": valeur.valeur,
+                        "couleur": couleur,
+                        "personnage": "",
+                        "verbe": "",
+                        "objet": "",
+                        "lieu": "",
+                        "conditions": valeur.conditions
+                    }
+                    userCards.cards.push(card);
+            });
+        });
+        const dataCardForUser = await getDataCard(userId);
+        if(dataCardForUser?.data.length === 0){
+            const userDatacard = JSON.stringify(userCards);
+            return axios.put(API + "/userdatacard", {userId, cards: userDatacard});
+        }
+        
     } catch (error) {
         console.error("ERREUR", error);
     }
@@ -49,9 +84,65 @@ const getUserStepperData = async(userId) => {
     }
         
 }
-const saveUserStepperData = async({userId, initHomeScreen, initCardAssociation, initPrePlay, initPlayGame}) => {
+const saveUserStepperData = async({userId, initHomeScreen = true, initCardAssociation = true, initPrePlay = true, initPlayGame = true, prePlayHint = false, prePlayData = true}) => {
     try {
-        return axios.put(API + "/userstepperdata", {userId, initHomeScreen, initCardAssociation, initPrePlay, initPlayGame})
+        return axios.put(API + "/userstepperdata", {userId, initHomeScreen, initCardAssociation, initPrePlay, initPlayGame, prePlayHint, prePlayData})
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
+/**
+ * UPDATE STEPPER DATAS
+ * 
+ */
+
+
+const updateInitCardAssociation = async({userId, initCardAssociation}) => {
+    try {
+        return axios.put(`${API}/userstepperdata/${userId}/initCardAssociation`, {initCardAssociation})
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
+const updateInitHomeScreen = async({userId, initHomeScreen}) => {
+    try {
+        return axios.put(`${API}/userstepperdata/${userId}/initHomeScreen`, {initHomeScreen})
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
+const updateInitPrePlay = async({userId, initPrePlay}) => {
+    try {
+        return axios.put(`${API}/userstepperdata/${userId}/initPrePlay`, {userId, initPrePlay})
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
+
+const updateInitPlayGame = async({userId, initPlayGame}) => {
+    try {
+        return axios.put(`${API}/userstepperdata/${userId}/initPlayGame`, {initPlayGame})
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
+
+const updatePrePlayHint = async({userId, prePlayHint}) => {
+    try {
+        return axios.put(`${API}/userstepperdata/${userId}/prePlayHint`, {prePlayHint})
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
+const updatePrePlayData = async({userId, prePlayData}) => {
+    try {
+        return axios.put(`${API}/userstepperdata/${userId}/prePlayData`, {prePlayData})
     } catch (error) {
         console.error("ERREUR", error);
     }
@@ -66,13 +157,56 @@ const getUserFamillyProgressData = async(userId) => {
     }
         
 }
-const saveUserFamillyProgressData = async({userId, famillyProgress}) => {
+const saveUserFamillyProgressData = async(userId) => {
     try {
-        return axios.put(API + "/userfamillyprogress", {userId, famillyProgress})
+        const famillyProgressObj = 
+            {   
+                "coeur": {
+                    "eightFirstCardFilled": false,
+                    "allCardFilled": false
+                },
+                "carreau": {
+                    "eightFirstCardFilled": undefined,
+                    "allCardFilled": undefined
+                },
+                "trefle": {
+                    "eightFirstCardFilled": undefined,
+                    "allCardFilled": undefined
+                },          
+                "pique": {
+                    "eightFirstCardFilled": undefined,
+                    "allCardFilled": undefined
+                },
+            };
+            const famillyProgress = JSON.stringify(famillyProgressObj);
+            return axios.put(API + "/userfamillyprogress", {userId, famillyProgress})
     } catch (error) {
         console.error("ERREUR", error);
     }
         
+}
+
+const updateUserFamillyProgress = async(userId, famillyProgressIn, famillyCard, stringTypeCardFilled, flagFamillyRemplie) => {
+    try{
+        let famillyProgress = {...famillyProgressIn};
+        if(famillyCard === "carreau") {
+            famillyProgress.carreau[stringTypeCardFilled] = flagFamillyRemplie;
+        }
+        if(famillyCard === "coeur") {
+            famillyProgress.coeur[stringTypeCardFilled] = flagFamillyRemplie;
+        }
+        if(famillyCard === "trefle") {
+            famillyProgress.trefle[stringTypeCardFilled] = flagFamillyRemplie;
+        }
+        if(famillyCard === "pique") {
+            famillyProgress.pique[stringTypeCardFilled] = flagFamillyRemplie;
+        }
+        const jsonValue = JSON.stringify(famillyProgress);
+        return axios.post(`${API}/userfamillyprogress/${userId}`, {famillyProgress: jsonValue})
+
+    } catch(e){
+        console.log(e);
+    }
 }
 
 const getUserRankAndNumberUsers = async(userId) => {
@@ -83,16 +217,51 @@ const getUserRankAndNumberUsers = async(userId) => {
     }
 }
 
+const saveProgressionTime = async({userId, typePlay, time, datePlayed, errorNumber = 0}) => {
+    try{
+        return axios.put(`${API}/userplayhistory/`, {userId, typePlay, time, datePlayed, errorNumber});
+    } catch (error) {
+        console.error("Erreur à la sauvegarde du temps de l'user" + userId);
+    }
+}
+
+const getProgressionTime = async(userId) => {
+    try{
+        return axios.get(`${API}/userplayhistory/${userId}`);
+    } catch (error) {
+        console.error("Erreur à la récupération des temps de l'user " + userId);
+    }
+}
+
+const clearAll = async(userId) => {
+    try{
+
+    } catch (error) {
+        console.error("Erreur à la réinitialisation complète des données de l'user" + userId);
+    }
+}
+
 const UserService = {
     saveUser,
     getUserByUserId,
     getDataCard,
     saveDataCard,
+    saveOneCard,
     getUserStepperData,
+    updateInitCardAssociation,
+    updateInitHomeScreen,
+    updateInitPlayGame,
+    updateInitPrePlay,
+    updatePrePlayHint,
+    updatePrePlayData,
     saveUserStepperData,
+    updateUserFamillyProgress,
     getUserFamillyProgressData,
     saveUserFamillyProgressData,
-    getUserRankAndNumberUsers
+    getUserRankAndNumberUsers,
+    saveProgressionTime,
+    getProgressionTime,
+    clearAll
 }
 
 export default UserService

@@ -5,7 +5,7 @@ import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
-import CardService from "../services/Card.service";
+import UserService from "../services/User.service";
 import Voice from '@react-native-voice/voice';
 import AudioRecordModal from "../components/AudioRecordModal";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,12 +13,14 @@ import { closeAudio, openAudio } from "../slices/audioSlice";
 import { copilot, walkthroughable, CopilotStep } from "react-native-copilot";
 import StepNumberComponent from '../components/stepper/StepNumberComponent';
 import TooltipComponent from '../components/stepper/TooltipComponent';
+import initPersoChoices from "../initPersoChoices.json";
+import { Text } from "react-native";
+import { FlatList } from "react-native";
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
 
 const Container = styled.ImageBackground`
-  //flex:1;
   width: 100%;
   height: 100%;
   align-items: center;
@@ -75,6 +77,19 @@ const TextInput = styled.TextInput`
   background: #3c4560;
   z-index: 1;
 `;
+const TextInputPerso = styled.TextInput`
+  border: 1px solid #53565f;
+  width: ${widthContent}px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 17px;
+  color: #FFFFFF;
+  padding-left: 120px;
+  padding-right: 40px;
+  margin-top: 10px;
+  background: #3c4560;
+  z-index: 1;
+`;
 
 const ButtonView = styled.View`
   background: #FFFFFF;
@@ -116,6 +131,14 @@ const PostText = styled.View`
     right: 10px;
     z-index: 2;
 `;
+const PostTextWithArrow = styled.View`
+    position: absolute;
+    flex-direction: row;
+    width: 50px;
+    top: 20px;
+    right: 20px;
+    z-index: 2;
+`;
 
 const ConditionTextContainer = styled.View`
     position: relative;
@@ -131,6 +154,7 @@ const ConditionText = styled.Text`
 
 const InputContainer = styled.View`
     position: relative;
+    z-index: 2;
 `;
 
 const SigninButton = styled.View`
@@ -141,7 +165,7 @@ const SaveButton = styled.View`
     position: relative;
     justify-content: center;
     align-items: center;
-    z-index: 100;
+    z-index: 1;
 `;
 
 const ButtonSaveView = styled.View`
@@ -165,7 +189,26 @@ const InputView = styled.View`
     width: 100%;
     height: 100%;
 `;
+const VariantsBox = styled.View`
+    width: ${widthContent}px;
+    padding: 5px;
+    border-bottom: 1px solid grey;
+`;
 
+const ListContent = styled.View`
+    position: absolute;
+    top: 50px;
+    width: ${widthContent}px;
+
+    background-color: #485272;
+    border: 1px solid #53565f;
+    border-radius: 2px;
+    padding: 5px;
+    flex-direction: row ;
+    justify-content: center;
+    align-items: center;
+    z-index: 15;
+`;
 const CardAssociationPerFamillyScreen = (props) => {
     const [recordPersonnageStarted, setRecordPersonnageStarted] = useState(false);
     const [recordVerbeStarted, setRecordVerbeStarted] = useState(false);
@@ -173,6 +216,8 @@ const CardAssociationPerFamillyScreen = (props) => {
     const [recordObjetStarted, setRecordObjetStarted] = useState(false);
     const [results, setResults] = useState([]);
     const [personnage, setPersonnage] = useState("");
+    const [filterPersonnageList, setFilterPersonnageList] = useState([]);
+    const [isPersoClicked, setIsPersoClicked] = useState(false);
     const [verbe, setVerbe] = useState("");
     const [objet, setObjet] = useState("");
     const [lieu, setLieu] = useState("");
@@ -182,7 +227,8 @@ const CardAssociationPerFamillyScreen = (props) => {
     const userCards = userCardsFull?.cards?.filter(elt => elt.couleur === color);
     const [flagUserDataCard, setFlagUserDataCard] = useState(false);
     const ref = useRef(null);
-    const audio = useSelector(state => state.audio.value)
+    const audio = useSelector(state => state.audio.value);
+    const user = useSelector(state => state.user.value);
     const dispatch = useDispatch();
     const [resultAudio, setResultAudio] = useState("");
 
@@ -191,12 +237,13 @@ const CardAssociationPerFamillyScreen = (props) => {
     },[]);
 
     useEffect(()=> {
-        CardService.getStepperBeforePlay().then((stepData) => {
-            if(stepData?.initCardAssociation) props.start();
+        UserService.getUserStepperData(user).then((value) => {
+            const dataRaw = value?.data[0];
+            if(dataRaw.initCardAssociation) props.start();
         });
 
         props.copilotEvents.on("stop", () => {
-            CardService.updateStepperBeforePlay("initCardAssociation", false);
+            UserService.updateInitCardAssociation({userId: user, initCardAssociation: false});
         });
 
         return () => {
@@ -258,6 +305,9 @@ const CardAssociationPerFamillyScreen = (props) => {
         }
     }, [results]);
 
+    useEffect(() =>{
+
+    })
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
     const updateCurrentItemIndex = element => {
         const contentOffsetX = element.nativeEvent.contentOffset.x;
@@ -284,12 +334,18 @@ const CardAssociationPerFamillyScreen = (props) => {
     const setPropertiesFromIndex = (itemIndex)=> {
         
         const currentCard = userCards[itemIndex];
-        console.log(currentCard);
         setPersonnage(currentCard?.personnage);
         setVerbe(currentCard?.verbe);
         setObjet(currentCard?.objet);
         setLieu(currentCard?.lieu);
         setConditionalText(gerenateConditions(currentCard?.conditions));
+        calculateChoicesForPersonnnage(currentCard?.valeur);
+    }
+
+    const calculateChoicesForPersonnnage = (valeur) => {
+        const listPersoChoices = initPersoChoices.hero;
+        const listChoicesByValue =listPersoChoices[""+valeur];
+        setFilterPersonnageList(listChoicesByValue);
     }
 
     const gerenateConditions = (conditionElement) => {
@@ -317,7 +373,7 @@ const CardAssociationPerFamillyScreen = (props) => {
         setloadingSaveCard(true);
         const currentCard = userCards[currentItemIndex];
         if(checkConditionsCard(personnage, currentCard?.conditions)){
-            CardService.saveCard(userCardsFull, calculateIndexToCardsFull(color, currentItemIndex), personnage, verbe, objet, lieu).then(()=> {
+            UserService.saveOneCard(userCardsFull, calculateIndexToCardsFull(color, currentItemIndex), personnage, verbe, objet, lieu).then(()=> {
                 setloadingSaveCard(false);
                 Toast.show({
                 type: 'success',
@@ -344,6 +400,7 @@ const CardAssociationPerFamillyScreen = (props) => {
             });
         }
     }
+
 
     const handlePrevCard = () => {
         const prevItemIndex = currentItemIndex > 0 ? currentItemIndex - 1 : 0;
@@ -405,25 +462,25 @@ const CardAssociationPerFamillyScreen = (props) => {
         const famillyProgressAllParsed = famillyProgress[colorIn].allCardFilled;
         console.log("famillyProgressEightFirstParsed : " + famillyProgressEightFirstParsed + " famillyProgressAllParsed " + famillyProgressAllParsed);
         if(isListCardFamillyRemplieEightFirst && !famillyProgressEightFirstParsed) {
-            CardService.updateFamillyProgress(famillyProgress, colorIn, "eightFirstCardFilled", true).then((data)=> {
-                if(data) props.navigation.navigate("FamillyModal", {texteContent : "Vous avez suffisament créé de cartes pour commencer à jouer et à créer des histoires !"});
+            UserService.updateUserFamillyProgress(user, famillyProgress, colorIn, "eightFirstCardFilled", true).then((data)=> {
+                if(data.data) props.navigation.navigate("FamillyModal", {texteContent : "Vous avez suffisament créé de cartes pour commencer à jouer et à créer des histoires !"});
             });
         }
         if(isListCardFamillyRemplie && !famillyProgressAllParsed){
-            CardService.updateFamillyProgress(famillyProgress, colorIn, "allCardFilled", true).then((data)=> {
+            UserService.updateUserFamillyProgress(user, famillyProgress, colorIn, "allCardFilled", true).then((data)=> {
                 if(data) {
                     const nextColor = calculateNextColor(colorIn);
                     console.log("NEXTCOLOR =>", nextColor);
                     console.log("COLORIN =>", colorIn);
                     if(nextColor === colorIn){
-                        CardService.updateFamillyProgress(famillyProgress, nextColor, "eightFirstCardFilled", true).then((data)=> {
-                            CardService.updateFamillyProgress(famillyProgress, nextColor, "allCardFilled", true).then((data) => {
+                        UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "eightFirstCardFilled", true).then((data)=> {
+                            UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "allCardFilled", true).then((data) => {
                                 props.navigation.navigate("FamillyModal", {texteContent : "Félicitations ! Vous avez rempli toutes les familles de cartes ! Vous pouvez désormais aprendre le tableau !"});
                             });
                         }); 
                     } else {                    
-                        CardService.updateFamillyProgress(famillyProgress, nextColor, "eightFirstCardFilled", false).then((data)=> {
-                            CardService.updateFamillyProgress(famillyProgress, nextColor, "allCardFilled", false).then((data) => {
+                        UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "eightFirstCardFilled", false).then((data)=> {
+                            UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "allCardFilled", false).then((data) => {
                                 props.navigation.navigate("FamillyModal", {texteContent : "Vous avez rempli toute une famille de carte ! Vous pouvez remplir la famille suivante !"});
                             });
                         }); 
@@ -512,8 +569,24 @@ const CardAssociationPerFamillyScreen = (props) => {
         setRecordLieuStarted(false);
     }
 
+    const onPersonnageSelected = (text) => {
+        setPersonnage(text);
+        setIsPersoClicked(false);
+    }
 
-
+    const filterPersonnageChoiceList = (event) => {
+        if(event !== "") {
+            const datafiltered = filterPersonnageList.filter(item => {
+                return item.toLowerCase().indexOf(event.toLowerCase()) > -1;
+            })
+            setFilterPersonnageList(datafiltered);
+        } else {
+            calculateChoicesForPersonnnage(userCards[currentItemIndex].valeur);
+        }
+        
+        setPersonnage(event);
+        
+    }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
@@ -552,7 +625,6 @@ const CardAssociationPerFamillyScreen = (props) => {
                     {currentItemIndex > 0 && <TouchableArrowLeft onPress={()=> handlePrevCard()}>
                         <Ionicons name="chevron-back" size={50} color="#FFFFFF" />
                     </TouchableArrowLeft>}
-
                     {currentItemIndex < userCards.length - 1  && <TouchableArrowRight onPress={()=> handleNextCard()}>
                         <Ionicons name="chevron-forward" size={50} color="#FFFFFF" />
                     </TouchableArrowRight>}
@@ -569,7 +641,7 @@ const CardAssociationPerFamillyScreen = (props) => {
                         </CopilotStep>
                         <TouchableWithoutFeedback onPress={() => handleFocusPersonnage()}>
                         
-                        <InputContainer>
+                        <InputContainer style={{zIndex: 10}}>
                             <CopilotStep 
                             text="Choisissez bien des personnages que vous visionnez facilement."
                             order={2}
@@ -577,8 +649,33 @@ const CardAssociationPerFamillyScreen = (props) => {
                                 <WalkthroughableInputView />
                             </CopilotStep>
                             <PreText>Personnage</PreText>
-                            <TextInput ref={refPersonnage} value={personnage} onChangeText={(e)=> setPersonnage(e)} />
-                            <PostText>
+                            <TextInputPerso ref={refPersonnage} value={personnage} onChangeText={(e)=> filterPersonnageChoiceList(e)} onFocus={()=> setIsPersoClicked(true)} />
+                            {isPersoClicked && 
+                                <ListContent style={{height: filterPersonnageList.length === 1 ? 40 : 30*filterPersonnageList.length}}>
+                                    <FlatList
+                                        data={filterPersonnageList}
+                                        style={{zIndex: 11}}
+                                        renderItem={({item, index}) => (
+                                            <TouchableOpacity
+                                            onPress={() => onPersonnageSelected(item)} style={{zIndex: 16}}>
+                                            <VariantsBox>
+                                                <Text style={{color: "#FFFFFF"}}>
+                                                {item || ''}
+                                                </Text>
+                                            </VariantsBox>
+                                            </TouchableOpacity>
+                                        )}
+                                        keyExtractor={item => item}
+                                        />
+                                </ListContent>}
+                                
+                            <PostTextWithArrow>
+                            {isPersoClicked && <TouchableOpacity style={{width:30}} onPress={()=> setIsPersoClicked(false)}>
+                                    <Ionicons name="md-caret-up" size={20} color="white" />
+                                </TouchableOpacity> }
+                            {!isPersoClicked && <TouchableOpacity style={{width:30}} onPress={()=> setIsPersoClicked(true)}>
+                                    <Ionicons name="md-caret-down" size={20} color="white" />
+                                </TouchableOpacity> }
                             {!recordPersonnageStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForPersonnage()}>
                                     <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
                                 </TouchableOpacity> }
@@ -586,7 +683,7 @@ const CardAssociationPerFamillyScreen = (props) => {
                                 <MaterialCommunityIcons name="record" size={20} color="red" />
                                 </TouchableOpacity> }
 
-                            </PostText>
+                            </PostTextWithArrow>
                         </InputContainer>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => handleFocusVerbe()}>

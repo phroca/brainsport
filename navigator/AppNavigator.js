@@ -8,11 +8,11 @@ import SignUpScreen from '../screens/SignUpScreen';
 import ConfirmationSignUpScreen from '../screens/ConfirmationSignUpScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 import ForgotPasswordEmailSubmitScreen from '../screens/ForgotPasswordEmailSubmitScreen';
-import CardService from '../services/Card.service';
 import ChallengeScreen from '../screens/communaute/ChallengeScreen';
 import EventScreen from '../screens/communaute/EventScreen';
 import CreateGroupSreen from '../screens/CreateGroupScreen';
 import GroupScreen from '../screens/communaute/GroupScreen';
+import AvatarProfilScreen from '../screens/AvatarProfilScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,6 +44,7 @@ const AppNavigator = () => {
                 <Stack.Screen name="Event" component={EventScreen} />
                 <Stack.Screen name="CreerGroupe" component={CreateGroupSreen} />
                 <Stack.Screen name="Group" component={GroupScreen} />
+                <Stack.Screen name="Avatar" component={AvatarProfilScreen} />
 
             </Stack.Navigator>
         );
