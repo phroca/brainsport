@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import styled from 'styled-components/native';
 import { ActivityIndicator, SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, View, Platform } from "react-native";
@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import UserService from "../services/User.service";
 import { useInitials } from "../hooks/useInitials";
+import UserEditPrompt from "../components/UserEditPrompt";
+import { useCalculatePoints } from "../hooks/useCalculatePoints";
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -100,12 +102,10 @@ const Separator = styled.View`
 `
 const UserContainer = styled.View`
   width: ${widthContent}px;
-  padding-right: 20px;
-  padding-left: 20px;
+  margin-left: 20px;
   justify-content: center;
   margin-top: 20px;
   margin-bottom: 20px;
-
 `
 const UserTitle = styled.Text`
     font-size: 16px;
@@ -140,6 +140,28 @@ const UserEditContent = styled.Text`
     font-weight: 300;
     color: white;
 `
+
+const RewardSection = styled.View`
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+`;
+const RewardAssociation = styled.View`
+  justify-content: center;
+  align-items: center;
+`;
+const RewardLevelCardImage = styled.View`
+  justify-content: center;
+  align-items: center;
+`;
+const RewardLevelCard = styled.Image`
+  width: 80px;
+  height: 80px;
+  margin: 10px 20px;
+  border-radius: 10px;
+  border: .2px solid #0000003d;
+`;
+
 const RewardCard = styled.View`
 width: 80px;
 height: 80px;
@@ -150,6 +172,7 @@ justify-content: center;
   border-radius: 10px;
   border: .2px solid #FFFFFF;
 `;
+
 const RewardNumber = styled.Text`
 color: #FFFFFF;
   font-size: 25px;
@@ -161,21 +184,70 @@ color: #FFFFFF;
   font-size: 14px;
 `;
 
+const imgLevel = {
+  "Novice": require("../assets/level/novice.png"),
+  "Intermédiaire": require("../assets/level/intermediaire.png"),
+  "Avancé": require("../assets/level/avan.png"),
+  "Expert": require("../assets/level/expert.png"), 
+  "Maître": require("../assets/level/maitre.png"), 
+  "Génie": require("../assets/level/genie.png")
+}
+
 const AvatarProfilScreen = (props) => {
 
   const user = useSelector(state => state.user.value);
   const [currentUser, setCurrentUser] = useState(USER_DEFAULT);
-  const [initials, setInitials] = useState("");
+  const [userLevel, setUserLevel] = useState({});
+  const [flagUserLevel, setFlagUserLevel] = useState(false);
+
+  const userEditRef = useRef();
   useEffect(() => {
     UserService.getUserByUserId(user).then((value) => {
       if(value?.data){
         setCurrentUser(value.data[0]);
       }
     });
+
   }, [user]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if(!flagUserLevel){
+        UserService.getListOfRewards().then((value) => {
+          if(value?.data){
+            setUserLevel(calculateRankByUserReward(value.data, currentUser.rewardPoints));
+          }
+        });
+      }
+      return () => setFlagUserLevel(true)
+    }, [currentUser, userLevel])
+  );
+  
+  const calculateRankByUserReward = (listRewards, currentUserRewardPoints) => {
+    let currentLevel = {};
+    if(currentUserRewardPoints === 0) {
+      return listRewards[0];
+    } else if(currentUserRewardPoints >= listRewards[listRewards.length - 1]) {
+      return listRewards[listRewards.length - 1];
+    } else {
+      for (let i = 1; i < listRewards.length -1 ; i++) {
+      
+        if (i > 0 && currentUserRewardPoints >= listRewards[i].rewardPointToReach && currentUserRewardPoints < listRewards[i+1].rewardPointToReach){
+          currentLevel = listRewards[i]
+          break;
+        }
+      }
+      return currentLevel;
+    }
+    
+  }
+  const handleEditUser = () => {
+    userEditRef.current.setVisible(true);
+  }
     return (
         <Container>
+        <StatusBar hidden />
+            <SafeAreaView>
             <BgContainer source={require("../assets/default/default-bg.jpg")}/>
             <TitleBar>
                 <CloseButton>
@@ -189,15 +261,18 @@ const AvatarProfilScreen = (props) => {
                   <AvatarText>{useInitials(currentUser.firstName)}</AvatarText>
               </AvatarCircle>
             </AvatarContainer>
-            <UserEditContainer>
-              <UserEditIcon>
-              <MaterialCommunityIcons name="pencil" size={10} color="#FFFFFF" />
-              </UserEditIcon>
-              <UserEditContent>Modifier les détails</UserEditContent>
-            </UserEditContainer>
+            <TouchableOpacity onPress={() => handleEditUser()}>
+              <UserEditContainer>
+                <UserEditIcon>
+                <MaterialCommunityIcons name="pencil" size={10} color="#FFFFFF" />
+                </UserEditIcon>
+                <UserEditContent>Modifier les détails</UserEditContent>
+              </UserEditContainer>
+            </TouchableOpacity>
             <UserInfoContainer>
               <UserName>{currentUser.lastName} {currentUser.firstName}</UserName>
-              <RewardCard>
+              <RewardSection>
+                <RewardCard>
                   <RewardNumber>
                       {currentUser.rewardPoints}
                   </RewardNumber>
@@ -205,9 +280,18 @@ const AvatarProfilScreen = (props) => {
                     Points
                   </RewardLabel>
                 </RewardCard>
+                <RewardAssociation>
+                  <MaterialCommunityIcons name="arrow-right-thin" size={24} color="white" />
+                </RewardAssociation>
+                <RewardLevelCardImage >
+                  <RewardLevelCard source={imgLevel[userLevel?.levelName]}/>
+                  <RewardLabel>
+                    {userLevel?.levelName}
+                  </RewardLabel>
+                </RewardLevelCardImage>
+              </RewardSection>
             </UserInfoContainer>
             <Separator />
-            
             <UserContainer>
               <UserTitle>Bio</UserTitle>
               <UserContent>{currentUser.bio === "" ? "Pas encore de bio..." : currentUser.bio}</UserContent>
@@ -216,8 +300,10 @@ const AvatarProfilScreen = (props) => {
               <UserTitle>Région</UserTitle>
               <UserContent>{currentUser.region === "" ? "Région pas sélectionné..." : currentUser.region }</UserContent>
             </UserContainer>
-
-        </Container>);
+          </SafeAreaView>
+          <UserEditPrompt ref={userEditRef} currentUser={currentUser} navigation={props.navigation}/>
+        </Container>
+        );
 }
 
 export default AvatarProfilScreen;

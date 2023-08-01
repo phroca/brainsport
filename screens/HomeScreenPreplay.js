@@ -21,6 +21,7 @@ import TabChoicePrompt from '../components/TabChoicePrompt';
 import UserService from '../services/User.service';
 import { useDispatch } from 'react-redux';
 import { updateUser } from '../slices/userSlice';
+import { useCalculatePoints } from '../hooks/useCalculatePoints';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -246,15 +247,28 @@ const HomeScreenPreplay = (props) => {
         setUsername(user?.attributes?.given_name);
         setUserId(user?.attributes?.sub);
         dispatch(updateUser({userId: user?.attributes?.sub}));
+        const resultPoints = await useCalculatePoints(user?.attributes?.sub);
         UserService.getUserByUserId(user?.attributes?.sub).then((value) => {
+          
+          console.log("useCalculatePoints", resultPoints);
+
           if(value?.data.length < 1){
-            UserService.saveUser({userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name}).then((value) => {
-              console.log("first synchro done.");
+            UserService.saveUser({userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name, rewardPoints: resultPoints}).then((value) => {
+              if(value.data) {
+                UserService.updateRewardPointsForUser(user?.attributes?.sub, resultPoints);
+              }
             }).catch((error) => {
               console.error(`Error fetching Cognito User ${error}`);
             })
-          } 
+          } else {
+            // update points for existing users
+            const userDataRewardPoints = value.data[0].rewardPoints;
+            if(userDataRewardPoints === 0){
+              UserService.updateRewardPointsForUser(user?.attributes?.sub, resultPoints);
+            }
+          }
         })
+        
       })();
     },[])
 

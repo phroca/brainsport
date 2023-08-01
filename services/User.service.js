@@ -7,12 +7,28 @@ const API = "http://192.168.1.19:3000";
 
 
 
-const saveUser = async({userId= "", email = "", firstName = "", lastName= "", birthDate = new Date().getTime(), phoneNumber ="", address= "", zipCode = "", city= "", region= ""}) => {
+const saveUser = async({userId= "", email = "", firstName = "", lastName= "", birthDate = new Date().getTime(), phoneNumber ="", bio = "", colorProfil="#000000", rewardPoints = 0, address= "", zipCode = "", city= "", region= ""}) => {
     try{
-        return axios.put(API + "/users", {userId, email, firstName, lastName, birthDate, phoneNumber, address, zipCode, city, region});
+        return axios.put(API + "/users", {userId, email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region});
     } catch (error) {
         console.error("ERREUR", error)
     }
+}
+const updateUser = async({userId, email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region}) => {
+    try{
+        return axios.post(API + "/users/" + userId, {email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region});
+    } catch (error) {
+        console.error("ERREUR", error)
+    }
+}
+
+const updateRewardPointsForUser = async(userId, rewardPoints) => {
+    try {
+        return axios.post(API + "/users/" + userId + "/rewardPoints", {rewardPoints});
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
 }
 
 const getUserByUserId = async(userId) => {
@@ -233,6 +249,25 @@ const getProgressionTime = async(userId) => {
     }
 }
 
+
+const getListOfRewards = async() => {
+    try{
+        return axios.get(`${API}/progresspointdata`);
+    } catch (error) {
+        console.error("Erreur à la récupération des temps de l'user " + userId);
+    }
+}
+const getRewardsData = async() => {
+    try{
+        return axios.get(`${API}/rewardsdata`);
+    } catch (error) {
+        console.error("Erreur à la récupération des temps de l'user " + userId);
+    }
+}
+
+
+
+
 const clearAll = async(userId) => {
     try{
 
@@ -243,6 +278,8 @@ const clearAll = async(userId) => {
 
 const UserService = {
     saveUser,
+    updateUser,
+    updateRewardPointsForUser,
     getUserByUserId,
     getDataCard,
     saveDataCard,
@@ -261,6 +298,8 @@ const UserService = {
     getUserRankAndNumberUsers,
     saveProgressionTime,
     getProgressionTime,
+    getListOfRewards,
+    getRewardsData,
     clearAll
 }
 

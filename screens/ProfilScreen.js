@@ -215,7 +215,7 @@ const ProfilScreen = ({navigation}) => {
         calculateConsecutiveDays(value.data);
       }
     });
-  }, [consecutiveDays]);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
