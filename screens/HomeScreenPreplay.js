@@ -249,9 +249,6 @@ const HomeScreenPreplay = (props) => {
         dispatch(updateUser({userId: user?.attributes?.sub}));
         const resultPoints = await useCalculatePoints(user?.attributes?.sub);
         UserService.getUserByUserId(user?.attributes?.sub).then((value) => {
-          
-          console.log("useCalculatePoints", resultPoints);
-
           if(value?.data.length < 1){
             UserService.saveUser({userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name, rewardPoints: resultPoints}).then((value) => {
               if(value.data) {

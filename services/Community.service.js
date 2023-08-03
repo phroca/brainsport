@@ -41,6 +41,22 @@ const getGroupUsersByGroupId = async(groupId) => {
     }
 }
 
+const getPublicGroupNotRegistered = async(userId) => {
+    try {
+        return axios.get(`${API}/communitygroup/user/${userId}/publicGroup`)
+    } catch (error) {
+        console.error("Erreur à la récupération des groupes publics ");
+    }
+}
+
+const joinPublicGroup = async(groupId, userId) => {
+    try {
+        return axios.put(`${API}/communitygroup/${groupId}/users/${userId}`)
+    } catch (error) {
+        console.error("Erreur à rejoindre le groupe public "+ groupId);
+    }
+}
+
 const getGroupsById = async(groupId) => {
     try {
         return axios.get(`${API}/communitygroup/${groupId}`)
@@ -70,6 +86,8 @@ const CommunityService = {
     getGroupsByIdFromCurrentUser,
     getNbMemberOfGroup,
     getGroupUsersByGroupId,
+    getPublicGroupNotRegistered,
+    joinPublicGroup,
     getGroupsById,
     getGroupDiscussion,
     sendMessageToGroupDiscussion

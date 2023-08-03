@@ -72,8 +72,8 @@ const AvatarContainer = styled.View`
   margin-bottom: 30px;
 `;
 const AvatarCircle = styled.View`
-    width: 120px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
     border-radius: 10px;
     background-color: ${props => props.colortheme};
     align-items: center;
@@ -325,7 +325,7 @@ const GroupScreen = (props) => {
             <SafeAreaView>
                 <TitleBar>
                     <CloseButton>
-                    <TouchableOpacity onPress={() => props.navigation.goBack()}>
+                    <TouchableOpacity onPress={() => props.navigation.navigate("Communauté")}>
                         <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
                     </TouchableOpacity>
                     </CloseButton>

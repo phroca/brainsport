@@ -22,6 +22,24 @@ const updateUser = async({userId, email, firstName, lastName, birthDate, phoneNu
     }
 }
 
+const getRewardPointsForUser = async(userId) => {
+    try {
+        return axios.get(API + "/users/" + userId + "/rewardPoints");
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
+const incrementRewardPointsForUser = async(userId, rewardPoints) => {
+    try {
+        const currentAwardPoints = await getRewardPointsForUser(userId);
+        const newCurrentAwardPoints = currentAwardPoints.data[0].rewardPoints + rewardPoints;
+        return axios.post(API + "/users/" + userId + "/rewardPoints", {rewardPoints: newCurrentAwardPoints});
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
 const updateRewardPointsForUser = async(userId, rewardPoints) => {
     try {
         return axios.post(API + "/users/" + userId + "/rewardPoints", {rewardPoints});
@@ -265,8 +283,65 @@ const getRewardsData = async() => {
     }
 }
 
+const getUserFriends = async(userId, state="VALIDATED") => {
+    try{
+        return axios.get(`${API}/userfriends/${userId}/state/${state}`);
+    } catch (error) {
+        console.error("Erreur à la récupération de la liste des amis de l'user " + userId);
+    }
+}
 
+const getFriendsWhoAddedCurrentUser = async(userId, state="VALIDATED") => {
+    try{
+        return axios.get(`${API}/userfriends/addedUser/${userId}/state/${state}`);
+    } catch (error) {
+        console.error("Erreur à la récupération de la liste d'attente d'amis de l'user " + userId);
+    }
+}
 
+const verifyFriend = async(userId, userFriendId) => {
+    try{
+        return axios.get(`${API}/userfriends/${userId}/verify/${userFriendId}`);
+    } catch (error) {
+        console.error("Erreur à la récupération de l'ami "+ userFriendId +" de l'user " + userId);
+    }
+}
+const verifyFriendWhoWantToBeAdded = async(userId, userFriendId) => {
+    try{
+        return axios.get(`${API}/userfriends/addedUser/${userId}/verify/${userFriendId}`);
+    } catch (error) {
+        console.error("Erreur à la récupération de la vérification de l'ajout de l'ami "+ userFriendId +" pour l'user " + userId);
+    }
+}
+const addFriendRequest = async(userId, userFriendId) => {
+    try{
+        return axios.put(`${API}/userfriends/${userId}/add/${userFriendId}`);
+    } catch (error) {
+        console.error("Erreur à l'ajout d'amis de l'user " + userId);
+    }
+}
+
+const validateFriendRequest = async(userId, userFriendId) => {
+    try{
+        return axios.post(`${API}/userfriends/${userId}/update/${userFriendId}`);
+    } catch (error) {
+        console.error("Erreur à la validation d'ajout d'amis de l'user " + userId);
+    }
+}
+const rejectOrDeleteFriend = async(userId, userFriendId) => {
+    try{
+        return axios.delete(`${API}/userfriends/${userId}/delete/${userFriendId}`);
+    } catch (error) {
+        console.error("Erreur à la suppression d'un ami de l'user " + userId);
+    }
+}
+const rejectOrDeleteFriendById = async(friendLineId) => {
+    try{
+        return axios.delete(`${API}/userfriends/byId/${friendLineId}`);
+    } catch (error) {
+        console.error("Erreur à la suppression d'un ami de l'user à la ligne" + friendLineId);
+    }
+}
 
 const clearAll = async(userId) => {
     try{
@@ -279,6 +354,8 @@ const clearAll = async(userId) => {
 const UserService = {
     saveUser,
     updateUser,
+    getRewardPointsForUser,
+    incrementRewardPointsForUser,
     updateRewardPointsForUser,
     getUserByUserId,
     getDataCard,
@@ -300,6 +377,14 @@ const UserService = {
     getProgressionTime,
     getListOfRewards,
     getRewardsData,
+    getUserFriends,
+    getFriendsWhoAddedCurrentUser,
+    verifyFriend,
+    verifyFriendWhoWantToBeAdded,
+    addFriendRequest,
+    validateFriendRequest,
+    rejectOrDeleteFriend,
+    rejectOrDeleteFriendById,
     clearAll
 }
 

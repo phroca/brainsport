@@ -14,6 +14,7 @@ import GroupChoicePrompt from "../components/GroupChoicePrompt";
 import { useFocusEffect } from "@react-navigation/native";
 import CommunityService from "../services/Community.service";
 import GroupCard from "../components/GroupCard";
+import GroupInvitationPrompt from "../components/GroupInvitationPrompt";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -169,12 +170,11 @@ const CommunauteScreen = ({navigation}) => {
     const eventRef = useRef(null);
     const groupRef = useRef(null);
     const promptGroupRef = useRef();
-  
     const [userId, setUserId] = useState("");
     const [userRankInfo, setUserRankInfo] = useState({"totalUsers": 0, "userRank": 0});
     const [currentUser, setCurrentUSer] = useState({});
     const [groupList, setGroupList] = useState([]);
-
+    const [publicGroupList, setPublicGroupList] = useState([]);
     const [flagFetchGroup, setFlagFetchGroup] = useState(false);
     useEffect(()=> {
       (async() => {
@@ -210,6 +210,13 @@ const CommunauteScreen = ({navigation}) => {
             }).catch((error) => {
               console.error(error);
             });
+            CommunityService.getPublicGroupNotRegistered(userId).then((value) => {
+              if(value?.data) {
+                setPublicGroupList(value?.data);
+              }
+            }).catch((error) => {
+              console.error(error);
+            });
 
           }
         }
@@ -220,6 +227,16 @@ const CommunauteScreen = ({navigation}) => {
     const activateAddGroup = () => {
       promptGroupRef.current.setVisible(true);
     }
+    const handleVerifyGroup = (item, userId) => {
+      CommunityService.getGroupsByIdFromCurrentUser(userId, item.id).then((result) => {
+        if(result.data.length > 0) {
+          navigation.navigate("Group", { groupData: item, currentUserId: userId })
+        } else {
+          navigation.navigate("GroupInvitation", { groupData: item, currentUserId: userId })
+        }
+      })
+    }
+
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
           <SafeAreaView>
@@ -306,6 +323,27 @@ const CommunauteScreen = ({navigation}) => {
                 </SectionContentText>
               </SectionContent>
             </CommuSection>
+            <CommuSection>
+              <SectionTitleGroup>
+                <SectionTitleTextGroup>
+                  Les Groupes Publics
+                </SectionTitleTextGroup>
+              </SectionTitleGroup>
+              {publicGroupList.map((item, index) => {
+                    return (
+                    <TouchableOpacity key={"card-"+item.id} style={{backgroundColor: "rgba(255,255,225,0.3)", borderRadius: 5, marginTop: 5, marginBottom: 5}} onPress={() => handleVerifyGroup(item, userId) } >
+                        <CardGroupContainer>
+                          <GroupCard
+                          key={"card-"+item.id}
+                          nbMembres={item.nbMember}
+                          title={item.title}
+                          colortheme={item.colortheme}
+                          />
+                        </CardGroupContainer>
+                      </TouchableOpacity>
+                    );
+              })}
+            </CommuSection>
             <CommuSection style={{marginBottom: 100}}>
               <SectionTitleGroup>
                 <SectionTitleTextGroup>
@@ -335,7 +373,7 @@ const CommunauteScreen = ({navigation}) => {
               })}
             </CommuSection>
             </ScrollView>
-            <GroupChoicePrompt ref={promptGroupRef} userData={currentUser} navigation={navigation}/>
+            <GroupChoicePrompt ref={promptGroupRef} userData={currentUser} navigation={navigation}/>        
           </SafeAreaView>
         </Container>);
 }

@@ -7,6 +7,7 @@ import Card from "../components/Card";
 import Voice from '@react-native-voice/voice';
 import UserService from "../services/User.service";
 import { useSelector } from "react-redux";
+import { useCalculatePlayPoints } from "../hooks/useCalculatePoints";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -393,10 +394,18 @@ const PlayCardFamilly = ({navigation, route}) => {
         setFinished(true);
         handleStopSpeech();
         const datePlayed  = new Date().getTime();
-        const typePlayObj = { type: "TRAINING", nbCards: famillyToPlay.length};
+        const typePlayObj = { type: "REAL", nbCards: famillyToPlay.length};
         const typePlay = JSON.stringify(typePlayObj);
         UserService.saveProgressionTime({userId: user, typePlay, time: sec, datePlayed}).then((result) =>{
-            if(result.data)  navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé le jeu en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
+            if(result.data)  {
+                useCalculatePlayPoints(typePlayObj, sec).then((value) => {
+                    UserService.incrementRewardPointsForUser(user, value).then((result) => {
+                        if(result.data){
+                            navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé le jeu en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
+                        }
+                    })
+                }) 
+            }
         });
     }
 

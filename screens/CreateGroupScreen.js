@@ -240,10 +240,10 @@ const CreateGroupSreen = (props) => {
                     </InputContainer>
                 </TouchableWithoutFeedback>
                 <TouchableOpacity onPress={()=> handleCreate()}>
-              <ButtonView>
-                <ButtonText>Créer le groupe</ButtonText>
-              </ButtonView>
-          </TouchableOpacity>
+                    <ButtonView>
+                        <ButtonText>Créer le groupe</ButtonText>
+                    </ButtonView>
+                </TouchableOpacity>
                 </GroupForm>
             </SafeAreaView>
         </Container>

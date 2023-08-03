@@ -461,9 +461,19 @@ const CardAssociationPerFamillyScreen = (props) => {
         const famillyProgressEightFirstParsed = famillyProgress[colorIn].eightFirstCardFilled;
         const famillyProgressAllParsed = famillyProgress[colorIn].allCardFilled;
         console.log("famillyProgressEightFirstParsed : " + famillyProgressEightFirstParsed + " famillyProgressAllParsed " + famillyProgressAllParsed);
+        
+        if(!isListCardFamillyRemplie){
+            UserService.incrementRewardPointsForUser(user, 5);
+        }
         if(isListCardFamillyRemplieEightFirst && !famillyProgressEightFirstParsed) {
             UserService.updateUserFamillyProgress(user, famillyProgress, colorIn, "eightFirstCardFilled", true).then((data)=> {
-                if(data.data) props.navigation.navigate("FamillyModal", {texteContent : "Vous avez suffisament créé de cartes pour commencer à jouer et à créer des histoires !"});
+                if(data.data) {
+                    UserService.incrementRewardPointsForUser(user, 5).then((result) => {
+                        if(result.data) {
+                            props.navigation.navigate("FamillyModal", {texteContent : "Vous avez suffisament créé de cartes pour commencer à jouer et à créer des histoires !"});
+                        }
+                    })
+                }
             });
         }
         if(isListCardFamillyRemplie && !famillyProgressAllParsed){
@@ -475,13 +485,25 @@ const CardAssociationPerFamillyScreen = (props) => {
                     if(nextColor === colorIn){
                         UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "eightFirstCardFilled", true).then((data)=> {
                             UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "allCardFilled", true).then((data) => {
-                                props.navigation.navigate("FamillyModal", {texteContent : "Félicitations ! Vous avez rempli toutes les familles de cartes ! Vous pouvez désormais aprendre le tableau !"});
+                                if(data.data) {
+                                    UserService.incrementRewardPointsForUser(user, 5).then((result) => {
+                                        if(result.data) {
+                                            props.navigation.navigate("FamillyModal", {texteContent : "Félicitations ! Vous avez rempli toutes les familles de cartes ! Vous pouvez désormais aprendre le tableau !"});
+                                        }
+                                    })
+                                }
                             });
                         }); 
                     } else {                    
                         UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "eightFirstCardFilled", false).then((data)=> {
                             UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "allCardFilled", false).then((data) => {
-                                props.navigation.navigate("FamillyModal", {texteContent : "Vous avez rempli toute une famille de carte ! Vous pouvez remplir la famille suivante !"});
+                                if(data.data) {
+                                    UserService.incrementRewardPointsForUser(user, 5).then((result) => {
+                                        if(result.data) {
+                                            props.navigation.navigate("FamillyModal", {texteContent : "Vous avez rempli toute une famille de carte ! Vous pouvez remplir la famille suivante !"});
+                                        }
+                                    })
+                                }
                             });
                         }); 
                     }

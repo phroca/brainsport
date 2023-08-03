@@ -269,6 +269,8 @@ const UserEditPrompt = (props, ref) => {
         UserService.updateUser({userId: user, email: currentUser.email, firstName, lastName, birthDate: currentUser.birthDate, phoneNumber: currentUser.phoneNumber, bio, colorProfil: currentUser.colorProfil, address, zipCode, city, region}).then((value) =>{
             if(value.data) {
                 handleCloseModal();
+                props.navigation.pop();
+                props.navigation.push("Avatar");
             }
         })
     }

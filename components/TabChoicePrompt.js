@@ -125,13 +125,6 @@ const TabChoicePrompt = (props, ref) => {
         ]
     }
 
-    const handlePlayFillGame = () => {
-        const cardCopyToShuffle = JSON.parse(JSON.stringify(userDataCard));
-        const shuffledArrayforPlayGame = cardCopyToShuffle.cards.sort(() => 0.5 - Math.random());
-        _setVisible(false);
-        props.navigation.push("Card Association Read Only", {userCards: shuffledArrayforPlayGame});
-    }
-
     const handlePlayRealGame = () => {
         _setVisible(false);
         props.navigation.push("PlayFamilly", {famillyToPlay: userDataCard.cards, isRandom: true});
@@ -154,13 +147,6 @@ const TabChoicePrompt = (props, ref) => {
                         </PromptContentTitle>
                     </PromptContentHeaderContainer>
                     <PromptContentButtonChoicesContainer>
-                        {/* <TouchableOpacity onPress={() => handlePlayFillGame()}>
-                            <PromptContentButton>
-                                <PromptContentButtonText>
-                                    Défiler les cartes simplement
-                                </PromptContentButtonText>
-                            </PromptContentButton>
-                        </TouchableOpacity> */}
                         <TouchableOpacity onPress={() => handlePlayRealGame()}>
                             <PromptContentButton >
                                 <PromptContentButtonText >

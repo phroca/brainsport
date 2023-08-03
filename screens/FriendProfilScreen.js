@@ -13,24 +13,6 @@ import { useCalculatePoints } from "../hooks/useCalculatePoints";
 const {width, height} = Dimensions.get("screen");
 const widthContent = width - 50;
 
-const USER_DEFAULT = {
-  "userId": "", 
-  "email": "", 
-  "firstName": "", 
-  "lastName": "", 
-  "birthDate": 0, 
-  "phoneNumber": "", 
-  "bio": "", 
-  "profilPic": "", 
-  "colorProfil": "",
-  "profilBg": "", 
-  "rewardPoints": 0, 
-  "address": "", 
-  "zipCode": "", 
-  "city": "", 
-  "region": ""
-}
-
 const Container = styled.View`
   flex:1;
   width: 100%;
@@ -119,7 +101,7 @@ const UserContent = styled.Text`
 `
 const UserEditContainer = styled.View`
   width: auto;
-  align-self: flex-end;
+  align-self: flex-start;
   padding: 5px;
   border-radius: 5px;
   justify-content: center;
@@ -129,6 +111,43 @@ const UserEditContainer = styled.View`
   margin-right: 20px;
   margin-left: 20px;
   background-color: rgba(255,255,255,0.5);
+
+`
+const UserAcceptOrRefuseContainer = styled.View`
+  width: auto;
+  align-self: flex-start;
+  padding: 5px;
+  border-radius: 5px;
+  justify-content: center;
+  flex-direction:row;
+  margin-top: 150px;
+  margin-bottom: 5px;
+  margin-right: 20px;
+  margin-left: 20px;
+`
+const UserAcceptOrRefuseActions = styled.View`
+  width: auto;
+  align-self: flex-start;
+  padding: 5px;
+  border-radius: 5px;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  margin-right: 20px;
+  margin-left: 20px;
+
+`
+const UserEditContainerEmpty = styled.View`
+  width: auto;
+  align-self: flex-start;
+  padding: 5px;
+  border-radius: 5px;
+  justify-content: center;
+  flex-direction:row; ;
+  margin-top: 150px;
+  margin-bottom: 5px;
+  margin-right: 20px;
+  margin-left: 20px;
 
 `
 const UserEditIcon = styled.View`
@@ -193,28 +212,15 @@ const imgLevel = {
   "Génie": require("../assets/level/genie.png")
 }
 
-const AvatarProfilScreen = (props) => {
+const FriendProfilScreen = (props) => {
 
   const user = useSelector(state => state.user.value);
-  const [currentUser, setCurrentUser] = useState(USER_DEFAULT);
+  const {currentUser} = props.route.params;
   const [userLevel, setUserLevel] = useState({});
   const [flagUserLevel, setFlagUserLevel] = useState(false);
-  const [flagUser, setFlagUser] = useState(false);
-
-  const userEditRef = useRef();
-  useFocusEffect(
-    useCallback(() => {
-      if(!flagUser){
-        UserService.getUserByUserId(user).then((value) => {
-          if(value?.data){
-            setCurrentUser(value.data[0]);
-          }
-        });
-      }
-      return () => setFlagUser(true)
-    }, [currentUser, user])
-  );
-
+  const [addFriend, setAddFriend] = useState(false);
+  const [validateOrRefuseFriend, setValidateOrRefuseFriend] = useState(false);
+  const [friendLineToDelete, setFriendLineToDelete] = useState(0);
   useFocusEffect(
     useCallback(() => {
       if(!flagUserLevel){
@@ -223,6 +229,27 @@ const AvatarProfilScreen = (props) => {
             setUserLevel(calculateRankByUserReward(value.data, currentUser.rewardPoints));
           }
         });
+        UserService.verifyFriend(user, currentUser.userFriendId).then((value) => {
+          if(value?.data.length > 0) {
+            setAddFriend(false);
+          } else {
+            setAddFriend(true);
+            setValidateOrRefuseFriend(false);
+          }
+          UserService.verifyFriendWhoWantToBeAdded(user, currentUser.userId).then((value) => {
+            console.log(value?.data);
+            if(value?.data.length > 0) {
+              const friend = value?.data[0];
+              if(friend.state === "WAITING") {
+                setFriendLineToDelete(value?.data[0].friendLineId);
+                setValidateOrRefuseFriend(true);
+                setAddFriend(false);
+              } else {
+                setValidateOrRefuseFriend(false);
+              }
+            }
+          })
+        })
       }
       return () => setFlagUserLevel(true)
     }, [currentUser, userLevel])
@@ -246,8 +273,26 @@ const AvatarProfilScreen = (props) => {
     }
     
   }
-  const handleEditUser = () => {
-    userEditRef.current.setVisible(true);
+  const addToFriend = () => {
+    UserService.addFriendRequest(user, currentUser.userFriendId).then((value) => {
+      if(value.data) {
+        props.navigation.pop(2);
+      }
+    })
+  }
+  const acceptFriend = () => {
+    UserService.validateFriendRequest(currentUser.userId, user).then((value) => {
+      if(value.data) {
+        props.navigation.pop(2);
+      }
+    })
+  }
+  const refuseFriend = () => {
+    UserService.rejectOrDeleteFriendById(friendLineToDelete).then((value) => {
+      if(value.data) {
+        props.navigation.pop(2);
+      }
+    })
   }
     return (
         <Container>
@@ -266,14 +311,29 @@ const AvatarProfilScreen = (props) => {
                   <AvatarText>{useInitials(currentUser.firstName)}</AvatarText>
               </AvatarCircle>
             </AvatarContainer>
-            <TouchableOpacity onPress={() => handleEditUser()}>
-              <UserEditContainer>
-                <UserEditIcon>
-                <MaterialCommunityIcons name="pencil" size={10} color="#FFFFFF" />
+            {addFriend &&<TouchableOpacity onPress={() => addToFriend()}>
+             <UserEditContainer>
+              <UserEditIcon>
+                <Ionicons name="add-circle" size={10} color="#FFFFFF" />
                 </UserEditIcon>
-                <UserEditContent>Modifier les détails</UserEditContent>
+                <UserEditContent>Ajouter un ami</UserEditContent>
               </UserEditContainer>
-            </TouchableOpacity>
+              
+            </TouchableOpacity>}
+            {!addFriend && !validateOrRefuseFriend && <UserEditContainerEmpty />}
+            {validateOrRefuseFriend &&
+            <UserAcceptOrRefuseContainer>
+              <TouchableOpacity onPress={() => acceptFriend()}>
+              <UserAcceptOrRefuseActions style={{backgroundColor:"#2ecc71"}}>
+                  <UserEditContent>Accepter sa demande d'amis</UserEditContent>
+                </UserAcceptOrRefuseActions>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => refuseFriend()}>
+              <UserAcceptOrRefuseActions style={{backgroundColor:"#c0392b"}}>
+                  <UserEditContent>Refuser sa demande d'amis</UserEditContent>
+                </UserAcceptOrRefuseActions>
+              </TouchableOpacity>
+            </UserAcceptOrRefuseContainer>}
             <UserInfoContainer>
               <UserName>{currentUser.lastName} {currentUser.firstName}</UserName>
               <RewardSection>
@@ -299,16 +359,15 @@ const AvatarProfilScreen = (props) => {
             <Separator />
             <UserContainer>
               <UserTitle>Bio</UserTitle>
-              <UserContent>{currentUser.bio === "" ? "Pas encore de bio..." : currentUser.bio}</UserContent>
+              <UserContent>{currentUser.bio === "" ? "Pas encore de bio" : currentUser.bio}</UserContent>
             </UserContainer>
             <UserContainer>
               <UserTitle>Région</UserTitle>
-              <UserContent>{currentUser.region === "" ? "Région pas sélectionné..." : currentUser.region }</UserContent>
+              <UserContent>{currentUser.region === "" ? "Région non renseigné" : currentUser.region }</UserContent>
             </UserContainer>
           </SafeAreaView>
-          <UserEditPrompt ref={userEditRef} currentUser={currentUser} navigation={props.navigation}/>
         </Container>
         );
 }
 
-export default AvatarProfilScreen;
+export default FriendProfilScreen;

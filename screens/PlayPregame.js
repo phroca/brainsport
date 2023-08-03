@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { closeHistory, openHistory } from "../slices/historySlice";
 import HistoryModal from "../components/HistoryModal";
 import UserService from "../services/User.service";
+import { useCalculatePlayPoints } from "../hooks/useCalculatePoints";
 
 const {width} = Dimensions.get("screen");
 const widthContent = width - 50;
@@ -424,7 +425,13 @@ const PlayPregame = memo((props) => {
         const typePlay = JSON.stringify(typePlayObj);
         UserService.saveProgressionTime({userId: user, typePlay, time: sec, datePlayed}).then((result) =>{
             if(result.data){
-                props.navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé l'entraînement en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
+                useCalculatePlayPoints(typePlayObj, sec).then((value) => {
+                    UserService.incrementRewardPointsForUser(user, value).then((result) => {
+                        if(result.data){
+                            props.navigation.navigate("FamillyModal", {texteContent : "Vous avez terminé l'entraînement en " + padToTwo(Math.trunc(sec/60)) + ":" + padToTwo(sec%60) + " ! "});
+                        }
+                    })
+                })
             }
         });
     }

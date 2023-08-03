@@ -413,6 +413,16 @@ const ProfilScreen = ({navigation}) => {
                   </ActionButton>
                 </ProfilAction>
               </TouchableOpacity>
+              <TouchableOpacity onPress={()=> navigation.navigate("Notifications")}>
+                <ProfilAction>
+                  <ActionTitle>
+                    Mes notifications
+                  </ActionTitle>
+                  <ActionButton>
+                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                  </ActionButton>
+                </ProfilAction>
+              </TouchableOpacity>
               <TouchableOpacity onPress={()=> navigation.navigate("Support")}>
                 <ProfilAction>
                   <ActionTitle>
