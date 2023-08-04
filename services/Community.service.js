@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = "http://192.168.1.19:3000";
+const API = "http://ec2-13-38-100-228.eu-west-3.compute.amazonaws.com:3000";
 
 const createGroup = async({title, colortheme, description, image="", userOwner, visibility}) => {
     try {
