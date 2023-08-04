@@ -85,6 +85,37 @@ const AvatarText = styled.Text`
     color: white;
 `;
 
+const AjoutAmisSection = styled.View`
+  margin-top: 10px;
+`;
+
+const AvatarMiniContainer = styled.View`
+justify-content: center;
+align-items: center;
+flex-direction: row;
+`;
+
+const AvatarMiniCircle = styled.View`
+  border-radius: 20px;
+
+  height: 30px;
+  width: 30px;
+  background-color: ${props=> props.colortheme};
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #0c0c0c;
+  margin-right: 10px;
+`;
+const AvatarMiniText = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+`;
+const AvatarMiniAddText = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+`;
 /**
  * ==================
  * CLASSEMENT CSS
@@ -307,6 +338,14 @@ const GroupScreen = (props) => {
         { key: 'second', title: 'Discussion' },
         { key: 'third', title: 'A Propos' },
     ]);
+    const[currentNbMembers, setCurrentNbMembers] = useState(groupData?.nbMember);
+    useEffect(()=> {
+        CommunityService.getNbMemberOfGroup(groupData.id).then((value) => {
+            if(value?.data.length > 0) {
+                setCurrentNbMembers(value?.data[0].nbMember);
+            }
+        });
+    },[])
     const renderScene = ({ route }) => {
         switch (route.key) {
           case 'first':
@@ -338,8 +377,18 @@ const GroupScreen = (props) => {
                     <SubTitleContainer>
                         <SubTitle>{groupData?.visibility === 1 ? "Public" : "Privée"} </SubTitle>
                         <CircleSeparate />
-                        <SubTitle>{groupData?.nbMember} membre{groupData?.nbMember > 1 ? "s":""} </SubTitle>
+                        <SubTitle>{currentNbMembers} membre{currentNbMembers > 1 ? "s":""} </SubTitle>
                     </SubTitleContainer>
+                    {groupData.visibility === 0 &&<AjoutAmisSection>
+                        <TouchableOpacity onPress={() => { props.navigation.navigate("AjoutAmisAGroup", {groupData}); }} >
+                            <AvatarMiniContainer>
+                            <AvatarMiniCircle colortheme="#27ae60">
+                                <AvatarMiniText>+</AvatarMiniText>
+                            </AvatarMiniCircle>
+                            <AvatarMiniAddText>Ajouter un ami dans le groupe</AvatarMiniAddText>
+                            </AvatarMiniContainer>
+                        </TouchableOpacity>
+                    </AjoutAmisSection>}
                 </TitleBar>
                 <TabView style={{width}}
                 renderTabBar={renderTabBar}

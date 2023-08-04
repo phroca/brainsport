@@ -165,6 +165,37 @@ const CardGroupContainer = styled.View`
   padding: 5px;
 `;
 
+const AjoutAmisSection = styled.View`
+  
+`;
+
+const AvatarContainer = styled.View`
+justify-content: center;
+align-items: center;
+flex-direction: row;
+`;
+
+const AvatarCircle = styled.View`
+  border-radius: 80px;
+  padding: 5px;
+  min-height: 80px;
+  min-width: 80px;
+  background-color: ${props=> props.colortheme};
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #0c0c0c;
+  margin-right: 10px;
+`;
+const AvatarText = styled.Text`
+  font-size: 30px;
+  font-weight: bold;
+  color: white;
+`;
+const AvatarAddText = styled.Text`
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+`;
 const CommunauteScreen = ({navigation}) => {
     const challengeRef = useRef(null);
     const eventRef = useRef(null);
@@ -222,7 +253,7 @@ const CommunauteScreen = ({navigation}) => {
         }
         
         return () => setFlagFetchGroup(true)
-      },[userId])
+      },[groupList, publicGroupList, userId])
       );
     const activateAddGroup = () => {
       promptGroupRef.current.setVisible(true);
@@ -248,6 +279,16 @@ const CommunauteScreen = ({navigation}) => {
                 <Mappemonde source={require("../assets/mappemonde.png")}/>
                 <LinkText>{userRankInfo.totalUsers} membres connectés</LinkText>
             </ConnecterSection>
+            <AjoutAmisSection>
+              <TouchableOpacity onPress={() => { navigation.navigate("AjoutAmis"); }} >
+                <AvatarContainer>
+                  <AvatarCircle colortheme="#27ae60">
+                      <AvatarText>+</AvatarText>
+                  </AvatarCircle>
+                  <AvatarAddText>Ajouter un ami</AvatarAddText>
+                </AvatarContainer>
+              </TouchableOpacity>
+            </AjoutAmisSection>
             <CommuSection>
               <SectionTitle>
                 <SectionTitleText>

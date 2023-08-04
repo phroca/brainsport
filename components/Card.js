@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components/native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { View } from "react-native";
+import { cardIllustration } from "../cardIllustration";
 
 const CardContainer = styled.View`
     width: ${props => props.w ?? "150"}px;
@@ -54,6 +55,27 @@ position: absolute;
     height: 80px;
 `;
 
+const ValueContainer = styled.View`
+    flex: 1;
+    position: relative;
+`;
+const ImageTexte = styled.Image`
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    border-radius: 15px;
+    
+`
+const ImageIllustration = styled.Image`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    border-radius: 15px; 
+`
+const ValidValue = ["D", "R"];
+const ValidColor = ["pique"];
+
 const Card = ({valeur, couleur, isFold = false, width = 150, height = 250}) => {
 
     const namingColorCard = (couleur) => {
@@ -82,7 +104,14 @@ const Card = ({valeur, couleur, isFold = false, width = 150, height = 250}) => {
                             </FoldColorContainer>
                             
                         ) 
-                    :   (<>
+                    :   ValidValue.includes(valeur) && ValidColor.includes(couleur) ? 
+                    (<>
+                        <ValueContainer>
+                            <ImageTexte source={cardIllustration[valeur][couleur].texte}/>
+                            <ImageIllustration source={cardIllustration[valeur][couleur].illustration}/>
+                        </ValueContainer>
+                    </>) : 
+                    (<>
                             <ValueContainerHeader>
                                 <TextHeader couleur={couleur}>{namingColorCard(couleur)}</TextHeader>
                             </ValueContainerHeader>

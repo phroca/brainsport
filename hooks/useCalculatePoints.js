@@ -56,7 +56,7 @@ export const useCalculatePoints = async(userId)=> {
             const userPlayHistoryResponseParsed = JSON.parse(element.typePlay);
             const pointsForType = rewardDataObj[userPlayHistoryResponseParsed.type];
             const pointsForNumberCardsPlayed = userPlayHistoryResponseParsed.nbCards * 5;
-            const pointsForTime = typeplay.type === "TRAINING" ? calculatePointByTimeinTraining(time) : calculatePointByTimeinReal(time);
+            const pointsForTime = userPlayHistoryResponseParsed.type === "TRAINING" ? calculatePointByTimeinTraining(element.time) : calculatePointByTimeinReal(element.time);
             const pointTotalForLine = pointsForType + pointsForNumberCardsPlayed + pointsForTime;
             pointForPlayHistory += pointTotalForLine;
 

@@ -165,6 +165,46 @@ const GroupInvitationPrompt = (props) => {
             });
         })
     }
+    const handleJoinToPrivateGroup = () => {
+        CommunityService.joinPrivateGroup(groupData.id, currentUserId).then((result) => {
+            if(result.data) {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Groupe rejoint',
+                    text2:  "Bienvenue sur le groupe !"
+                });
+                props.navigation.getParent()?.goBack();
+                props.navigation.navigate("Group", { groupData: groupData, currentUserId });
+            }
+        }).catch((error) => {
+            console.error(error);
+            Toast.show({
+                type: 'error',
+                text1: "Erreur à l'intégration du groupe" ,
+                text2: "Veuillez réessayer ultérieurement."
+            });
+        })
+    }
+    const handleDeclineOrDeleteInvitationToPrivateGroup = () => {
+        CommunityService.declineOrDeletePrivateGroup(groupData.groupUserId).then((result) => {
+            if(result.data) {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Invitation refusée',
+                    text2:  "vous avez refusé l'invitation du groupe."
+                });
+                props.navigation.pop(2);
+                props.navigation.push("Notifications");
+            }
+        }).catch((error) => {
+            console.error(error);
+            Toast.show({
+                type: 'error',
+                text1: "Erreur au refus du groupe" ,
+                text2: "Veuillez réessayer ultérieurement."
+            });
+        })
+    }
     return (
             <Container>
                 <Cover>
@@ -200,11 +240,24 @@ const GroupInvitationPrompt = (props) => {
                         <ContentDetailDescription>{groupData?.userOwner}</ContentDetailDescription>
                     </ContentDetail>
                 </Content>
-                <TouchableOpacity onPress={()=> handleJoinToGroup()}>
+                {groupData?.visibility === 1 &&<TouchableOpacity onPress={()=> handleJoinToGroup()}>
                     <ButtonView>
                         <ButtonText>Rejoindre le groupe</ButtonText>
                     </ButtonView>
+                </TouchableOpacity>}
+                {groupData?.visibility === 0 &&<>
+                <TouchableOpacity onPress={()=> handleJoinToPrivateGroup()}>
+                    <ButtonView>
+                        <ButtonText>Accepter l'invitation</ButtonText>
+                    </ButtonView>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={()=> handleDeclineOrDeleteInvitationToPrivateGroup()}>
+                    <ButtonView>
+                        <ButtonText>Refuser l'invitation</ButtonText>
+                    </ButtonView>
+                </TouchableOpacity>
+                
+                </>}
             </Container>
         )
         

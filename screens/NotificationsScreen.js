@@ -9,6 +9,7 @@ import UserService from "../services/User.service";
 import { useInitials } from "../hooks/useInitials";
 import UserCard from "../components/UserCard";
 import GroupCard from "../components/GroupCard";
+import CommunityService from "../services/Community.service";
 
 
 const {width, height} = Dimensions.get("screen");
@@ -189,14 +190,24 @@ const NotificationsScreen = ({navigation}) => {
     const user = useSelector(state => state.user.value);
     const [friendToAddList, setFriendToAddList] = useState([]);
     const [privateGroupToAddList, setPrivateGroupToAddList] = useState([]);
-
-    useEffect(() => {
-        UserService.getFriendsWhoAddedCurrentUser(user, "WAITING").then((result) => {
-          if(result?.data){
-            setFriendToAddList(result?.data);
-          }
-        });
-    }, [search]);
+    const [flagListsNotifs, setFlagListNotifs] = useState(false);
+    useFocusEffect(
+      useCallback(()=> {
+        if(!flagListsNotifs){
+          UserService.getFriendsWhoAddedCurrentUser(user, "WAITING").then((result) => {
+            if(result?.data){
+              setFriendToAddList(result?.data);
+            }
+          });
+          CommunityService.getWaitingGroupsFromCurrentUser(user).then((result) => {
+            if(result?.data){
+              setPrivateGroupToAddList(result?.data);
+            }
+          });
+        }
+        return () => setFlagListNotifs(true)
+      }, [friendToAddList, privateGroupToAddList])
+    );
 
 
     return(
@@ -255,13 +266,13 @@ const NotificationsScreen = ({navigation}) => {
             (
                 <PrivateGroupToAddList>
                 {privateGroupToAddList.map((item, index) => (
-                    <TouchableOpacity onPress={() => navigation.navigate("AmisProfil", {groupData: item})}>
+                    <TouchableOpacity onPress={() => navigation.navigate("GroupInvitation", {groupData: item, currentUserId: user})}>
                         <PrivateGroupToAddCardContainer>
                             <GroupCard
-                            key={"classement"+index+"" + item._id}
-                            rewardPoints={item.rewardPoints}
-                            firstName={item.firstName}
-                            color={item.colorProfil}
+                            key={"card-"+item.id}
+                            nbMembres={item.nbMember}
+                            title={item.title}
+                            colortheme={item.colortheme}
                             />
                         </PrivateGroupToAddCardContainer>
                     </TouchableOpacity>

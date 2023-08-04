@@ -229,27 +229,32 @@ const FriendProfilScreen = (props) => {
             setUserLevel(calculateRankByUserReward(value.data, currentUser.rewardPoints));
           }
         });
-        UserService.verifyFriend(user, currentUser.userFriendId).then((value) => {
-          if(value?.data.length > 0) {
-            setAddFriend(false);
-          } else {
-            setAddFriend(true);
-            setValidateOrRefuseFriend(false);
-          }
-          UserService.verifyFriendWhoWantToBeAdded(user, currentUser.userId).then((value) => {
-            console.log(value?.data);
+        if(user !== currentUser.userId) {
+
+
+          UserService.verifyFriend(user, currentUser.userFriendId).then((value) => {
             if(value?.data.length > 0) {
-              const friend = value?.data[0];
-              if(friend.state === "WAITING") {
-                setFriendLineToDelete(value?.data[0].friendLineId);
-                setValidateOrRefuseFriend(true);
-                setAddFriend(false);
-              } else {
-                setValidateOrRefuseFriend(false);
-              }
+              setAddFriend(false);
+            } else {
+              setAddFriend(true);
+              setValidateOrRefuseFriend(false);
             }
+            UserService.verifyFriendWhoWantToBeAdded(user, currentUser.userId).then((value) => {
+              console.log(value?.data);
+              if(value?.data.length > 0) {
+                setAddFriend(false);
+                const friend = value?.data[0];
+                if(friend.state === "WAITING") {
+                  setFriendLineToDelete(value?.data[0].friendLineId);
+                  setValidateOrRefuseFriend(true);
+                  
+                } else {
+                  setValidateOrRefuseFriend(false);
+                }
+              }
+            })
           })
-        })
+        }
       }
       return () => setFlagUserLevel(true)
     }, [currentUser, userLevel])

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components/native";
 import { Dimensions } from "react-native";
 import { TouchableOpacity, TouchableWithoutFeedback } from "react-native";
@@ -16,7 +16,18 @@ const Container = styled.ImageBackground`
   height: 100%;
   align-items: center;
 `;
+const VideoContainer = styled.View`
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background-color: #000000;
+`;
+const TextLoading = styled.Text`
+  color: #FFFFFF;
+  font-size: 17px;
 
+`
 const BrainsportIcon = styled.Image`
     position: absolute;
     top: 50px;
@@ -159,6 +170,7 @@ const SignInScreen = ({navigation}) => {
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [showPass, setShowPass] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const refEmail = useRef(null);
     const handleFocusEmail = () => {
@@ -170,6 +182,17 @@ const SignInScreen = ({navigation}) => {
       refPassword.current.focus();
     }
 
+
+    useEffect(() => {
+      Auth.currentAuthenticatedUser().then((result) => {
+        if(result) {
+          navigation.navigate("Main");
+        }
+        setLoading(false);
+      }).catch((error) => {
+        setLoading(false);
+      })
+    },[]);
 
     async function handleSignIn() {
            
@@ -208,7 +231,13 @@ const SignInScreen = ({navigation}) => {
         }
     };
 
-    return (
+    return loading === true ? (
+      <VideoContainer>
+        {/* <ActivityIndicator size="large" color="#A138F2" />
+        <TextLoading>Chargement en cours...</TextLoading> */}
+      </VideoContainer>
+    ) :
+    (
     <Container source={require("../assets/brainsport-bg.png")}>
       <BrainsportIcon source={require("../assets/brainsport-logo.png")}/>
       <BrainsportIconText source={require("../assets/logo-brainsport.png")}/>

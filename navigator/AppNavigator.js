@@ -17,6 +17,8 @@ import GroupInvitationPrompt from '../components/GroupInvitationPrompt';
 import FriendsScreen from '../screens/FriendsScreen';
 import FriendProfilScreen from '../screens/FriendProfilScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import FriendsAddScreen from '../screens/FriendsAddScreen';
+import FriendsAddToGroupScreen from '../screens/FriendsAddToGroupScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +55,8 @@ const AppNavigator = () => {
                     <Stack.Screen name="Amis" component={FriendsScreen} />
                     <Stack.Screen name="AmisProfil" component={FriendProfilScreen} />
                     <Stack.Screen name="Notifications" component={NotificationsScreen} />
+                    <Stack.Screen name="AjoutAmis" component={FriendsAddScreen} />
+                    <Stack.Screen name="AjoutAmisAGroup" component={FriendsAddToGroupScreen} />
                 </Stack.Group>
                 <Stack.Group screenOptions={{ presentation: 'modal' }}>
                     <Stack.Screen name="GroupInvitation" component={GroupInvitationPrompt} />

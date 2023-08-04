@@ -10,11 +10,20 @@ const createGroup = async({title, colortheme, description, image="", userOwner, 
     }
 }
 
+/*Récupère les groupes validé */
 const getGroupsFromCurrentUser = async(userId) => {
     try {
         return axios.get(`${API}/users/${userId}/groups`)
     } catch (error) {
         console.error("Erreur à la récupération des groupe de l'user " + userId);
+    }
+}
+/*Récupère les groupes en attente */
+const getWaitingGroupsFromCurrentUser = async(userId) => {
+    try {
+        return axios.get(`${API}/users/${userId}/waitingGroups`)
+    } catch (error) {
+        console.error("Erreur à la récupération des groupe en attente de l'user " + userId);
     }
 }
 const getGroupsByIdFromCurrentUser = async(userId, groupId) => {
@@ -56,6 +65,28 @@ const joinPublicGroup = async(groupId, userId) => {
         console.error("Erreur à rejoindre le groupe public "+ groupId);
     }
 }
+const joinPrivateGroup = async(groupId, userId) => {
+    try {
+        return axios.post(`${API}/communitygroup/privateGroup/${groupId}/users/${userId}`)
+    } catch (error) {
+        console.error("Erreur à rejoindre le groupe privé "+ groupId);
+    }
+}
+const declineOrDeletePrivateGroup = async(groupUserId) => {
+    try {
+        return axios.delete(`${API}/communitygroup/deleteInvitation/${groupUserId}`)
+    } catch (error) {
+        console.error("Erreur à la suppression de l'invitation du groupe "+ groupId);
+    }
+}
+
+const inviteFriendToPrivateGroup = async(groupId, userId) => {
+    try {
+        return axios.put(`${API}/communitygroup/${groupId}/add/${userId}`)
+    } catch (error) {
+        console.error("Erreur à rejoindre le user" + userId + " au groupe privé "+ groupId);
+    }
+}
 
 const getGroupsById = async(groupId) => {
     try {
@@ -83,11 +114,15 @@ const sendMessageToGroupDiscussion = async({groupId, userId, message, dateEnvoi}
 const CommunityService = {
     createGroup,
     getGroupsFromCurrentUser,
+    getWaitingGroupsFromCurrentUser,
     getGroupsByIdFromCurrentUser,
     getNbMemberOfGroup,
     getGroupUsersByGroupId,
     getPublicGroupNotRegistered,
     joinPublicGroup,
+    joinPrivateGroup,
+    declineOrDeletePrivateGroup,
+    inviteFriendToPrivateGroup,
     getGroupsById,
     getGroupDiscussion,
     sendMessageToGroupDiscussion

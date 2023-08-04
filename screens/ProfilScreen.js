@@ -89,9 +89,26 @@ color: #FFFFFF;
 `;
 
 const ActionButton = styled.View`
-position: absolute;
-right: 20px;
+  position: absolute;
+  right: 20px;
 `;
+const ActionPastille = styled.View`
+  position: absolute;
+  right: 50px;
+`;
+const Pastille = styled.View`
+  width: 24px;
+  height: 24px;
+  border-radius: 24px;
+  background-color: #c0392b;
+  justify-content: center;
+  align-items: center;
+`;
+const PastilleText = styled.Text`
+  color: #FFFFFF;
+  font-size: 12px;
+`;
+
 
 const ProgresSection = styled.View`
 
@@ -192,6 +209,9 @@ const ProfilScreen = ({navigation}) => {
   const [isInitCardAssociation, setIsInitCardAssociation] = useState(false);
   const [isInitPrePlay, setIsInitPrePlay] = useState(false);
   const [isPrePlayHint, setIsPrePlayHint] = useState(false);
+  const [nbNotifs, setNbNotifs] = useState(0);
+  const [flagNbNotifs, setFlagNbNotifs] = useState(false);
+
   const user = useSelector(state => state.user.value);
 
   useFocusEffect(
@@ -228,6 +248,16 @@ const ProfilScreen = ({navigation}) => {
       }
       return () => setFlagUserDataCard(true)
     }, [currentUserDataCard])
+  );
+  useFocusEffect(
+    useCallback(() => {
+      if(!flagNbNotifs){
+        UserService.getNbNotifs(user).then((value) => {
+          setNbNotifs(value);
+        });
+      }
+      return () => setFlagNbNotifs(true)
+    }, [nbNotifs])
   );
 
   const handleReinit = () => {
@@ -285,8 +315,8 @@ const ProfilScreen = ({navigation}) => {
     const dates = new Set();
     const numberConsecutive = [];
     valueData.forEach(elt => {
-      const dateTemp = moment(elt.datePlayed)
-      dates.add(dateTemp.format("L"));
+      const dateTemp = moment(new Date(elt.datePlayed));
+      dates.add(dateTemp.format("MM/DD/YYYY"));
     })
     const consecutiveDates = Array.from(dates).reduce((acc, date) => {
       const group = acc[acc.length - 1];
@@ -349,9 +379,9 @@ const ProfilScreen = ({navigation}) => {
                   <ProgresNumber>
                       {consecutiveDays}
                   </ProgresNumber>
-                  <ProgresLabel>
-                    jours
-                  </ProgresLabel>
+                  <ProgresLabelCenter>
+                    jours consécutifs
+                  </ProgresLabelCenter>
                 </ProgresCard>
                 <ProgresCard>
                   <ProgresNumberLittle>
@@ -418,6 +448,13 @@ const ProfilScreen = ({navigation}) => {
                   <ActionTitle>
                     Mes notifications
                   </ActionTitle>
+                  <ActionPastille>
+                  <Pastille>
+                    <PastilleText>
+                          {nbNotifs}
+                    </PastilleText>
+                  </Pastille>
+                  </ActionPastille>
                   <ActionButton>
                     <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
                   </ActionButton>

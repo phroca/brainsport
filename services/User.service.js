@@ -1,5 +1,6 @@
 import cardStructure from "../card-structure.json"
 import axios from 'axios';
+import CommunityService from "./Community.service";
 
 const API = "http://192.168.1.19:3000";
 
@@ -7,6 +8,13 @@ const API = "http://192.168.1.19:3000";
 
 
 
+const getUsersByChar = async(char) => {
+    try{
+        return axios.get(API + "/users/byChar/" + char);
+    } catch (error) {
+        console.error("ERREUR", error)
+    }
+}
 const saveUser = async({userId= "", email = "", firstName = "", lastName= "", birthDate = new Date().getTime(), phoneNumber ="", bio = "", colorProfil="#000000", rewardPoints = 0, address= "", zipCode = "", city= "", region= ""}) => {
     try{
         return axios.put(API + "/users", {userId, email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region});
@@ -40,6 +48,8 @@ const incrementRewardPointsForUser = async(userId, rewardPoints) => {
     }
         
 }
+
+
 const updateRewardPointsForUser = async(userId, rewardPoints) => {
     try {
         return axios.post(API + "/users/" + userId + "/rewardPoints", {rewardPoints});
@@ -291,6 +301,14 @@ const getUserFriends = async(userId, state="VALIDATED") => {
     }
 }
 
+const getNbNotifs = async(userId) => {
+    let nbNotif = 0;
+    const friendsNotifs = await getFriendsWhoAddedCurrentUser(userId, "WAITING");
+    const groupNotifs = await CommunityService.getWaitingGroupsFromCurrentUser(userId);
+    nbNotif = friendsNotifs?.data.length + groupNotifs?.data.length;
+    return nbNotif;
+}
+
 const getFriendsWhoAddedCurrentUser = async(userId, state="VALIDATED") => {
     try{
         return axios.get(`${API}/userfriends/addedUser/${userId}/state/${state}`);
@@ -352,6 +370,7 @@ const clearAll = async(userId) => {
 }
 
 const UserService = {
+    getUsersByChar,
     saveUser,
     updateUser,
     getRewardPointsForUser,
@@ -378,6 +397,7 @@ const UserService = {
     getListOfRewards,
     getRewardsData,
     getUserFriends,
+    getNbNotifs,
     getFriendsWhoAddedCurrentUser,
     verifyFriend,
     verifyFriendWhoWantToBeAdded,

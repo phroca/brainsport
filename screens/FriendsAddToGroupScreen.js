@@ -8,6 +8,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import UserService from "../services/User.service";
 import { useInitials } from "../hooks/useInitials";
 import UserCard from "../components/UserCard";
+import CommunityService from "../services/Community.service";
 
 
 const {width, height} = Dimensions.get("screen");
@@ -77,7 +78,7 @@ const SubTitle = styled.Text`
 
 const ButtonView = styled.View`
   background: white;
-  width: ${widthContent}px;
+  padding: 5px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -88,7 +89,7 @@ const ButtonView = styled.View`
 
 const ButtonViewSecondary = styled.View`
   background: #131516;
-  width: ${widthContent}px;
+  padding: 5px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -135,6 +136,9 @@ const FriendsList = styled.View`
 const FriendsCardContainer = styled.View`
     margin-top: 5px;
     margin-bottom: 5px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
 `
 
 const FriendsListEmpty = styled.View`
@@ -150,12 +154,13 @@ const FriendsListEmptyText = styled.Text`
 
 
 
-const FriendsScreen = ({navigation}) => {
+const FriendsAddToGroupScreen = ({navigation, route}) => {
     const [search, setSearch] = useState("");
     const [listFriends, setListFriends] = useState([]);
     const user = useSelector(state => state.user.value);
+    const {groupData} = route.params;
     useEffect(() => {
-        UserService.getUserFriends(user).then((result) => {
+        UserService.getUsersByChar(user).then((result) => {
             if(result?.data){
                 setListFriends(result?.data);
             }
@@ -163,22 +168,26 @@ const FriendsScreen = ({navigation}) => {
     }, []);
 
     const filterListFriends = (event) => {
-        if(event !== "") {
-            const datafiltered = listFriends.filter(item => {
-                return item.firstName.toLowerCase().indexOf(event.toLowerCase()) > -1;
-            })
-            setListFriends(datafiltered);
+        if(event !== "" && event.length >= 2) {
+          UserService.getUsersByChar(event).then((result) => {
+              if(result?.data){
+                  setListFriends(result?.data);
+              }
+          })
         } else {
-            UserService.getUserFriends(user).then((result) => {
-                if(result?.data){
-                    setListFriends(result?.data);
-                }
-            });
+          setListFriends([]);
         }
         setSearch(event);
         
     }
 
+    const inviteFriendToPrivateGroup = (userId) => {
+      CommunityService.inviteFriendToPrivateGroup(groupData.id, userId).then((result) => {
+        if(result.data) {
+          navigation.pop(2);
+        }
+      });
+    }
     return(
     <Container>
     <FriendsForm>
@@ -188,7 +197,7 @@ const FriendsScreen = ({navigation}) => {
             <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
             </TouchableOpacity>
         </CloseButton>
-        <Title>Amis</Title>
+        <Title>Ajouter un ami dans le groupe</Title>
       </TitleBar>
       <InputContainer>
             <PreText>
@@ -202,16 +211,21 @@ const FriendsScreen = ({navigation}) => {
             (
                 <FriendsList>
                 {listFriends.map((item, index) => (
-                    <TouchableOpacity key={index} onPress={() => navigation.navigate("AmisProfil", {currentUser: item})}>
-                        <FriendsCardContainer>
+                    
+                        <FriendsCardContainer key={index}>
                             <UserCard
                             key={"classement"+index+"" + item._id}
                             rewardPoints={item.rewardPoints}
                             firstName={item.firstName}
                             color={item.colorProfil}
                             />
+                            <TouchableOpacity onPress={() => inviteFriendToPrivateGroup(item.userId)}>
+                              <ButtonView>
+                                    <ButtonText>Inviter</ButtonText>
+                              </ButtonView>
+                            </TouchableOpacity>
                         </FriendsCardContainer>
-                    </TouchableOpacity>
+
                     ))}
                 </FriendsList>
             ) : 
@@ -229,4 +243,4 @@ const FriendsScreen = ({navigation}) => {
     </Container>)
 }
 
-export default FriendsScreen;
+export default FriendsAddToGroupScreen;
