@@ -82,6 +82,7 @@ const TextInputDesc = styled.TextInput`
   font-size: 17px;
   color: #FFFFFF;
   padding-left: 10px;
+  padding-top: 10px;
   margin-top: 20px;
   background: #3c4560;
   z-index: 1;
@@ -113,7 +114,7 @@ const CreateGroupSreen = (props) => {
     const [descriptionError, setDescriptionError] = useState("");
     const [initials, setInitials] = useState("");
     const [hexagenerated, setHexagenerated] = useState("");
-;    const { user, isPublic } = props.route.params;
+    const { user, isPublic } = props.route.params;
     /* REFS */
     const refGroupName = useRef(null);
     const refDescription = useRef(null); 
@@ -171,9 +172,9 @@ const CreateGroupSreen = (props) => {
             try{
                 CommunityService.createGroup({title: groupName, colortheme: "#"+hexagenerated, description, userOwner: user.userId, visibility: isPublic}).then((value)=> {
                     if(value?.data) {
-                        CommunityService.getGroupsByIdFromCurrentUser(user.userId, value.data.insertId).then((value) => {
+                        CommunityService.getGroupsByIdFromCurrentUser(user.userId, value.data).then((value) => {
                             if(value?.data){
-                                props.navigation.navigate("Group", { groupData: value?.data, currentUserId: user.userId });
+                                props.navigation.navigate("Group", { groupData: value?.data[0], currentUserId: user.userId });
                                 Toast.show({
                                     type: 'success',
                                     text1: 'Le groupe est créé',
@@ -236,7 +237,7 @@ const CreateGroupSreen = (props) => {
                 </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback onPress={()=> handleFocusText(refDescription)}>
                     <InputContainer>
-                        <TextInputDesc multiline numberOfLines={6} placeholder="Description" ref={refDescription} isError={descriptionError} onChangeText={(e)=> setDescription(e)}/>
+                        <TextInputDesc multiline numberOfLines={6} style={{textAlignVertical: 'top'}} placeholder="Description" ref={refDescription} isError={descriptionError} onChangeText={(e)=> setDescription(e)}/>
                     </InputContainer>
                 </TouchableWithoutFeedback>
                 <TouchableOpacity onPress={()=> handleCreate()}>

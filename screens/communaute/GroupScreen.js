@@ -364,7 +364,7 @@ const GroupScreen = (props) => {
             <SafeAreaView>
                 <TitleBar>
                     <CloseButton>
-                    <TouchableOpacity onPress={() => props.navigation.navigate("Communauté")}>
+                    <TouchableOpacity onPress={() => {props.navigation.navigate("Communauté"); }}>
                         <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
                     </TouchableOpacity>
                     </CloseButton>

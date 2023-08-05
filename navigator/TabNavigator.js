@@ -58,7 +58,7 @@ const TabNavigator = (navigation, route) => {
                 })}} initialRouteName="Home">
                 
                 <Tab.Screen name="Formation" component={FormationScreen} />
-                <Tab.Screen name="Communauté" component={CommunauteScreen} />
+                <Tab.Screen name="Communauté" component={CommunauteScreen} options={{unmountOnBlur: true}} />
                 <Tab.Screen name="Home" component={HomeNavigator} />
                 <Tab.Screen name="Profil" component={ProfilNavigator} /> 
             </Tab.Navigator> 

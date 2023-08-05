@@ -19,7 +19,7 @@ import TooltipComponent from '../components/stepper/TooltipComponent';
 import TabChoicePrompt from '../components/TabChoicePrompt';
 
 import UserService from '../services/User.service';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../slices/userSlice';
 import { useCalculatePoints } from '../hooks/useCalculatePoints';
 
@@ -209,6 +209,7 @@ const HomeScreenPreplay = (props) => {
     const [flagFamillyProgress, setFlagFamillyProgress] = useState(false);
     const [username, setUsername] = useState("");
     const [userId, setUserId] = useState("");
+    const userFrom = useSelector(state => state.user.value);
     // Flag pour detecter si on a passé l'etape de la première 
     // découverte
     const [prePlayDataIn, setPrePlayDataIn] = useState(true);
@@ -264,6 +265,8 @@ const HomeScreenPreplay = (props) => {
               UserService.updateRewardPointsForUser(user?.attributes?.sub, resultPoints);
             }
           }
+        }).catch((error) => {
+          console.error('Error getting current user:', error);
         })
         
       })();
@@ -435,7 +438,7 @@ const HomeScreenPreplay = (props) => {
 
     useEffect(()=> {
       props.copilotEvents.on("stop", () => {
-        UserService.updateInitHomeScreen({userId: user, initHomeScreen: false});
+        UserService.updateInitHomeScreen({userId: userFrom, initHomeScreen: false});
       });
 
       return () => {
@@ -471,10 +474,13 @@ const HomeScreenPreplay = (props) => {
         currentFamillyProgress?.pique["allCardFilled"] && currentFamillyProgress?.pique["eightFirstCardFilled"];
     }
     const calculateProgressionCardByFamilly = (couleurIn) => {
-      const cardFamilly = currentUSerDataCard.cards.filter(elt => elt.couleur === couleurIn);
-      const elementCarteRemplie = (element) => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "";
-      const cardFamillyProgress = cardFamilly.filter(element => elementCarteRemplie(element)).length;
-      return cardFamillyProgress + " / " + cardFamilly.length;
+      if(currentUSerDataCard.cards){
+        const cardFamilly = currentUSerDataCard.cards.filter(elt => elt.couleur === couleurIn);
+        const elementCarteRemplie = (element) => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "";
+        const cardFamillyProgress = cardFamilly.filter(element => elementCarteRemplie(element)).length;
+        return cardFamillyProgress + " / " + cardFamilly.length;
+      }
+      
     }
   return prePlayDataIn === false ?( 
           <Container source={require("../assets/brainsport-bg.png")}>   

@@ -2,7 +2,8 @@ import cardStructure from "../card-structure.json"
 import axios from 'axios';
 import CommunityService from "./Community.service";
 
-const API = "http://ec2-13-38-100-228.eu-west-3.compute.amazonaws.com:3000";
+//const API = "http://ec2-13-38-100-228.eu-west-3.compute.amazonaws.com:3000";
+const API = "http://192.168.1.19:3000";
 
 
 
@@ -110,7 +111,7 @@ const saveDataCard = async(userId) => {
         });
         const dataCardForUser = await getDataCard(userId);
         if(dataCardForUser?.data.length === 0){
-            const userDatacard = JSON.stringify(userCards);
+            const userDatacard = JSON.stringify(userCards.cards);
             return axios.put(API + "/userdatacard", {userId, cards: userDatacard});
         }
         
@@ -144,7 +145,7 @@ const saveUserStepperData = async({userId, initHomeScreen = true, initCardAssoci
 
 const updateInitCardAssociation = async({userId, initCardAssociation}) => {
     try {
-        return axios.put(`${API}/userstepperdata/${userId}/initCardAssociation`, {initCardAssociation})
+        return axios.post(`${API}/userstepperdata/${userId}/initCardAssociation`, {initCardAssociation})
     } catch (error) {
         console.error("ERREUR", error);
     }
@@ -152,7 +153,7 @@ const updateInitCardAssociation = async({userId, initCardAssociation}) => {
 }
 const updateInitHomeScreen = async({userId, initHomeScreen}) => {
     try {
-        return axios.put(`${API}/userstepperdata/${userId}/initHomeScreen`, {initHomeScreen})
+        return axios.post(`${API}/userstepperdata/${userId}/initHomeScreen`, {initHomeScreen})
     } catch (error) {
         console.error("ERREUR", error);
     }
@@ -160,7 +161,7 @@ const updateInitHomeScreen = async({userId, initHomeScreen}) => {
 }
 const updateInitPrePlay = async({userId, initPrePlay}) => {
     try {
-        return axios.put(`${API}/userstepperdata/${userId}/initPrePlay`, {userId, initPrePlay})
+        return axios.post(`${API}/userstepperdata/${userId}/initPrePlay`, {userId, initPrePlay})
     } catch (error) {
         console.error("ERREUR", error);
     }
@@ -169,7 +170,7 @@ const updateInitPrePlay = async({userId, initPrePlay}) => {
 
 const updateInitPlayGame = async({userId, initPlayGame}) => {
     try {
-        return axios.put(`${API}/userstepperdata/${userId}/initPlayGame`, {initPlayGame})
+        return axios.post(`${API}/userstepperdata/${userId}/initPlayGame`, {initPlayGame})
     } catch (error) {
         console.error("ERREUR", error);
     }
@@ -178,7 +179,7 @@ const updateInitPlayGame = async({userId, initPlayGame}) => {
 
 const updatePrePlayHint = async({userId, prePlayHint}) => {
     try {
-        return axios.put(`${API}/userstepperdata/${userId}/prePlayHint`, {prePlayHint})
+        return axios.post(`${API}/userstepperdata/${userId}/prePlayHint`, {prePlayHint})
     } catch (error) {
         console.error("ERREUR", error);
     }
@@ -186,7 +187,7 @@ const updatePrePlayHint = async({userId, prePlayHint}) => {
 }
 const updatePrePlayData = async({userId, prePlayData}) => {
     try {
-        return axios.put(`${API}/userstepperdata/${userId}/prePlayData`, {prePlayData})
+        return axios.post(`${API}/userstepperdata/${userId}/prePlayData`, {prePlayData})
     } catch (error) {
         console.error("ERREUR", error);
     }
@@ -223,6 +224,7 @@ const saveUserFamillyProgressData = async(userId) => {
                 },
             };
             const famillyProgress = JSON.stringify(famillyProgressObj);
+            console.log({userId, famillyProgress});
             return axios.put(API + "/userfamillyprogress", {userId, famillyProgress})
     } catch (error) {
         console.error("ERREUR", error);

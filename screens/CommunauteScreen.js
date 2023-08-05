@@ -248,10 +248,8 @@ const CommunauteScreen = ({navigation}) => {
             }).catch((error) => {
               console.error(error);
             });
-
           }
-        }
-        
+       }
         return () => setFlagFetchGroup(true)
       },[groupList, publicGroupList, userId])
       );

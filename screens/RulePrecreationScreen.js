@@ -5,6 +5,8 @@ import { Animated, Dimensions } from "react-native";
 import styled from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
 import UserService from "../services/User.service";
+import { updateUser } from "../slices/userSlice";
+import { useDispatch } from "react-redux";
 
 const {width, height} = Dimensions.get("screen");
 const widthContent = width  - 50;
@@ -169,7 +171,7 @@ const RulePrecreationScreen = ({navigation}) => {
 const scrollX  = useRef(new Animated.Value(0)).current;
 const ref = useRef(null);
 const [currentItemIndex, setCurrentItemIndex] = useState(0);
-
+const dispatch = useDispatch();
 
 const updateCurrentItemIndex = element => {
     const contentOffsetX = element.nativeEvent.contentOffset.x;
@@ -192,12 +194,14 @@ const skip = () => {
 const handleGotoHomePrecreation = async() => {
     const user = await Auth.currentAuthenticatedUser();
     const userId = user?.attributes?.sub;
+    dispatch(updateUser({userId: user?.attributes?.sub}));
     UserService.saveUserStepperData({userId}).then((result)=> {
         if(result?.data){
             UserService.getUserStepperData(userId).then((result) => {
                 if(result?.data){
-                    const stepperData = JSON.parse(result?.data[0]);
-                    if(stepperData.prePlayHint === false) {
+                    const stepperData = result?.data[0];
+                    console.log(stepperData);
+                    if(!stepperData.prePlayHint) {
                         UserService.saveDataCard(userId).then((result) => {
                             if(result?.data){
                                 UserService.saveUserFamillyProgressData(userId).then((result) => {
