@@ -77,6 +77,33 @@ const initCardCreationMock = async(userId) => {
     }
 }
 
+/* FOR TEST PURPOSE ONLY */ 
+const generateCardMock = async(userId) => {
+    const userCards = {userId: userId, cards: []};
+    cardStructure.couleurs.forEach((couleur)=> {
+        cardStructure.valeurs.forEach((valeur)=>{
+                const card = {
+                    "valeur": valeur.valeur,
+                    "couleur": couleur,
+                    "personnage": "egse",
+                    "verbe": "sdfbsdb",
+                    "objet": "sdfbsdb",
+                    "lieu": "sdfbsdfb",
+                    "conditions": valeur.conditions
+                }
+                userCards.cards.push(card);
+        });
+    });
+    try{    
+        const jsonValue = JSON.stringify(userCards);
+        AsyncStorage.setItem('@user_Cards', jsonValue);
+        return userCards;
+    } catch(e){
+        console.log(e);
+    }
+}
+
+
 /**
  * 
  * @returns 
@@ -476,6 +503,7 @@ const CardService ={
     getCitation,
     terminateCitation,
     initCardCreationMock,
+    generateCardMock,
     getUserCardsMock,
     getPrePlayData,
     initPrePlayData,

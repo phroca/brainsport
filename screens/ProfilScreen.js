@@ -10,6 +10,7 @@ import CheckBox from "../components/CheckBox";
 import UserService from "../services/User.service";
 import { useSelector } from "react-redux";
 import moment from "moment";
+import { useCalculatePoints } from "../hooks/useCalculatePoints";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -228,6 +229,20 @@ const ProfilScreen = ({navigation}) => {
     },[])
   );
 
+  useEffect(()=> {
+    (async() => {
+      const resultPoints = await useCalculatePoints(user);
+      UserService.getUserByUserId(user).then((value) => {
+        const userDataRewardPoints = value.data[0].rewardPoints;
+        if(userDataRewardPoints === 0){
+          UserService.updateRewardPointsForUser(user, resultPoints);
+        }
+      }).catch((error) => {
+        console.error('Error getting current user:', error);
+      })
+    })();
+  }, []);
+
   useEffect(() => {
     UserService.getProgressionTime(user).then((value) => {
       if(value.data){
@@ -360,6 +375,27 @@ const ProfilScreen = ({navigation}) => {
     setIsPrePlayHint(value);
   }
 
+  const handleInsertDataToLocalStorage = () => {
+    CardService.initPrePlayData().then((value)=> {
+      if(value){
+          CardService.initStepperBeforePlay().then((stepValue)=> {
+              if(stepValue){
+                  CardService.initPrePlayHintData().then((preplayHintValue) => {
+                      if(preplayHintValue === false){
+                          CardService.generateCardMock(user).then((data) => {
+                              if(data) {
+                                  CardService.initFamillyProgress().then((famillyprogressData) => {
+                                      if(famillyprogressData) console.log("insertion done");
+                                  });
+                              }
+                          });
+                      }
+                  })
+              }
+          });
+      }
+  });
+  }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
         <SafeAreaView>
@@ -530,6 +566,11 @@ const ProfilScreen = ({navigation}) => {
                 <ButtonText>Tout Reinitialiser</ButtonText>
               </ButtonView>
             </TouchableOpacity>
+            {/* <TouchableOpacity onPress={()=> handleInsertDataToLocalStorage()}>
+              <ButtonView>
+                <ButtonText>Generer donnees fictives</ButtonText>
+              </ButtonView>
+            </TouchableOpacity> */}
             <TouchableOpacity onPress={()=> disconnect()}>
               <ButtonView>
                 <ButtonText>Se déconnecter</ButtonText>

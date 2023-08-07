@@ -248,27 +248,19 @@ const HomeScreenPreplay = (props) => {
         setUsername(user?.attributes?.given_name);
         setUserId(user?.attributes?.sub);
         dispatch(updateUser({userId: user?.attributes?.sub}));
-        const resultPoints = await useCalculatePoints(user?.attributes?.sub);
         UserService.getUserByUserId(user?.attributes?.sub).then((value) => {
           if(value?.data.length < 1){
-            UserService.saveUser({userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name, rewardPoints: resultPoints}).then((value) => {
+            UserService.saveUser({userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name}).then((value) => {
               if(value.data) {
-                UserService.updateRewardPointsForUser(user?.attributes?.sub, resultPoints);
+                console.log("first synchro done.");
               }
             }).catch((error) => {
               console.error(`Error fetching Cognito User ${error}`);
             })
-          } else {
-            // update points for existing users
-            const userDataRewardPoints = value.data[0].rewardPoints;
-            if(userDataRewardPoints === 0){
-              UserService.updateRewardPointsForUser(user?.attributes?.sub, resultPoints);
-            }
           }
         }).catch((error) => {
           console.error('Error getting current user:', error);
         })
-        
       })();
     },[])
 
@@ -281,7 +273,7 @@ const HomeScreenPreplay = (props) => {
                   CardService.getUserCardsMock().then((userCardsData) => {
                     if(userCardsData){
                       setCurrentUSerDataCard(userCardsData);
-                      UserService.saveDataCard({userId, userDatacard: JSON.stringify(userCardsData["cards"])}).then((value)=> {
+                      UserService.saveDataCardFromLocal({userId, userDatacard: JSON.stringify(userCardsData["cards"])}).then((value)=> {
                         console.log("first synchro done.");
                       });
                       const userCardDone = userCardsData.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
@@ -368,7 +360,7 @@ const HomeScreenPreplay = (props) => {
               CardService.getFamillyProgress().then((famillyProgressData) => {
                 if(famillyProgressData) {
                   setCurrentFamillyProgress(famillyProgressData);
-                  UserService.saveUserFamillyProgressData({userId, famillyProgress: JSON.stringify(famillyProgressData)}).then((value)=> {
+                  UserService.saveUserFamillyProgressDataFromLocal({userId, famillyProgress: JSON.stringify(famillyProgressData)}).then((value)=> {
                     console.log("first synchro done.");
                   })
                 }

@@ -120,6 +120,14 @@ const saveDataCard = async(userId) => {
     }
         
 }
+const saveDataCardFromLocal = async({userId, userDatacard}) => {
+    try {
+        return axios.put(API + "/userdatacard", {userId, cards: userDatacard});
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
 
 const getUserStepperData = async(userId) => {
     try {
@@ -226,6 +234,14 @@ const saveUserFamillyProgressData = async(userId) => {
             const famillyProgress = JSON.stringify(famillyProgressObj);
             console.log({userId, famillyProgress});
             return axios.put(API + "/userfamillyprogress", {userId, famillyProgress})
+    } catch (error) {
+        console.error("ERREUR", error);
+    }
+        
+}
+const saveUserFamillyProgressDataFromLocal = async({userId, famillyProgress}) => {
+    try {
+        return axios.put(API + "/userfamillyprogress", {userId, famillyProgress})
     } catch (error) {
         console.error("ERREUR", error);
     }
@@ -381,6 +397,7 @@ const UserService = {
     getUserByUserId,
     getDataCard,
     saveDataCard,
+    saveDataCardFromLocal,
     saveOneCard,
     getUserStepperData,
     updateInitCardAssociation,
@@ -393,6 +410,7 @@ const UserService = {
     updateUserFamillyProgress,
     getUserFamillyProgressData,
     saveUserFamillyProgressData,
+    saveUserFamillyProgressDataFromLocal,
     getUserRankAndNumberUsers,
     saveProgressionTime,
     getProgressionTime,
