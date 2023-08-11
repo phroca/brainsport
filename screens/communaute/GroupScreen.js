@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Toast from 'react-native-toast-message';
 import { ActivityIndicator, SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, View, Platform } from "react-native";
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import styled from 'styled-components/native';
 import { StatusBar } from "expo-status-bar";
 import { useInitials } from "../../hooks/useInitials";
@@ -12,7 +12,7 @@ import UserCard from "../../components/UserCard";
 import UserConversation from "../../components/UserConversation";
 
 
-const {width, height} = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 const widthContent = width - 50;
 
 const Container = styled.ImageBackground`
@@ -100,7 +100,7 @@ const AvatarMiniCircle = styled.View`
 
   height: 30px;
   width: 30px;
-  background-color: ${props=> props.colortheme};
+  background-color: ${props => props.colortheme};
   align-items: center;
   justify-content: center;
   border: 1px solid #0c0c0c;
@@ -131,34 +131,35 @@ const ClassementUserCardContainer = styled.View`
     margin-bottom: 5px;
 `;
 
-const ClassementRoute = ({groupId}) => {
+const ClassementRoute = ({ groupId }) => {
     const [userList, setUserList] = useState([]);
-    useEffect(()=> {
+    useEffect(() => {
         CommunityService.getGroupUsersByGroupId(groupId).then((value) => {
-            if(value?.data.length > 0) {
+            if (value?.data.length > 0) {
                 setUserList(value?.data);
             }
         });
-    },[])
+    }, [])
     return (
         <View style={{ flex: 1, backgroundColor: '#0f0f0f' }}>
-        <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
-            <ClassementSection>
+            <ScrollView style={{ height: "100%" }} showsVerticalScrollIndicator={false}>
+                <ClassementSection>
                     {userList.map((item, index) => (
                         <ClassementUserCardContainer>
                             <UserCard
-                            key={"classement"+index+"" + item._id}
-                            rewardPoints={item.rewardPoints}
-                            firstName={item.firstName}
-                            color={item.colorProfil}
+                                key={"classement" + index + "" + item._id}
+                                rewardPoints={item.rewardPoints}
+                                firstName={item.firstName}
+                                color={item.colorProfil}
                             />
                         </ClassementUserCardContainer>
                     ))}
-            </ClassementSection>
-        </ScrollView>
+                </ClassementSection>
+            </ScrollView>
         </View>
-    )};
-  
+    )
+};
+
 
 /**
  * ==================
@@ -180,7 +181,7 @@ const DiscussionActionContainer = styled.View`
 
 const DiscussionTextInput = styled.TextInput`
   border: 1px solid #53565f;
-  width: ${widthContent-20}px;
+  width: ${widthContent - 20}px;
   margin-right: 10px;
   height: 40px;
   border-radius: 20px;
@@ -202,68 +203,75 @@ const DiscussionMessages = styled.View`
     padding-bottom: 60px;
 `;
 
-const DiscussionRoute = ({groupData, currentUserId}) => {
+const DiscussionRoute = ({ groupData, currentUserId }) => {
     const [message, setMessage] = useState("");
     const [messageList, setMessageList] = useState([]);
-    useEffect(()=> {
+    useEffect(() => {
         CommunityService.getGroupDiscussion(groupData.id).then((value) => {
-            if(value?.data.length > 0) {
-                setMessageList(value?.data);
+            if (value?.data.length > 0) {
+                const orderedMsgList = value?.data.sort((a, b) => {
+                    return a.dateEnvoi - b.dateEnvoi;
+                })
+                setMessageList(orderedMsgList);
             }
         });
-    },[])
+    }, [])
     const handleSendMessage = () => {
         const dateEnvoi = new Date().getTime();
-        CommunityService.sendMessageToGroupDiscussion({groupId: groupData.id, userId: currentUserId, message, dateEnvoi}).then((value) => {
-            if(value.data) {
+        CommunityService.sendMessageToGroupDiscussion({ groupId: groupData.id, userId: currentUserId, message, dateEnvoi }).then((value) => {
+            if (value.data) {
                 CommunityService.getGroupDiscussion(groupData.id).then((value) => {
-                    if(value?.data.length > 0) {
-                        setMessageList(value?.data);
+                    if (value?.data.length > 0) {
+                        const orderedMsgList = value?.data.sort((a, b) => {
+                            return a.dateEnvoi - b.dateEnvoi;
+                        })
+                        setMessageList(orderedMsgList);
                     }
                 });
+                setMessage("");
             }
         }).catch((error) => {
             Toast.show({
                 type: 'error',
-                text1: "Erreur à l'envoi du message" ,
+                text1: "Erreur à l'envoi du message",
                 text2: "Veuillez réessayer ultérieurement."
             });
         })
     }
 
     return (
-    <View style={{ flex: 1, backgroundColor: '#0f0f0f'}}>
-    <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
-        <DiscussionMessages>
-            {messageList.map((item, index) => (
-                <DiscussionUserContainer>
-                    <UserConversation
-                        color={item.colorProfil}
-                        dateOfCreation={item.dateEnvoi}
-                        firstName={item.firstName}
-                        message={item.message}
-                    />
-                </DiscussionUserContainer>
-            ))}
-        </DiscussionMessages>
-    </ScrollView>
-    <DiscussionActionContainer>
-        <DiscussionTextInput placeholder="Message..." onChangeText={(e) => setMessage(e)}/>
-        <TouchableOpacity onPress={()=> handleSendMessage()}>
-            <ButtonView>
-                <Ionicons name="send" size={24} color="white" />
-            </ButtonView>
-        </TouchableOpacity>
-    </DiscussionActionContainer>
-    </View>
+        <View style={{ flex: 1, backgroundColor: '#0f0f0f' }}>
+            <ScrollView style={{ height: "100%" }} showsVerticalScrollIndicator={false}>
+                <DiscussionMessages>
+                    {messageList.map((item, index) => (
+                        <DiscussionUserContainer>
+                            <UserConversation
+                                color={item.colorProfil}
+                                dateOfCreation={item.dateEnvoi}
+                                firstName={item.firstName}
+                                message={item.message}
+                            />
+                        </DiscussionUserContainer>
+                    ))}
+                </DiscussionMessages>
+            </ScrollView>
+            <DiscussionActionContainer>
+                <DiscussionTextInput value={message} placeholder="Message..." onChangeText={(e) => setMessage(e)} />
+                <TouchableOpacity onPress={() => handleSendMessage()}>
+                    <ButtonView>
+                        <Ionicons name="send" size={24} color="white" />
+                    </ButtonView>
+                </TouchableOpacity>
+            </DiscussionActionContainer>
+        </View>
     )
 };
 
-    /**
- * ==================
- * A PROPOS CSS
- * ==================
- */
+/**
+* ==================
+* A PROPOS CSS
+* ==================
+*/
 
 const AProposDescriptionSection = styled.View`
     margin: 20px;
@@ -302,17 +310,17 @@ const AProposDescriptionContent = styled.Text`
 const ButtonView = styled.View`
 `;
 
-const AProposRoute = ({description, creator}) => (
+const AProposRoute = ({ description, creator }) => (
     <View style={{ flex: 1, backgroundColor: '#0f0f0f' }}>
-    <AProposDescriptionSection>
-        <AProposDescriptionTitle>Description</AProposDescriptionTitle>
-        <AProposDescriptionContent>{description}</AProposDescriptionContent>
-    </AProposDescriptionSection>
-    <Separator />
-    <AProposDescriptionSection>
-        <AProposDescriptionCreatorTitle>Créateur</AProposDescriptionCreatorTitle>
-        <AProposDescriptionContent>{creator}</AProposDescriptionContent>
-    </AProposDescriptionSection>
+        <AProposDescriptionSection>
+            <AProposDescriptionTitle>Description</AProposDescriptionTitle>
+            <AProposDescriptionContent>{description}</AProposDescriptionContent>
+        </AProposDescriptionSection>
+        <Separator />
+        <AProposDescriptionSection>
+            <AProposDescriptionCreatorTitle>Créateur</AProposDescriptionCreatorTitle>
+            <AProposDescriptionContent>{creator}</AProposDescriptionContent>
+        </AProposDescriptionSection>
     </View>
 );
 
@@ -322,15 +330,15 @@ const renderTabBar = props => (
         indicatorStyle={{ backgroundColor: 'white' }}
         style={{ backgroundColor: '#0f0f0f' }}
         renderLabel={({ route, focused, color }) => (
-        <Text style={{ color, margin: 8 }}>
-        {route.title}
-        </Text>
-    )}
+            <Text style={{ color, margin: 8 }}>
+                {route.title}
+            </Text>
+        )}
     />
 );
 
 const GroupScreen = (props) => {
-    const {groupData, currentUserId} = props.route.params;
+    const { groupData, currentUserId } = props.route.params;
     const initials = useInitials(groupData?.title);
     const [index, setIndex] = useState(0);
     const [routes] = useState([
@@ -338,35 +346,35 @@ const GroupScreen = (props) => {
         { key: 'second', title: 'Discussion' },
         { key: 'third', title: 'A Propos' },
     ]);
-    const[currentNbMembers, setCurrentNbMembers] = useState(groupData?.nbMember);
-    useEffect(()=> {
+    const [currentNbMembers, setCurrentNbMembers] = useState(groupData?.nbMember);
+    useEffect(() => {
         CommunityService.getNbMemberOfGroup(groupData.id).then((value) => {
-            if(value?.data.length > 0) {
+            if (value?.data.length > 0) {
                 setCurrentNbMembers(value?.data[0].nbMember);
             }
         });
-    },[])
+    }, [])
     const renderScene = ({ route }) => {
         switch (route.key) {
-          case 'first':
-            return <ClassementRoute groupId={groupData?.id}/>;
-          case 'second':
-            return <DiscussionRoute groupData={groupData} currentUserId={currentUserId}/>;
-          case 'third':
-            return <AProposRoute description={groupData?.description} creator={groupData?.userOwner} />;
-          default:
-            return null;
+            case 'first':
+                return <ClassementRoute groupId={groupData?.id} />;
+            case 'second':
+                return <DiscussionRoute groupData={groupData} currentUserId={currentUserId} />;
+            case 'third':
+                return <AProposRoute description={groupData?.description} creator={groupData?.userOwner} />;
+            default:
+                return null;
         }
-      };
+    };
     return (
         <Container source={require("../../assets/brainsport-bg.png")}>
             <StatusBar hidden />
             <SafeAreaView>
                 <TitleBar>
                     <CloseButton>
-                    <TouchableOpacity onPress={() => {props.navigation.navigate("Communauté"); }}>
-                        <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={() => { props.navigation.navigate("Communauté"); }}>
+                            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+                        </TouchableOpacity>
                     </CloseButton>
                     <AvatarContainer>
                         <AvatarCircle colortheme={groupData?.colortheme}>
@@ -377,30 +385,30 @@ const GroupScreen = (props) => {
                     <SubTitleContainer>
                         <SubTitle>{groupData?.visibility === 1 ? "Public" : "Privée"} </SubTitle>
                         <CircleSeparate />
-                        <SubTitle>{currentNbMembers} membre{currentNbMembers > 1 ? "s":""} </SubTitle>
+                        <SubTitle>{currentNbMembers} membre{currentNbMembers > 1 ? "s" : ""} </SubTitle>
                     </SubTitleContainer>
-                    {groupData.visibility === 0 &&<AjoutAmisSection>
-                        <TouchableOpacity onPress={() => { props.navigation.navigate("AjoutAmisAGroup", {groupData}); }} >
+                    {groupData.visibility === 0 && <AjoutAmisSection>
+                        <TouchableOpacity onPress={() => { props.navigation.navigate("AjoutAmisAGroup", { groupData }); }} >
                             <AvatarMiniContainer>
-                            <AvatarMiniCircle colortheme="#27ae60">
-                                <AvatarMiniText>+</AvatarMiniText>
-                            </AvatarMiniCircle>
-                            <AvatarMiniAddText>Ajouter un ami dans le groupe</AvatarMiniAddText>
+                                <AvatarMiniCircle colortheme="#27ae60">
+                                    <AvatarMiniText>+</AvatarMiniText>
+                                </AvatarMiniCircle>
+                                <AvatarMiniAddText>Ajouter un ami dans le groupe</AvatarMiniAddText>
                             </AvatarMiniContainer>
                         </TouchableOpacity>
                     </AjoutAmisSection>}
                 </TitleBar>
-                <TabView style={{width}}
-                renderTabBar={renderTabBar}
-                navigationState={{ index, routes }}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{ width }}
+                <TabView style={{ width }}
+                    renderTabBar={renderTabBar}
+                    navigationState={{ index, routes }}
+                    renderScene={renderScene}
+                    onIndexChange={setIndex}
+                    initialLayout={{ width }}
                 />
             </SafeAreaView>
         </Container>
-        )
-        
+    )
+
 }
 
 export default GroupScreen;

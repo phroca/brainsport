@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, View, Platform } from "react-native";
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import styled from 'styled-components/native';
 import Card from "../components/Card";
@@ -17,7 +17,7 @@ import initPersoChoices from "../initPersoChoices.json";
 import { Text } from "react-native";
 import { FlatList } from "react-native";
 
-const {width, height} = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 const widthContent = width - 50;
 
 const Container = styled.ImageBackground`
@@ -41,13 +41,13 @@ const CloseButton = styled.View`
 const TouchableArrowLeft = styled.TouchableOpacity`
     position: absolute;
     left: 20px;
-    top:  ${widthContent/3}px;
+    top:  ${widthContent / 3}px;
 `;
 
 const TouchableArrowRight = styled.TouchableOpacity`
     position: absolute;
     right: 20px;
-    top:  ${widthContent/3}px;
+    top:  ${widthContent / 3}px;
 `;
 
 const FlatView = styled.View`
@@ -191,6 +191,7 @@ const InputView = styled.View`
 `;
 const VariantsBox = styled.View`
     width: ${widthContent}px;
+    height: 40px;
     padding: 5px;
     border-bottom: 1px solid grey;
 `;
@@ -205,8 +206,8 @@ const ListContent = styled.View`
     border-radius: 2px;
     padding: 5px;
     flex-direction: row ;
-    justify-content: center;
-    align-items: center;
+    /* justify-content: center;
+    align-items: center; */
     z-index: 15;
 `;
 const CardAssociationPerFamillyScreen = (props) => {
@@ -232,24 +233,24 @@ const CardAssociationPerFamillyScreen = (props) => {
     const dispatch = useDispatch();
     const [resultAudio, setResultAudio] = useState("");
 
-    useEffect(()=> {
-            setPropertiesFromIndex(0);
-    },[]);
+    useEffect(() => {
+        setPropertiesFromIndex(0);
+    }, []);
 
-    useEffect(()=> {
+    useEffect(() => {
         UserService.getUserStepperData(user).then((value) => {
             const dataRaw = value?.data[0];
-            if(dataRaw.initCardAssociation) props.start();
+            if (dataRaw.initCardAssociation) props.start();
         });
 
         props.copilotEvents.on("stop", () => {
-            UserService.updateInitCardAssociation({userId: user, initCardAssociation: false});
+            UserService.updateInitCardAssociation({ userId: user, initCardAssociation: false });
         });
 
         return () => {
             props.copilotEvents.off("stop");
         }
-    },[]);
+    }, []);
 
     const WalkthroughableInputView = walkthroughable(InputView);
     const WalkthroughableConditionTextContainer = walkthroughable(ConditionTextContainer);
@@ -257,23 +258,23 @@ const CardAssociationPerFamillyScreen = (props) => {
     const WalkthroughableSaveButton = walkthroughable(SaveButton);
     const WalkthroughableSigninButton = walkthroughable(SigninButton);
 
-    useEffect(()=> {
+    useEffect(() => {
         Voice.isAvailable().then((value) => {
             console.log("SERVICES VOICE ", value);
         })
-        
+
         const onSpeechResults = (result) => {
-            console.log("result =>",result.value);
+            console.log("result =>", result.value);
             setResults(result.value ?? []);
         };
         const onSpeechStart = (data) => {
             console.log("start =>", data);
         };
-        
+
         const onSpeechError = (error) => {
-        console.log(error);
+            console.log(error);
         };
-        
+
         Voice.onSpeechStart = onSpeechStart;
         Voice.onSpeechError = onSpeechError;
         Voice.onSpeechResults = onSpeechResults;
@@ -281,31 +282,31 @@ const CardAssociationPerFamillyScreen = (props) => {
             Voice.destroy().then(Voice.removeAllListeners);
             setResults([]);
         }
-    },[]);
+    }, []);
 
-    useEffect(()=> {
-        if(audio === "retryRecordAudio") {
+    useEffect(() => {
+        if (audio === "retryRecordAudio") {
             handleStartSpeech();
         }
 
-        if(audio === "closeAudio"){
+        if (audio === "closeAudio") {
             Voice.stop();
             reinitRecords();
         }
     }, [audio]);
 
-    useEffect(()=> {
-        if(results.length > 0) {
-            setResultAudio(results[results.length -1]);
-            if(recordPersonnageStarted) setPersonnage(results[results.length -1]);
-            if(recordVerbeStarted) setVerbe(results[results.length -1]);
-            if(recordObjetStarted) setObjet(results[results.length -1]);
-            if(recordLieuStarted) setLieu(results[results.length -1]);
+    useEffect(() => {
+        if (results.length > 0) {
+            setResultAudio(results[results.length - 1]);
+            if (recordPersonnageStarted) setPersonnage(results[results.length - 1]);
+            if (recordVerbeStarted) setVerbe(results[results.length - 1]);
+            if (recordObjetStarted) setObjet(results[results.length - 1]);
+            if (recordLieuStarted) setLieu(results[results.length - 1]);
             reinitRecords();
         }
     }, [results]);
 
-    useEffect(() =>{
+    useEffect(() => {
 
     })
     const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -331,8 +332,8 @@ const CardAssociationPerFamillyScreen = (props) => {
     const handleFocusLieu = () => {
         refLieu.current.focus();
     }
-    const setPropertiesFromIndex = (itemIndex)=> {
-        
+    const setPropertiesFromIndex = (itemIndex) => {
+
         const currentCard = userCards[itemIndex];
         setPersonnage(currentCard?.personnage);
         setVerbe(currentCard?.verbe);
@@ -344,15 +345,15 @@ const CardAssociationPerFamillyScreen = (props) => {
 
     const calculateChoicesForPersonnnage = (valeur) => {
         const listPersoChoices = initPersoChoices.hero;
-        const listChoicesByValue =listPersoChoices[""+valeur];
+        const listChoicesByValue = listPersoChoices["" + valeur];
         setFilterPersonnageList(listChoicesByValue);
     }
 
     const gerenateConditions = (conditionElement) => {
-        if(conditionElement?.length > 0) {
+        if (conditionElement?.length > 0) {
             const conditionEndText = conditionElement.join(", ");
             return "Le personnage doit commencer par ces lettres : " + conditionEndText;
-            
+
         } else {
             return "Le personnage doit former un couple avec la carte " + conditionElement?.couple;
         }
@@ -363,22 +364,22 @@ const CardAssociationPerFamillyScreen = (props) => {
         const colorAssociation = {
             "coeur": 0,
             "carreau": 1,
-            "trefle": 2, 
+            "trefle": 2,
             "pique": 3,
         };
         return (colorAssociation[color] * numbercardPerFamilly) + itemindex;
     }
 
-    const handleSaveCurrentCard = () =>{
+    const handleSaveCurrentCard = () => {
         setloadingSaveCard(true);
         const currentCard = userCards[currentItemIndex];
-        if(checkConditionsCard(personnage, currentCard?.conditions)){
-            UserService.saveOneCard(userCardsFull, calculateIndexToCardsFull(color, currentItemIndex), personnage, verbe, objet, lieu).then(()=> {
+        if (checkConditionsCard(personnage, currentCard?.conditions)) {
+            UserService.saveOneCard(userCardsFull, calculateIndexToCardsFull(color, currentItemIndex), personnage, verbe, objet, lieu).then(() => {
                 setloadingSaveCard(false);
                 Toast.show({
-                type: 'success',
-                text1: 'Enregistrement réussi',
-                text2:  "La carte a bien été enregistrée"
+                    type: 'success',
+                    text1: 'Enregistrement réussi',
+                    text2: "La carte a bien été enregistrée"
                 });
                 checkFamillyCardDone(color);
             }).catch((e) => {
@@ -386,7 +387,7 @@ const CardAssociationPerFamillyScreen = (props) => {
                 console.warn(e);
                 Toast.show({
                     type: 'error',
-                    text1: "Erreur à l'enregistrement" ,
+                    text1: "Erreur à l'enregistrement",
                     text2: "veuillez réessayer ultérieurement."
                 });
             });
@@ -395,7 +396,7 @@ const CardAssociationPerFamillyScreen = (props) => {
             const conditionEndText = currentCard?.conditions.join(", ");
             Toast.show({
                 type: 'error',
-                text1: "Erreur à l'enregistrement" ,
+                text1: "Erreur à l'enregistrement",
                 text2: "le personnage doit commencer par ces lettres : " + conditionEndText
             });
         }
@@ -405,25 +406,25 @@ const CardAssociationPerFamillyScreen = (props) => {
     const handlePrevCard = () => {
         const prevItemIndex = currentItemIndex > 0 ? currentItemIndex - 1 : 0;
         const offset = prevItemIndex * width;
-        ref?.current?.scrollToOffset({offset});
+        ref?.current?.scrollToOffset({ offset });
         setCurrentItemIndex(prevItemIndex);
         setPropertiesFromIndex(prevItemIndex);
     }
     const handleNextCard = () => {
-        if(checkElementNotEmpty() && checkCurrentElementNotEmpty()) {
+        if (checkElementNotEmpty() && checkCurrentElementNotEmpty()) {
             const nextItemIndex = currentItemIndex < userCards.length - 1 ? currentItemIndex + 1 : userCards.length - 1;
             const offset = nextItemIndex * width;
-            ref?.current?.scrollToOffset({offset});      
+            ref?.current?.scrollToOffset({ offset });
             setPropertiesFromIndex(nextItemIndex);
             setCurrentItemIndex(nextItemIndex);
         } else {
             Toast.show({
                 type: 'error',
-                text1: "Erreur à l'enregistrement de la carte" ,
+                text1: "Erreur à l'enregistrement de la carte",
                 text2: "veuillez compléter les éléments de la carte."
-              });
+            });
         }
-        
+
     }
 
     const checkElementNotEmpty = () => {
@@ -435,16 +436,16 @@ const CardAssociationPerFamillyScreen = (props) => {
     }
 
     const calculateNextColor = (colorIn) => {
-        if(colorIn === "coeur") return "carreau";
-        if(colorIn === "carreau") return "trefle";
-        if(colorIn === "trefle" ||colorIn === "pique") return "pique";
+        if (colorIn === "coeur") return "carreau";
+        if (colorIn === "carreau") return "trefle";
+        if (colorIn === "trefle" || colorIn === "pique") return "pique";
     }
 
     const checkConditionsCard = (personnage, conditionElement) => {
-        if(personnage === "") return true;
-        if(!personnage) return true;
+        if (personnage === "") return true;
+        if (!personnage) return true;
         const personnageLowCase = personnage.toLowerCase();
-        if(conditionElement?.length > 0) {
+        if (conditionElement?.length > 0) {
             return conditionElement.filter(elt => {
                 const eltLowCase = elt.toLowerCase();
                 return personnageLowCase.indexOf(eltLowCase) === 0;
@@ -461,55 +462,55 @@ const CardAssociationPerFamillyScreen = (props) => {
         const famillyProgressEightFirstParsed = famillyProgress[colorIn].eightFirstCardFilled;
         const famillyProgressAllParsed = famillyProgress[colorIn].allCardFilled;
         console.log("famillyProgressEightFirstParsed : " + famillyProgressEightFirstParsed + " famillyProgressAllParsed " + famillyProgressAllParsed);
-        
-        if(!isListCardFamillyRemplie){
+
+        if (!isListCardFamillyRemplie) {
             UserService.incrementRewardPointsForUser(user, 5);
         }
-        if(isListCardFamillyRemplieEightFirst && !famillyProgressEightFirstParsed) {
-            UserService.updateUserFamillyProgress(user, famillyProgress, colorIn, "eightFirstCardFilled", true).then((data)=> {
-                if(data.data) {
+        if (isListCardFamillyRemplieEightFirst && !famillyProgressEightFirstParsed) {
+            UserService.updateUserFamillyProgress(user, famillyProgress, colorIn, "eightFirstCardFilled", true).then((data) => {
+                if (data.data) {
                     UserService.incrementRewardPointsForUser(user, 5).then((result) => {
-                        if(result.data) {
-                            props.navigation.navigate("FamillyModal", {texteContent : "Vous avez suffisament créé de cartes pour commencer à jouer et à créer des histoires !"});
+                        if (result.data) {
+                            props.navigation.navigate("FamillyModal", { texteContent: "Vous avez suffisament créé de cartes pour commencer à jouer et à créer des histoires !" });
                         }
                     })
                 }
             });
         }
-        if(isListCardFamillyRemplie && !famillyProgressAllParsed){
-            UserService.updateUserFamillyProgress(user, famillyProgress, colorIn, "allCardFilled", true).then((data)=> {
-                if(data) {
+        if (isListCardFamillyRemplie && !famillyProgressAllParsed) {
+            UserService.updateUserFamillyProgress(user, famillyProgress, colorIn, "allCardFilled", true).then((data) => {
+                if (data) {
                     const nextColor = calculateNextColor(colorIn);
                     console.log("NEXTCOLOR =>", nextColor);
                     console.log("COLORIN =>", colorIn);
-                    if(nextColor === colorIn){
-                        UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "eightFirstCardFilled", true).then((data)=> {
+                    if (nextColor === colorIn) {
+                        UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "eightFirstCardFilled", true).then((data) => {
                             UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "allCardFilled", true).then((data) => {
-                                if(data.data) {
+                                if (data.data) {
                                     UserService.incrementRewardPointsForUser(user, 5).then((result) => {
-                                        if(result.data) {
-                                            props.navigation.navigate("FamillyModal", {texteContent : "Félicitations ! Vous avez rempli toutes les familles de cartes ! Vous pouvez désormais aprendre le tableau !"});
+                                        if (result.data) {
+                                            props.navigation.navigate("FamillyModal", { texteContent: "Félicitations ! Vous avez rempli toutes les familles de cartes ! Vous pouvez désormais aprendre le tableau !" });
                                         }
                                     })
                                 }
                             });
-                        }); 
-                    } else {                    
-                        UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "eightFirstCardFilled", false).then((data)=> {
+                        });
+                    } else {
+                        UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "eightFirstCardFilled", false).then((data) => {
                             UserService.updateUserFamillyProgress(user, famillyProgress, nextColor, "allCardFilled", false).then((data) => {
-                                if(data.data) {
+                                if (data.data) {
                                     UserService.incrementRewardPointsForUser(user, 5).then((result) => {
-                                        if(result.data) {
-                                            props.navigation.navigate("FamillyModal", {texteContent : "Vous avez rempli toute une famille de carte ! Vous pouvez remplir la famille suivante !"});
+                                        if (result.data) {
+                                            props.navigation.navigate("FamillyModal", { texteContent: "Vous avez rempli toute une famille de carte ! Vous pouvez remplir la famille suivante !" });
                                         }
                                     })
                                 }
                             });
-                        }); 
+                        });
                     }
                 }
             });
-        } 
+        }
     }
 
     const openStartSpeech = (input) => {
@@ -523,7 +524,7 @@ const CardAssociationPerFamillyScreen = (props) => {
                 break;
             case "objet":
                 setRecordObjetStarted(true);
-            break;         
+                break;
             case "lieu":
                 setRecordLieuStarted(true);
                 break;
@@ -536,15 +537,15 @@ const CardAssociationPerFamillyScreen = (props) => {
         try {
             setResultAudio("");
             await Voice.start("fr-FR");
-            if(input){
+            if (input) {
                 openStartSpeech(input);
             }
-        } catch (e){
+        } catch (e) {
             console.error(e);
         }
     }
 
-    const reinitRecords = () =>{
+    const reinitRecords = () => {
         setRecordPersonnageStarted(false);
         setRecordVerbeStarted(false);
         setRecordObjetStarted(false);
@@ -557,7 +558,7 @@ const CardAssociationPerFamillyScreen = (props) => {
 
     const handleStopSpeechForPersonnage = async () => {
         await Voice.stop();
-        setPersonnage(results[results.length -1]);
+        setPersonnage(results[results.length - 1]);
         setRecordPersonnageStarted(false);
     }
 
@@ -567,7 +568,7 @@ const CardAssociationPerFamillyScreen = (props) => {
 
     const handleStopSpeechForVerbe = async () => {
         await Voice.stop();
-        setVerbe(results[results.length -1]);
+        setVerbe(results[results.length - 1]);
         setRecordVerbeStarted(false);
     }
 
@@ -577,7 +578,7 @@ const CardAssociationPerFamillyScreen = (props) => {
 
     const handleStopSpeechForObjet = async () => {
         await Voice.stop();
-        setObjet(results[results.length -1]);
+        setObjet(results[results.length - 1]);
         setRecordObjetStarted(false);
     }
 
@@ -587,7 +588,7 @@ const CardAssociationPerFamillyScreen = (props) => {
 
     const handleStopSpeechForLieu = async () => {
         await Voice.stop();
-        setLieu(results[results.length -1]);
+        setLieu(results[results.length - 1]);
         setRecordLieuStarted(false);
     }
 
@@ -597,7 +598,7 @@ const CardAssociationPerFamillyScreen = (props) => {
     }
 
     const filterPersonnageChoiceList = (event) => {
-        if(event !== "") {
+        if (event !== "") {
             const datafiltered = filterPersonnageList.filter(item => {
                 return item.toLowerCase().indexOf(event.toLowerCase()) > -1;
             })
@@ -605,217 +606,219 @@ const CardAssociationPerFamillyScreen = (props) => {
         } else {
             calculateChoicesForPersonnnage(userCards[currentItemIndex].valeur);
         }
-        
+
         setPersonnage(event);
-        
+
     }
     return (
         <Container source={require("../assets/brainsport-bg.png")}>
             <StatusBar hidden />
             <SafeAreaView>
-            <TitleBar>
+                <TitleBar>
                     <CloseButton>
-                    <TouchableOpacity onPress={() => props.navigation.push("Accueil Preliminaire")}>
-                    <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={() => props.navigation.push("Accueil Preliminaire")}>
+                            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+                        </TouchableOpacity>
                     </CloseButton>
                 </TitleBar>
                 <KeyboardAvoidingView behavior="position">
                     <Animated.FlatList
-                    data={userCards}
-                    ref={ref}
-                    style={{}}
-                    keyExtractor={item => "card-"+item.couleur+"-"+item.valeur}
-                    horizontal
-                    scrollEventThrottle={32}
-                    onMomentumScrollEnd={updateCurrentItemIndex}
-                    pagingEnabled={false}
-                    scrollEnabled={false}
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({item, index}) => {
-                        return (
-                        <FlatView>
-                            <Card
-                            key={"card-"+item.couleur+"-"+item.valeur}
-                            couleur={item.couleur}
-                            valeur={item.valeur}
-                            />
-                        </FlatView>
-                        );
-                    }}
+                        data={userCards}
+                        ref={ref}
+                        style={{}}
+                        keyExtractor={item => "card-" + item.couleur + "-" + item.valeur}
+                        horizontal
+                        scrollEventThrottle={32}
+                        onMomentumScrollEnd={updateCurrentItemIndex}
+                        pagingEnabled={false}
+                        scrollEnabled={false}
+                        showsHorizontalScrollIndicator={false}
+                        renderItem={({ item, index }) => {
+                            return (
+                                <FlatView>
+                                    <Card
+                                        key={"card-" + item.couleur + "-" + item.valeur}
+                                        couleur={item.couleur}
+                                        valeur={item.valeur}
+                                    />
+                                </FlatView>
+                            );
+                        }}
                     />
-                    {currentItemIndex > 0 && <TouchableArrowLeft onPress={()=> handlePrevCard()}>
+                    {currentItemIndex > 0 && <TouchableArrowLeft onPress={() => handlePrevCard()}>
                         <Ionicons name="chevron-back" size={50} color="#FFFFFF" />
                     </TouchableArrowLeft>}
-                    {currentItemIndex < userCards.length - 1  && <TouchableArrowRight onPress={()=> handleNextCard()}>
+                    {currentItemIndex < userCards.length - 1 && <TouchableArrowRight onPress={() => handleNextCard()}>
                         <Ionicons name="chevron-forward" size={50} color="#FFFFFF" />
                     </TouchableArrowRight>}
                     <CardForm>
-                        <CopilotStep 
-                        text="Chaque personnage de chaque carte doit répondre à une règle en ce qui concerne l’initiale de son nom."
-                        order={1}
-                        name="second-step">
-                        <WalkthroughableConditionTextContainer>
-                            <ConditionText>
-                                {conditionalText}
-                            </ConditionText>
-                        </WalkthroughableConditionTextContainer>
+                        <CopilotStep
+                            text="Chaque personnage de chaque carte doit répondre à une règle en ce qui concerne l’initiale de son nom."
+                            order={1}
+                            name="second-step">
+                            <WalkthroughableConditionTextContainer>
+                                <ConditionText>
+                                    {conditionalText}
+                                </ConditionText>
+                            </WalkthroughableConditionTextContainer>
                         </CopilotStep>
                         <TouchableWithoutFeedback onPress={() => handleFocusPersonnage()}>
-                        
-                        <InputContainer style={{zIndex: 10}}>
-                            <CopilotStep 
-                            text="Choisissez bien des personnages que vous visionnez facilement."
-                            order={2}
-                            name="third-step">
-                                <WalkthroughableInputView />
-                            </CopilotStep>
-                            <PreText>Personnage</PreText>
-                            <TextInputPerso ref={refPersonnage} value={personnage} onChangeText={(e)=> filterPersonnageChoiceList(e)} onFocus={()=> setIsPersoClicked(true)} />
-                            {isPersoClicked && 
-                                <ListContent style={{height: filterPersonnageList.length === 1 ? 40 : 30*filterPersonnageList.length}}>
-                                    <FlatList
-                                        data={filterPersonnageList}
-                                        style={{zIndex: 11}}
-                                        renderItem={({item, index}) => (
-                                            <TouchableOpacity
-                                            onPress={() => onPersonnageSelected(item)} style={{zIndex: 16}}>
-                                            <VariantsBox>
-                                                <Text style={{color: "#FFFFFF"}}>
-                                                {item || ''}
-                                                </Text>
-                                            </VariantsBox>
-                                            </TouchableOpacity>
-                                        )}
-                                        keyExtractor={item => item}
-                                        />
-                                </ListContent>}
-                                
-                            <PostTextWithArrow>
-                            {isPersoClicked && <TouchableOpacity style={{width:30}} onPress={()=> setIsPersoClicked(false)}>
-                                    <Ionicons name="md-caret-up" size={20} color="white" />
-                                </TouchableOpacity> }
-                            {!isPersoClicked && <TouchableOpacity style={{width:30}} onPress={()=> setIsPersoClicked(true)}>
-                                    <Ionicons name="md-caret-down" size={20} color="white" />
-                                </TouchableOpacity> }
-                            {!recordPersonnageStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForPersonnage()}>
-                                    <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
-                                </TouchableOpacity> }
-                            {recordPersonnageStarted && <TouchableOpacity onPress={()=> handleStopSpeechForPersonnage()}>
-                                <MaterialCommunityIcons name="record" size={20} color="red" />
-                                </TouchableOpacity> }
 
-                            </PostTextWithArrow>
-                        </InputContainer>
+                            <InputContainer style={{ zIndex: 10 }}>
+                                <CopilotStep
+                                    text="Choisissez bien des personnages que vous visionnez facilement."
+                                    order={2}
+                                    name="third-step">
+                                    <WalkthroughableInputView />
+                                </CopilotStep>
+                                <PreText>Personnage</PreText>
+                                <TextInputPerso ref={refPersonnage} value={personnage} onChangeText={(e) => filterPersonnageChoiceList(e)} onFocus={() => setIsPersoClicked(true)} />
+                                {isPersoClicked &&
+                                    <ListContent style={{ height: filterPersonnageList.length === 1 ? 40 : 40 * filterPersonnageList.length }}>
+                                        <FlatList
+                                            data={filterPersonnageList}
+                                            style={{ zIndex: 11 }}
+                                            renderItem={({ item, index }) => (
+                                                <TouchableOpacity
+                                                    onPress={() => onPersonnageSelected(item)} style={{ zIndex: 16 }}>
+                                                    <VariantsBox>
+                                                        <Text style={{ color: "#FFFFFF", }}>
+                                                            {item || ''}
+                                                        </Text>
+                                                    </VariantsBox>
+                                                </TouchableOpacity>
+                                            )}
+                                            keyExtractor={item => item}
+                                        />
+                                    </ListContent>}
+
+                                <PostTextWithArrow>
+                                    {isPersoClicked && <TouchableOpacity style={{ width: 30 }} onPress={() => setIsPersoClicked(false)}>
+                                        <Ionicons name="md-caret-up" size={20} color="white" />
+                                    </TouchableOpacity>}
+                                    {!isPersoClicked && <TouchableOpacity style={{ width: 30 }} onPress={() => setIsPersoClicked(true)}>
+                                        <Ionicons name="md-caret-down" size={20} color="white" />
+                                    </TouchableOpacity>}
+                                    {!recordPersonnageStarted && <TouchableOpacity onPress={() => handleStartSpeechForPersonnage()}>
+                                        <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                                    </TouchableOpacity>}
+                                    {recordPersonnageStarted && <TouchableOpacity onPress={() => handleStopSpeechForPersonnage()}>
+                                        <MaterialCommunityIcons name="record" size={20} color="red" />
+                                    </TouchableOpacity>}
+
+                                </PostTextWithArrow>
+                            </InputContainer>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => handleFocusVerbe()}>
-                        
-                        <InputContainer>
-                            <CopilotStep 
-                            text="Choisissez bien des verbes qui amènent un mouvement physique. Les activités sexuelles peuvent en faire partie."
-                            order={3}
-                            name="fourth-step">
-                                <WalkthroughableInputView />
-                            </CopilotStep>
-                            <PreText>Verbe</PreText>
-                            <TextInput ref={refVerbe} value={verbe} onChangeText={(e)=> setVerbe(e)} />
-                            <PostText>
-                            {!recordVerbeStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForVerbe()}>
-                                    <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
-                                </TouchableOpacity> }
-                            {recordVerbeStarted && <TouchableOpacity onPress={()=> handleStopSpeechForVerbe()}>
-                                <MaterialCommunityIcons name="record" size={20} color="red" />
-                                </TouchableOpacity> }
 
-                            </PostText>
-                        </InputContainer>
-                        
+                            <InputContainer>
+                                <CopilotStep
+                                    text="Choisissez bien des verbes qui amènent un mouvement physique. Les activités sexuelles peuvent en faire partie."
+                                    order={3}
+                                    name="fourth-step">
+                                    <WalkthroughableInputView />
+                                </CopilotStep>
+                                <PreText>Verbe</PreText>
+                                <TextInput ref={refVerbe} value={verbe} onChangeText={(e) => setVerbe(e)} />
+                                <PostText>
+                                    {!recordVerbeStarted && <TouchableOpacity onPress={() => handleStartSpeechForVerbe()}>
+                                        <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                                    </TouchableOpacity>}
+                                    {recordVerbeStarted && <TouchableOpacity onPress={() => handleStopSpeechForVerbe()}>
+                                        <MaterialCommunityIcons name="record" size={20} color="red" />
+                                    </TouchableOpacity>}
+
+                                </PostText>
+                            </InputContainer>
+
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => handleFocusObjet()}>
-                        
-                        <InputContainer>
-                        <CopilotStep 
-                        text="Choisissez bien des objets qui peuvent être grossis, en couleur, qui peuvent faire du bruit."
-                        order={4}
-                        name="fifth-step">
-                            <WalkthroughableInputView />
-                        </CopilotStep>
-                            <PreText>Objet</PreText>
-                            <TextInput ref={refObjet} value={objet} onChangeText={(e)=> setObjet(e)} />
-                            <PostText>
-                            {!recordObjetStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForObjet()}>
-                                    <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
-                                </TouchableOpacity> }
-                            {recordObjetStarted && <TouchableOpacity onPress={()=> handleStopSpeechForObjet()}>
-                                <MaterialCommunityIcons name="record" size={20} color="red" />
-                                </TouchableOpacity> }
 
-                            </PostText>
-                        </InputContainer>
+                            <InputContainer>
+                                <CopilotStep
+                                    text="Choisissez bien des objets qui peuvent être grossis, en couleur, qui peuvent faire du bruit."
+                                    order={4}
+                                    name="fifth-step">
+                                    <WalkthroughableInputView />
+                                </CopilotStep>
+                                <PreText>Objet</PreText>
+                                <TextInput ref={refObjet} value={objet} onChangeText={(e) => setObjet(e)} />
+                                <PostText>
+                                    {!recordObjetStarted && <TouchableOpacity onPress={() => handleStartSpeechForObjet()}>
+                                        <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                                    </TouchableOpacity>}
+                                    {recordObjetStarted && <TouchableOpacity onPress={() => handleStopSpeechForObjet()}>
+                                        <MaterialCommunityIcons name="record" size={20} color="red" />
+                                    </TouchableOpacity>}
+
+                                </PostText>
+                            </InputContainer>
                         </TouchableWithoutFeedback>
                         <TouchableWithoutFeedback onPress={() => handleFocusLieu()}>
-                        
-                        <InputContainer>
-                            <CopilotStep 
-                            text="Choisissez bien des lieux faciles à visualiser, avec des environnements riches en détails et, si possible, en bruits caractéristiques, ou en odeurs."
-                            order={5}
-                            name="sixth-step">
-                                <WalkthroughableInputView />
-                            </CopilotStep>
-                            <PreText>Lieu</PreText>
-                            <TextInput ref={refLieu} value={lieu} onChangeText={(e)=> setLieu(e)} />
-                            <PostText>
-                            {!recordLieuStarted &&<TouchableOpacity onPress={()=> handleStartSpeechForLieu()}>
-                                    <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
-                                </TouchableOpacity> }
-                            {recordLieuStarted && <TouchableOpacity onPress={()=> handleStopSpeechForLieu()}>
-                                <MaterialCommunityIcons name="record" size={20} color="red" />
-                                </TouchableOpacity> }
 
-                            </PostText>
-                        </InputContainer>
+                            <InputContainer>
+                                <CopilotStep
+                                    text="Choisissez bien des lieux faciles à visualiser, avec des environnements riches en détails et, si possible, en bruits caractéristiques, ou en odeurs."
+                                    order={5}
+                                    name="sixth-step">
+                                    <WalkthroughableInputView />
+                                </CopilotStep>
+                                <PreText>Lieu</PreText>
+                                <TextInput ref={refLieu} value={lieu} onChangeText={(e) => setLieu(e)} />
+                                <PostText>
+                                    {!recordLieuStarted && <TouchableOpacity onPress={() => handleStartSpeechForLieu()}>
+                                        <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
+                                    </TouchableOpacity>}
+                                    {recordLieuStarted && <TouchableOpacity onPress={() => handleStopSpeechForLieu()}>
+                                        <MaterialCommunityIcons name="record" size={20} color="red" />
+                                    </TouchableOpacity>}
+
+                                </PostText>
+                            </InputContainer>
                         </TouchableWithoutFeedback>
-                        <CopilotStep 
-                        text="Enregistrez les information de la carte lorsque vous avez correctement rempli."
-                        order={6}
-                        name="seventh-step">
-                        <WalkthroughableSaveButton>
-                            <TouchableOpacity onPress={()=> handleSaveCurrentCard()}>
-                                <ButtonSaveView>
-                                    {!loadingSaveCard && <ButtonSaveText>Enregistrer</ButtonSaveText>}
-                                    {loadingSaveCard && <ActivityIndicator size="large" color="#FFFFFF" />}
-                                </ButtonSaveView>
-                            </TouchableOpacity>
-                        </WalkthroughableSaveButton>
+                        <CopilotStep
+                            text="Enregistrez les information de la carte lorsque vous avez correctement rempli."
+                            order={6}
+                            name="seventh-step">
+                            <WalkthroughableSaveButton>
+                                <TouchableOpacity onPress={() => handleSaveCurrentCard()}>
+                                    <ButtonSaveView>
+                                        {!loadingSaveCard && <ButtonSaveText>Enregistrer</ButtonSaveText>}
+                                        {loadingSaveCard && <ActivityIndicator size="large" color="#FFFFFF" />}
+                                    </ButtonSaveView>
+                                </TouchableOpacity>
+                            </WalkthroughableSaveButton>
                         </CopilotStep>
-                        <CopilotStep 
-                        text="Une fois enregistré, vous pourrez passer à la carte suivante. Bon jeu !"
-                        order={7}
-                        name="eighth-step">
-                        <WalkthroughableSigninButton>
-                            {/* <TouchableOpacity onPress={()=> handlePrevCard()}>
+                        <CopilotStep
+                            text="Une fois enregistré, vous pourrez passer à la carte suivante. Bon jeu !"
+                            order={7}
+                            name="eighth-step">
+                            <WalkthroughableSigninButton>
+                                {/* <TouchableOpacity onPress={()=> handlePrevCard()}>
                                 <ButtonView>
                                 <ButtonText>Carte Précédente</ButtonText>
                                 </ButtonView>
                             </TouchableOpacity>
                             <ViewSpace /> */}
-                            <TouchableOpacity onPress={()=> handleNextCard()}>
-                                <ButtonView>
-                                <ButtonText>Carte Suivante</ButtonText>
-                                </ButtonView>
-                            </TouchableOpacity>
-                        </WalkthroughableSigninButton>
+                                <TouchableOpacity onPress={() => handleNextCard()}>
+                                    <ButtonView>
+                                        <ButtonText>Carte Suivante</ButtonText>
+                                    </ButtonView>
+                                </TouchableOpacity>
+                            </WalkthroughableSigninButton>
                         </CopilotStep>
                     </CardForm>
                 </KeyboardAvoidingView>
             </SafeAreaView>
-            <AudioRecordModal resultAudio={resultAudio} restartSpeech={handleStartSpeech}/>
+            <AudioRecordModal resultAudio={resultAudio} restartSpeech={handleStartSpeech} />
         </Container>);
 }
 
-export default copilot({overlay: "svg", animated: true, verticalOffset: Platform.OS ==='ios'? 0 : 30, labels: {
-    previous: "Précédent",
-    next: "Suivant",
-    skip: "Passer",
-    finish: "Terminer"
-  }, stepNumberComponent: StepNumberComponent, tooltipComponent: TooltipComponent})(CardAssociationPerFamillyScreen);
+export default copilot({
+    overlay: "svg", animated: true, verticalOffset: Platform.OS === 'ios' ? 0 : 30, labels: {
+        previous: "Précédent",
+        next: "Suivant",
+        skip: "Passer",
+        finish: "Terminer"
+    }, stepNumberComponent: StepNumberComponent, tooltipComponent: TooltipComponent
+})(CardAssociationPerFamillyScreen);

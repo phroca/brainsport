@@ -2,12 +2,13 @@ import { StatusBar } from 'expo-status-bar';
 import { Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Animated, Platform } from 'react-native';
 import styled from 'styled-components/native';
 import { useFocusEffect } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 // import Card from '../components/Card';
 // import Menu from '../components/menu/Menu';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Auth} from "aws-amplify";
+import { Auth } from "aws-amplify";
 import CardService from '../services/Card.service';
 import { Ionicons } from '@expo/vector-icons';
 import CheckBox from '../components/CheckBox';
@@ -25,7 +26,7 @@ import { useCalculatePoints } from '../hooks/useCalculatePoints';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const widthContent = screenWidth  - 50;
+const widthContent = screenWidth - 50;
 const widthFamillyCard = screenWidth - 16;
 
 const Container = styled.ImageBackground`
@@ -121,7 +122,7 @@ width: ${widthContent}px;
 `
 const PlayCard = styled.View`
   position: relative;
-  width: ${widthContent/2-5}px;
+  width: ${widthContent / 2 - 5}px;
   margin: 5px 0px;
   //padding: 0 15px;
   background-color: #FFFFFF;
@@ -155,7 +156,7 @@ const Label = styled.Text`
   
 `;
 
-const LogoCard= styled.View`
+const LogoCard = styled.View`
 
   justify-content: center;
   align-items: center;
@@ -205,101 +206,86 @@ const AnimatedPlayCard = Animated.createAnimatedComponent(PlayCard);
 const AnimatedFamillychosen = Animated.createAnimatedComponent(Famillychosen);
 
 const HomeScreenPreplay = (props) => {
-    const [flagUserDataCard, setFlagUserDataCard] = useState(false);
-    const [flagFamillyProgress, setFlagFamillyProgress] = useState(false);
-    const [username, setUsername] = useState("");
-    const [userId, setUserId] = useState("");
-    const userFrom = useSelector(state => state.user.value);
-    // Flag pour detecter si on a passé l'etape de la première 
-    // découverte
-    const [prePlayDataIn, setPrePlayDataIn] = useState(true);
-    const [currentUSerDataCard, setCurrentUSerDataCard] = useState({"userId": "", "cards": []})
-    const [userCardSaved, setUserCardSaved] = useState([]);
-    const [informationDataCard, setInformationDataCard] = useState({
-        "cardDoneLength": 0,
-        "numberCardToPlayForHistory": 0,
-        "numberOfHistoriesToPlay": 0
+  const [flagUserDataCard, setFlagUserDataCard] = useState(false);
+  const [flagFamillyProgress, setFlagFamillyProgress] = useState(false);
+  const [username, setUsername] = useState("");
+  const [userId, setUserId] = useState("");
+  const userFrom = useSelector(state => state.user.value);
+  // Flag pour detecter si on a passé l'etape de la première 
+  // découverte
+  const [prePlayDataIn, setPrePlayDataIn] = useState(true);
+  const [currentUSerDataCard, setCurrentUSerDataCard] = useState({ "userId": "", "cards": [] })
+  const [userCardSaved, setUserCardSaved] = useState([]);
+  const [informationDataCard, setInformationDataCard] = useState({
+    "cardDoneLength": 0,
+    "numberCardToPlayForHistory": 0,
+    "numberOfHistoriesToPlay": 0
 
-    })
-    const [currentFamillyProgress, setCurrentFamillyProgress] = useState({   
-      "carreau": {
-          "eightFirstCardFilled": false,
-          "allCardFilled": false
-      },
-      "coeur": {
-          "eightFirstCardFilled": false,
-          "allCardFilled": false
-      },
-      "trefle": {
-          "eightFirstCardFilled": false,
-          "allCardFilled": false
-      },          
-      "pique": {
-          "eightFirstCardFilled": false,
-          "allCardFilled": false
-      },
-    });
-    const dispatch = useDispatch();
+  })
+  const [currentFamillyProgress, setCurrentFamillyProgress] = useState({
+    "carreau": {
+      "eightFirstCardFilled": false,
+      "allCardFilled": false
+    },
+    "coeur": {
+      "eightFirstCardFilled": false,
+      "allCardFilled": false
+    },
+    "trefle": {
+      "eightFirstCardFilled": false,
+      "allCardFilled": false
+    },
+    "pique": {
+      "eightFirstCardFilled": false,
+      "allCardFilled": false
+    },
+  });
+  const dispatch = useDispatch();
 
 
-    useEffect(()=> {
-      (async() => {
-        const user = await Auth.currentAuthenticatedUser();
-        setUsername(user?.attributes?.given_name);
-        setUserId(user?.attributes?.sub);
-        dispatch(updateUser({userId: user?.attributes?.sub}));
-        UserService.getUserByUserId(user?.attributes?.sub).then((value) => {
-          if(value?.data.length < 1){
-            UserService.saveUser({userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name}).then((value) => {
-              if(value.data) {
-                console.log("first synchro done.");
-              }
-            }).catch((error) => {
-              console.error(`Error fetching Cognito User ${error}`);
-            })
-          }
-        }).catch((error) => {
-          console.error('Error getting current user:', error);
-        })
-      })();
-    },[])
+  useEffect(() => {
+    (async () => {
+      const user = await Auth.currentAuthenticatedUser();
+      setUsername(user?.attributes?.given_name);
+      setUserId(user?.attributes?.sub);
+      dispatch(updateUser({ userId: user?.attributes?.sub }));
+      UserService.getUserByUserId(user?.attributes?.sub).then((value) => {
+        if (value?.data.length < 1) {
+          UserService.saveUser({ userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name }).then((value) => {
+            if (value.data) {
+              console.log("first synchro done.");
+            }
+          }).catch((error) => {
+            console.error(`Error fetching Cognito User ${error}`);
+          })
+        }
+      }).catch((error) => {
+        console.error('Error getting current user:', error);
+        Toast.show({
+          type: 'error',
+          text1: "Erreur de récupération des données ",
+          text2: "Veuillez réessayer ultérieurement."
+        });
+      })
+    })();
+  }, [])
 
-    useFocusEffect(
-      useCallback(() => {
-        if(!flagUserDataCard){         
-            if(userId !== "") {
-              UserService.getDataCard(userId).then((value) => {
-                if(value?.data.length < 1) {
-                  CardService.getUserCardsMock().then((userCardsData) => {
-                    if(userCardsData){
-                      setCurrentUSerDataCard(userCardsData);
-                      UserService.saveDataCardFromLocal({userId, userDatacard: JSON.stringify(userCardsData["cards"])}).then((value)=> {
-                        console.log("first synchro done.");
-                      });
-                      const userCardDone = userCardsData.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
-                      setUserCardSaved(userCardDone);
-                      const userCardDoneLength = userCardDone.length;
-                      const moduloUserCardDone = userCardDoneLength % 4;  
-                      const numberCardToPlayForHistory = (userCardDoneLength - moduloUserCardDone);
-                      const numberOfHistoriesToPlay = Math.floor(numberCardToPlayForHistory / 4);
-                      setInformationDataCard({
-                        ...informationDataCard,
-                        cardDoneLength: userCardDoneLength,
-                        numberCardToPlayForHistory: numberCardToPlayForHistory,
-                        numberOfHistoriesToPlay: numberOfHistoriesToPlay
-                      });
-                    }
-                  }).catch((error) => {
-                    console.error(`Error fetching Data card ${error}`);
-                  })
-                } else {
-                  const dataRaw = value?.data[0];
-                  const userDataFromServer= JSON.parse(dataRaw.cards);
-                  setCurrentUSerDataCard({"userId": dataRaw.userId, "cards": userDataFromServer});
-                  const userCardDone = userDataFromServer.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
+  useFocusEffect(
+    useCallback(() => {
+      if (!flagUserDataCard) {
+        if (userId !== "") {
+          UserService.getDataCard(userId).then((value) => {
+            if (value?.data.length < 1) {
+              CardService.getUserCardsMock().then((userCardsData) => {
+                if (userCardsData) {
+                  setCurrentUSerDataCard(userCardsData);
+                  UserService.saveDataCardFromLocal({ userId, userDatacard: JSON.stringify(userCardsData["cards"]) }).then((value) => {
+                    console.log("first synchro done.");
+                  });
+                  const userCardDone = userCardsData.cards.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
                   setUserCardSaved(userCardDone);
                   const userCardDoneLength = userCardDone.length;
-                  const moduloUserCardDone = userCardDoneLength % 4;  
+                  const moduloUserCardDone = userCardDoneLength % 4;
                   const numberCardToPlayForHistory = (userCardDoneLength - moduloUserCardDone);
                   const numberOfHistoriesToPlay = Math.floor(numberCardToPlayForHistory / 4);
                   setInformationDataCard({
@@ -309,219 +295,239 @@ const HomeScreenPreplay = (props) => {
                     numberOfHistoriesToPlay: numberOfHistoriesToPlay
                   });
                 }
-                
               }).catch((error) => {
-                console.log('Error getting data cards', error);
+                console.error(`Error fetching Data card ${error}`);
+              })
+            } else {
+              const dataRaw = value?.data[0];
+              const userDataFromServer = JSON.parse(dataRaw.cards);
+              setCurrentUSerDataCard({ "userId": dataRaw.userId, "cards": userDataFromServer });
+              const userCardDone = userDataFromServer.filter(element => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "");
+              setUserCardSaved(userCardDone);
+              const userCardDoneLength = userCardDone.length;
+              const moduloUserCardDone = userCardDoneLength % 4;
+              const numberCardToPlayForHistory = (userCardDoneLength - moduloUserCardDone);
+              const numberOfHistoriesToPlay = Math.floor(numberCardToPlayForHistory / 4);
+              setInformationDataCard({
+                ...informationDataCard,
+                cardDoneLength: userCardDoneLength,
+                numberCardToPlayForHistory: numberCardToPlayForHistory,
+                numberOfHistoriesToPlay: numberOfHistoriesToPlay
               });
             }
-        }
-        return () => setFlagUserDataCard(true)
-      },[currentUSerDataCard, userId])
-    );
 
-    useFocusEffect(
-      useCallback(() => {
-        if(userId !== "") {
-          UserService.getUserStepperData(userId).then((value) => {
-            if(value?.data.length < 1) {
-              CardService.getStepperBeforePlay().then((stepData) => {
-                CardService.getPrePlayData().then((preplayData) => {
-                  if(stepData && preplayData){
-                    UserService.saveUserStepperData({userId, initHomeScreen: stepData?.initHomeScreen, initCardAssociation: stepData?.initCardAssociation, initPrePlay: stepData?.initPrePlay, initPlayGame: stepData?.initPlayGame, prePlayData: preplayData}).then((value) =>{
-                      console.log("first synchro done.");
-                      //ETAPE DE PREMIER LANCEMENT DE L'APPLI SI PAS SYNCHRONISATION AVEC BBDD
-                      setPrePlayDataIn(preplayData);
-                      if(stepData?.initHomeScreen) props.start();
-                    })
-                  } else {
-                    setPrePlayDataIn(false);
-                  }
-                }) 
-              })
-              
-            } else {
-              //ETAPE DE PREMIER LANCEMENT DE L'APPLI SI  SYNCHRONISATION AVEC BBDD
-              const dataRaw = value?.data[0];
-              setPrePlayDataIn(dataRaw.prePlayData);
-              if(dataRaw.initHomeScreen) props.start();
-            }
-          })
+          }).catch((error) => {
+            console.log('Error getting data cards', error);
+          });
         }
-        
-      },[userId])
-    );
-    
-    useFocusEffect(
-    useCallback(()=> {
-      if(!flagFamillyProgress){
-        if(userId !== "") {
+      }
+      return () => setFlagUserDataCard(true)
+    }, [currentUSerDataCard, userId])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (userId !== "") {
+        UserService.getUserStepperData(userId).then((value) => {
+          if (value?.data.length < 1) {
+            CardService.getStepperBeforePlay().then((stepData) => {
+              CardService.getPrePlayData().then((preplayData) => {
+                if (stepData && preplayData) {
+                  UserService.saveUserStepperData({ userId, initHomeScreen: stepData?.initHomeScreen, initCardAssociation: stepData?.initCardAssociation, initPrePlay: stepData?.initPrePlay, initPlayGame: stepData?.initPlayGame, prePlayData: preplayData }).then((value) => {
+                    console.log("first synchro done.");
+                    //ETAPE DE PREMIER LANCEMENT DE L'APPLI SI PAS SYNCHRONISATION AVEC BBDD
+                    setPrePlayDataIn(preplayData);
+                    if (stepData?.initHomeScreen) props.start();
+                  })
+                } else {
+                  setPrePlayDataIn(false);
+                }
+              })
+            })
+
+          } else {
+            //ETAPE DE PREMIER LANCEMENT DE L'APPLI SI  SYNCHRONISATION AVEC BBDD
+            const dataRaw = value?.data[0];
+            setPrePlayDataIn(dataRaw.prePlayData);
+            if (dataRaw.initHomeScreen) props.start();
+          }
+        })
+      }
+
+    }, [userId])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!flagFamillyProgress) {
+        if (userId !== "") {
           UserService.getUserFamillyProgressData(userId).then((value) => {
-            if(value?.data.length < 1 ) {
+            if (value?.data.length < 1) {
               CardService.getFamillyProgress().then((famillyProgressData) => {
-                if(famillyProgressData) {
+                if (famillyProgressData) {
                   setCurrentFamillyProgress(famillyProgressData);
-                  UserService.saveUserFamillyProgressDataFromLocal({userId, famillyProgress: JSON.stringify(famillyProgressData)}).then((value)=> {
+                  UserService.saveUserFamillyProgressDataFromLocal({ userId, famillyProgress: JSON.stringify(famillyProgressData) }).then((value) => {
                     console.log("first synchro done.");
                   })
                 }
               });
             } else {
               const dataRaw = value?.data[0];
-              const userDataFromServer= JSON.parse(dataRaw.famillyProgress);
+              const userDataFromServer = JSON.parse(dataRaw.famillyProgress);
               setCurrentFamillyProgress(userDataFromServer);
             }
           })
-          
-        }
-        
-      }
-      
-      return () => setFlagFamillyProgress(true)
-    },[currentFamillyProgress, userId])
-    );
-    
-    const WalkthroughablePlayCard = walkthroughable(AnimatedPlayCard);
 
-    const [cardTop] = useState(new Animated.Value(0));
-    const [bgAnimation] = useState(new Animated.Value(0));
-    useEffect(()=> {
-      Animated.timing( cardTop ,{
+        }
+
+      }
+
+      return () => setFlagFamillyProgress(true)
+    }, [currentFamillyProgress, userId])
+  );
+
+  const WalkthroughablePlayCard = walkthroughable(AnimatedPlayCard);
+
+  const [cardTop] = useState(new Animated.Value(0));
+  const [bgAnimation] = useState(new Animated.Value(0));
+  useEffect(() => {
+    Animated.timing(cardTop, {
+      toValue: 1,
+      delay: 200,
+      useNativeDriver: true
+    }).start(() => {
+      Animated.timing(bgAnimation, {
         toValue: 1,
-        delay: 200,
         useNativeDriver: true
       }).start(() => {
-        Animated.timing( bgAnimation ,{
-          toValue: 1,
-          useNativeDriver: true
-        }).start(() => {
-          UserService.getUserStepperData(userId).then((value) => {
-            if(value?.data) {
-              const dataRaw = value?.data[0];
-              if(dataRaw.initHomeScreen) props.start();
-            }
-          })
+        UserService.getUserStepperData(userId).then((value) => {
+          if (value?.data) {
+            const dataRaw = value?.data[0];
+            if (dataRaw.initHomeScreen) props.start();
+          }
         })
-      });
-    }, []);
+      })
+    });
+  }, []);
 
-    const interpolateTranslation = {
-      transform: [{
-          translateY: cardTop.interpolate({
-              inputRange: [0, 1],
-              outputRange: [100, 0]
-          })
-          }   
-      ],
-      opacity: cardTop
+  const interpolateTranslation = {
+    transform: [{
+      translateY: cardTop.interpolate({
+        inputRange: [0, 1],
+        outputRange: [100, 0]
+      })
+    }
+    ],
+    opacity: cardTop
   }
-    const interpolateBgTranslation = {
-      transform: [{
-          translateY: bgAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [50, 0]
-          })
-          }   
-      ],
-      opacity: bgAnimation
+  const interpolateBgTranslation = {
+    transform: [{
+      translateY: bgAnimation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [50, 0]
+      })
+    }
+    ],
+    opacity: bgAnimation
   }
-    const WalkthroughableButton = walkthroughable(ButtonViewGame);
-    
+  const WalkthroughableButton = walkthroughable(ButtonViewGame);
 
 
-    useEffect(()=> {
-      props.copilotEvents.on("stop", () => {
-        UserService.updateInitHomeScreen({userId: userFrom, initHomeScreen: false});
-      });
 
-      return () => {
-        props.copilotEvents.off("stop");
-      }
-    },[])
-    
-    const promptGameRef = useRef();
+  useEffect(() => {
+    props.copilotEvents.on("stop", () => {
+      UserService.updateInitHomeScreen({ userId: userFrom, initHomeScreen: false });
+    });
 
-    const handlePlayPreplayGame = () => {
-     promptGameRef.current.setVisible(true);
+    return () => {
+      props.copilotEvents.off("stop");
     }
+  }, [])
 
-    const promptTabRef = useRef();
-    const handleGoToMainHome = () => {
-      promptTabRef.current.setVisible(true);
-    }
+  const promptGameRef = useRef();
+
+  const handlePlayPreplayGame = () => {
+    promptGameRef.current.setVisible(true);
+  }
+
+  const promptTabRef = useRef();
+  const handleGoToMainHome = () => {
+    promptTabRef.current.setVisible(true);
+  }
 
 
-    const handleModifyFamilly = (color) => {
-      props.navigation.push("Card Association Par Famille", { userCardsFull: currentUSerDataCard, famillyProgress: currentFamillyProgress, color: color });
-    }
-    const checkAbleToTrain = () => {
-      return currentFamillyProgress?.carreau["allCardFilled"] || currentFamillyProgress?.carreau["eightFirstCardFilled"] ||
+  const handleModifyFamilly = (color) => {
+    props.navigation.push("Card Association Par Famille", { userCardsFull: currentUSerDataCard, famillyProgress: currentFamillyProgress, color: color });
+  }
+  const checkAbleToTrain = () => {
+    return currentFamillyProgress?.carreau["allCardFilled"] || currentFamillyProgress?.carreau["eightFirstCardFilled"] ||
       currentFamillyProgress?.coeur["allCardFilled"] || currentFamillyProgress?.coeur["eightFirstCardFilled"] ||
-       currentFamillyProgress?.trefle["allCardFilled"] || currentFamillyProgress?.trefle["eightFirstCardFilled"] ||
-        currentFamillyProgress?.pique["allCardFilled"] || currentFamillyProgress?.pique["eightFirstCardFilled"];
-    }
-    const checkAbleToLearnAll = () => {
-      return currentFamillyProgress?.carreau["allCardFilled"] && currentFamillyProgress?.carreau["eightFirstCardFilled"] &&
+      currentFamillyProgress?.trefle["allCardFilled"] || currentFamillyProgress?.trefle["eightFirstCardFilled"] ||
+      currentFamillyProgress?.pique["allCardFilled"] || currentFamillyProgress?.pique["eightFirstCardFilled"];
+  }
+  const checkAbleToLearnAll = () => {
+    return currentFamillyProgress?.carreau["allCardFilled"] && currentFamillyProgress?.carreau["eightFirstCardFilled"] &&
       currentFamillyProgress?.coeur["allCardFilled"] && currentFamillyProgress?.coeur["eightFirstCardFilled"] &&
-       currentFamillyProgress?.trefle["allCardFilled"] && currentFamillyProgress?.trefle["eightFirstCardFilled"] &&
-        currentFamillyProgress?.pique["allCardFilled"] && currentFamillyProgress?.pique["eightFirstCardFilled"];
+      currentFamillyProgress?.trefle["allCardFilled"] && currentFamillyProgress?.trefle["eightFirstCardFilled"] &&
+      currentFamillyProgress?.pique["allCardFilled"] && currentFamillyProgress?.pique["eightFirstCardFilled"];
+  }
+  const calculateProgressionCardByFamilly = (couleurIn) => {
+    if (currentUSerDataCard.cards) {
+      const cardFamilly = currentUSerDataCard.cards.filter(elt => elt.couleur === couleurIn);
+      const elementCarteRemplie = (element) => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "";
+      const cardFamillyProgress = cardFamilly.filter(element => elementCarteRemplie(element)).length;
+      return cardFamillyProgress + " / " + cardFamilly.length;
     }
-    const calculateProgressionCardByFamilly = (couleurIn) => {
-      if(currentUSerDataCard.cards){
-        const cardFamilly = currentUSerDataCard.cards.filter(elt => elt.couleur === couleurIn);
-        const elementCarteRemplie = (element) => element.personnage !== "" && element.verbe !== "" && element.objet !== "" && element.lieu !== "";
-        const cardFamillyProgress = cardFamilly.filter(element => elementCarteRemplie(element)).length;
-        return cardFamillyProgress + " / " + cardFamilly.length;
-      }
-      
-    }
-  return prePlayDataIn === false ?( 
-          <Container source={require("../assets/brainsport-bg.png")}>   
-            <StatusBar style="auto" />
-              <SafeAreaView>
-                <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
-                  <TitleBar>
-                      <Title>Bonjour {username} !</Title>
-                  </TitleBar>
-                  <Subtitle >
-                      Bienvenue chez Brainsport ! 
-                      Avant de passer à la création de son propre tableau, 
-                      nous allons vous expliquer comment bien débuter !
-                  </Subtitle>
-                
-                  <ButtonFooter>
-                    <TouchableOpacity onPress={()=> props.navigation.push("Regle Precreation")}>
-                      <ButtonView>
-                        <ButtonText>Commencer</ButtonText>
-                      </ButtonView>
-                    </TouchableOpacity>
-                  </ButtonFooter>
-              </ScrollView>
-            </SafeAreaView>
-          </Container>
 
-  ) : ( 
-    <Container source={require("../assets/brainsport-bg.png")}>   
-      <StatusBar style="auto" />
-        <SafeAreaView>
-          <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
-            <TitleBar>
-                <Title>Bonjour {username} !</Title>
-            </TitleBar>
-            <SubtitleSection>
-              <SubtitleCard text="Pour débuter, tu joueras avec les familles suivantes. Cliques sur les familles pour voir les différentes cartes" sourceImg={require("../assets/brainsport-logo.png")}/>
-           </SubtitleSection>
-            <ListPlayCard>
+  }
+  return prePlayDataIn === false ? (
+    <Container source={require("../assets/brainsport-bg.png")}>
+      <StatusBar style="light" backgroundColor='#000000' />
+      <SafeAreaView>
+        <ScrollView style={{ height: "100%" }} showsVerticalScrollIndicator={false}>
+          <TitleBar>
+            <Title>Bonjour {username} !</Title>
+          </TitleBar>
+          <Subtitle >
+            Bienvenue chez Brainsport !
+            Avant de passer à la création de son propre tableau,
+            nous allons vous expliquer comment bien débuter !
+          </Subtitle>
+
+          <ButtonFooter>
+            <TouchableOpacity onPress={() => props.navigation.push("Regle Precreation")}>
+              <ButtonView>
+                <ButtonText>Commencer</ButtonText>
+              </ButtonView>
+            </TouchableOpacity>
+          </ButtonFooter>
+        </ScrollView>
+      </SafeAreaView>
+    </Container>
+
+  ) : (
+    <Container source={require("../assets/brainsport-bg.png")}>
+      <StatusBar style="light" backgroundColor='#000000' />
+      <SafeAreaView>
+        <ScrollView style={{ height: "100%" }} showsVerticalScrollIndicator={false}>
+          <TitleBar>
+            <Title>Bonjour {username} !</Title>
+          </TitleBar>
+          <SubtitleSection>
+            <SubtitleCard text="Pour débuter, tu joueras avec les familles suivantes. Cliques sur les familles pour voir les différentes cartes" sourceImg={require("../assets/brainsport-logo.png")} />
+          </SubtitleSection>
+          <ListPlayCard>
             <TouchableOpacity onPress={() => handleModifyFamilly("coeur")}>
-            <CopilotStep 
-              text="Nous allons commencer par créer la famille des Coeur. Définissez votre première catégorie en appuyant sur la couleur."
-              order={1}
-              name="second-familly">
-              <WalkthroughablePlayCard style={[interpolateTranslation]}>
+              <CopilotStep
+                text="Nous allons commencer par créer la famille des Coeur. Définissez votre première catégorie en appuyant sur la couleur."
+                order={1}
+                name="second-familly">
+                <WalkthroughablePlayCard style={[interpolateTranslation]}>
                   <ContentLabel>
-                      <LogoCard>
-                        <MaterialCommunityIcons name="cards-heart" size={20} color="red" />
-                      </LogoCard>
-                      <Label>Coeur</Label>
+                    <LogoCard>
+                      <MaterialCommunityIcons name="cards-heart" size={20} color="red" />
+                    </LogoCard>
+                    <Label>Coeur</Label>
                   </ContentLabel>
                   <ProgressContainer>
                     <ProgressContainerText>
@@ -530,172 +536,174 @@ const HomeScreenPreplay = (props) => {
                   </ProgressContainer>
                   <AnimatedFamillychosen style={[interpolateBgTranslation]}>
                     <ActionButton>
-                    <MaterialCommunityIcons name="cards-heart" size={180} color="#FF000022" />
+                      <MaterialCommunityIcons name="cards-heart" size={180} color="#FF000022" />
                     </ActionButton>
                   </AnimatedFamillychosen>
-              </WalkthroughablePlayCard>
+                </WalkthroughablePlayCard>
               </CopilotStep>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => currentFamillyProgress?.carreau["eightFirstCardFilled"] !== undefined && handleModifyFamilly("carreau")}>
-              <CopilotStep 
-              text="Les autres familles se débloqueront lorsque vous aurez complété la famille du Coeur."
-              order={2}
-              name="first-familly">
+              <CopilotStep
+                text="Les autres familles se débloqueront lorsque vous aurez complété la famille du Coeur."
+                order={2}
+                name="first-familly">
 
-              
-              <WalkthroughablePlayCard style={[interpolateTranslation]}>
-              {currentFamillyProgress?.carreau["eightFirstCardFilled"] !== undefined ? 
-                <>
-                  <ContentLabel>
-                      <LogoCard>
-                        <MaterialCommunityIcons name="cards-diamond" size={20} color="red" />
-                      </LogoCard>
-                      <Label>Carreau</Label>
-                  </ContentLabel>
-                  <ProgressContainer>
-                    <ProgressContainerText>
-                      {calculateProgressionCardByFamilly("carreau")}
-                    </ProgressContainerText>
-                  </ProgressContainer>
-                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
-                    <ActionButton>
-                    <MaterialCommunityIcons name="cards-diamond" size={180} color="#FF000022" />
-                    </ActionButton>
-                  </AnimatedFamillychosen>
-                </> : 
-                <>
-                <PlayCardOverLayer /> 
-                <ContentLabel>
-                      <LogoCard>
-                        <MaterialCommunityIcons name="lock" size={20} color="#95a5a6" />
-                      </LogoCard>
-                      <Label>Carreau</Label>
-                  </ContentLabel>
-                  
-                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
-                    <ActionButton>
-                    <MaterialCommunityIcons name="lock" size={180} color="#95a5a622" />
-                    </ActionButton>
-                  </AnimatedFamillychosen>
-                </>}
 
-              </WalkthroughablePlayCard>
+                <WalkthroughablePlayCard style={[interpolateTranslation]}>
+                  {currentFamillyProgress?.carreau["eightFirstCardFilled"] !== undefined ?
+                    <>
+                      <ContentLabel>
+                        <LogoCard>
+                          <MaterialCommunityIcons name="cards-diamond" size={20} color="red" />
+                        </LogoCard>
+                        <Label>Carreau</Label>
+                      </ContentLabel>
+                      <ProgressContainer>
+                        <ProgressContainerText>
+                          {calculateProgressionCardByFamilly("carreau")}
+                        </ProgressContainerText>
+                      </ProgressContainer>
+                      <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                        <ActionButton>
+                          <MaterialCommunityIcons name="cards-diamond" size={180} color="#FF000022" />
+                        </ActionButton>
+                      </AnimatedFamillychosen>
+                    </> :
+                    <>
+                      <PlayCardOverLayer />
+                      <ContentLabel>
+                        <LogoCard>
+                          <MaterialCommunityIcons name="lock" size={20} color="#95a5a6" />
+                        </LogoCard>
+                        <Label>Carreau</Label>
+                      </ContentLabel>
+
+                      <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                        <ActionButton>
+                          <MaterialCommunityIcons name="lock" size={180} color="#95a5a622" />
+                        </ActionButton>
+                      </AnimatedFamillychosen>
+                    </>}
+
+                </WalkthroughablePlayCard>
               </CopilotStep>
-            </TouchableOpacity> 
-            
+            </TouchableOpacity>
+
             <TouchableOpacity onPress={() => currentFamillyProgress?.trefle["eightFirstCardFilled"] !== undefined && handleModifyFamilly("trefle")}>
               <AnimatedPlayCard style={[interpolateTranslation]}>
-              {currentFamillyProgress?.trefle["eightFirstCardFilled"] !== undefined ? 
-                <>
-                  <ContentLabel>
-                    <LogoCard>
-                      <MaterialCommunityIcons name="cards-club" size={20} color="black" />
-                    </LogoCard>
-                    <Label>Trèfle</Label>
-                  </ContentLabel>
-                  <ProgressContainer>
-                    <ProgressContainerText>
-                      {calculateProgressionCardByFamilly("trefle")}
-                    </ProgressContainerText>
-                  </ProgressContainer>
-                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
-                    <ActionButton>
-                      <MaterialCommunityIcons name="cards-club" size={180} color="#00000022" />
-                    </ActionButton>
-              </AnimatedFamillychosen>
-              </> :
-              <>
-              <PlayCardOverLayer /> 
-                <ContentLabel>
+                {currentFamillyProgress?.trefle["eightFirstCardFilled"] !== undefined ?
+                  <>
+                    <ContentLabel>
+                      <LogoCard>
+                        <MaterialCommunityIcons name="cards-club" size={20} color="black" />
+                      </LogoCard>
+                      <Label>Trèfle</Label>
+                    </ContentLabel>
+                    <ProgressContainer>
+                      <ProgressContainerText>
+                        {calculateProgressionCardByFamilly("trefle")}
+                      </ProgressContainerText>
+                    </ProgressContainer>
+                    <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                      <ActionButton>
+                        <MaterialCommunityIcons name="cards-club" size={180} color="#00000022" />
+                      </ActionButton>
+                    </AnimatedFamillychosen>
+                  </> :
+                  <>
+                    <PlayCardOverLayer />
+                    <ContentLabel>
                       <LogoCard>
                         <MaterialCommunityIcons name="lock" size={20} color="#95a5a6" />
                       </LogoCard>
                       <Label>Trèfle</Label>
-                  </ContentLabel>
-                  
-                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
-                    <ActionButton>
-                    <MaterialCommunityIcons name="lock" size={180} color="#95a5a622" />
-                    </ActionButton>
-                  </AnimatedFamillychosen>
-              </>
-              }
+                    </ContentLabel>
+
+                    <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                      <ActionButton>
+                        <MaterialCommunityIcons name="lock" size={180} color="#95a5a622" />
+                      </ActionButton>
+                    </AnimatedFamillychosen>
+                  </>
+                }
               </AnimatedPlayCard>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => currentFamillyProgress?.pique["eightFirstCardFilled"] !== undefined && handleModifyFamilly("pique")}>
               <AnimatedPlayCard style={[interpolateTranslation]}>
-              {currentFamillyProgress?.pique["eightFirstCardFilled"] !== undefined ? 
-                <>
-                  <ContentLabel>
+                {currentFamillyProgress?.pique["eightFirstCardFilled"] !== undefined ?
+                  <>
+                    <ContentLabel>
                       <LogoCard>
                         <MaterialCommunityIcons name="cards-spade" size={20} color="black" />
                       </LogoCard>
                       <Label>Pique</Label>
-                  </ContentLabel>
-                  <ProgressContainer>
-                    <ProgressContainerText>
-                      {calculateProgressionCardByFamilly("pique")}
-                    </ProgressContainerText>
-                  </ProgressContainer>
-                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
-                    <ActionButton>
-                    <MaterialCommunityIcons name="cards-spade" size={180} color="#00000022" />
-                    </ActionButton>
-                  </AnimatedFamillychosen>
-                </> :
-                <>
-                <PlayCardOverLayer /> 
-                  <ContentLabel>
+                    </ContentLabel>
+                    <ProgressContainer>
+                      <ProgressContainerText>
+                        {calculateProgressionCardByFamilly("pique")}
+                      </ProgressContainerText>
+                    </ProgressContainer>
+                    <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                      <ActionButton>
+                        <MaterialCommunityIcons name="cards-spade" size={180} color="#00000022" />
+                      </ActionButton>
+                    </AnimatedFamillychosen>
+                  </> :
+                  <>
+                    <PlayCardOverLayer />
+                    <ContentLabel>
                       <LogoCard>
                         <MaterialCommunityIcons name="lock" size={20} color="#95a5a6" />
                       </LogoCard>
                       <Label>Pique</Label>
-                  </ContentLabel>
-                  
-                  <AnimatedFamillychosen style={[interpolateBgTranslation]}>
-                    <ActionButton>
-                    <MaterialCommunityIcons name="lock" size={180} color="#95a5a622" />
-                    </ActionButton>
-                  </AnimatedFamillychosen>
-                </>
-              }
+                    </ContentLabel>
+
+                    <AnimatedFamillychosen style={[interpolateBgTranslation]}>
+                      <ActionButton>
+                        <MaterialCommunityIcons name="lock" size={180} color="#95a5a622" />
+                      </ActionButton>
+                    </AnimatedFamillychosen>
+                  </>
+                }
               </AnimatedPlayCard>
-              
+
             </TouchableOpacity>
-            </ListPlayCard>
-            <HomeReplayButton>
-              <TouchableOpacity onPress={() => checkAbleToTrain() && handlePlayPreplayGame()}>
-              <CopilotStep 
-              text="Une fois les cartes définies pour chaque famille vous pourrez commencer à jouer en appuyant ici."
-              order={3}
-              name="train">
+          </ListPlayCard>
+          <HomeReplayButton>
+            <TouchableOpacity onPress={() => checkAbleToTrain() && handlePlayPreplayGame()}>
+              <CopilotStep
+                text="Une fois les cartes définies pour chaque famille vous pourrez commencer à jouer en appuyant ici."
+                order={3}
+                name="train">
                 <WalkthroughableButton color={checkAbleToTrain()}>
                   <ButtonTextGame color={checkAbleToTrain()}>Créer vos histoires</ButtonTextGame>
                 </WalkthroughableButton>
-                </CopilotStep>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => checkAbleToLearnAll() && handleGoToMainHome()}>
-              <CopilotStep 
-              text="Lorsque vous aurez rempli toutes vos familles et retenus toutes vos cartes, vous pourrez débloquer la dernière étape ! C'est parti !"
-              order={4}
-              name="final">
+              </CopilotStep>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => checkAbleToLearnAll() && handleGoToMainHome()}>
+              <CopilotStep
+                text="Lorsque vous aurez rempli toutes vos familles et retenus toutes vos cartes, vous pourrez débloquer la dernière étape ! C'est parti !"
+                order={4}
+                name="final">
                 <WalkthroughableButton color={checkAbleToLearnAll()}>
                   <ButtonTextTab color={checkAbleToLearnAll()}>Apprendre le tableau</ButtonTextTab>
                 </WalkthroughableButton>
               </CopilotStep>
-              </TouchableOpacity>
-            </HomeReplayButton>
-            </ScrollView>
-            <GameChoicePrompt ref={promptGameRef} userCardSaved={userCardSaved} informationDataCard={informationDataCard} navigation={props.navigation}/>
-            <TabChoicePrompt ref={promptTabRef} famillyProgress={currentFamillyProgress} currentUSerDataCard={currentUSerDataCard} navigation={props.navigation}/>
-        </SafeAreaView>      
+            </TouchableOpacity>
+          </HomeReplayButton>
+        </ScrollView>
+        <GameChoicePrompt ref={promptGameRef} userCardSaved={userCardSaved} informationDataCard={informationDataCard} navigation={props.navigation} />
+        <TabChoicePrompt ref={promptTabRef} famillyProgress={currentFamillyProgress} currentUSerDataCard={currentUSerDataCard} navigation={props.navigation} />
+      </SafeAreaView>
     </Container>);
 }
 
 
-export default copilot({overlay: "svg", animated: true, verticalOffset: Platform.OS === 'ios' ? 0 : 30, labels: {
-  previous: "Précédent",
-  next: "Suivant",
-  skip: "Passer",
-  finish: "Terminer"
-}, stepNumberComponent: StepNumberComponent, tooltipComponent: TooltipComponent})(HomeScreenPreplay);
+export default copilot({
+  overlay: "svg", animated: true, verticalOffset: Platform.OS === 'ios' ? 0 : 30, labels: {
+    previous: "Précédent",
+    next: "Suivant",
+    skip: "Passer",
+    finish: "Terminer"
+  }, stepNumberComponent: StepNumberComponent, tooltipComponent: TooltipComponent
+})(HomeScreenPreplay);

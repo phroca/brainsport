@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import styled from 'styled-components/native';
 import { ActivityIndicator, SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, View, Platform } from "react-native";
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import UserService from "../services/User.service";
@@ -10,7 +10,7 @@ import { useInitials } from "../hooks/useInitials";
 import UserEditPrompt from "../components/UserEditPrompt";
 import { useCalculatePoints } from "../hooks/useCalculatePoints";
 
-const {width, height} = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 const widthContent = width - 50;
 
 const Container = styled.View`
@@ -39,12 +39,12 @@ const CloseButton = styled.View`
   width: ${widthContent}px;
   justify-content: flex-start;
 `;
-  const AvatarContainer = styled.View`
+const AvatarContainer = styled.View`
   justify-content: center;
   align-items: center;
   position: absolute;
   top: 160px;
-  left: ${width/2 - 40}px;
+  left: ${width / 2 - 40}px;
   `;
 
 const AvatarCircle = styled.View`
@@ -52,7 +52,7 @@ const AvatarCircle = styled.View`
     padding: 5px;
     min-height: 80px;
     min-width: 80px;
-    background-color: ${props=> props.colortheme};
+    background-color: ${props => props.colortheme};
     align-items: center;
     justify-content: center;
     border: 1px solid #0c0c0c;
@@ -207,15 +207,15 @@ const imgLevel = {
   "Novice": require("../assets/level/novice.png"),
   "Intermédiaire": require("../assets/level/intermediaire.png"),
   "Avancé": require("../assets/level/avan.png"),
-  "Expert": require("../assets/level/expert.png"), 
-  "Maître": require("../assets/level/maitre.png"), 
+  "Expert": require("../assets/level/expert.png"),
+  "Maître": require("../assets/level/maitre.png"),
   "Génie": require("../assets/level/genie.png")
 }
 
 const FriendProfilScreen = (props) => {
 
   const user = useSelector(state => state.user.value);
-  const {currentUser} = props.route.params;
+  const { currentUser } = props.route.params;
   const [userLevel, setUserLevel] = useState({});
   const [flagUserLevel, setFlagUserLevel] = useState(false);
   const [addFriend, setAddFriend] = useState(false);
@@ -223,17 +223,17 @@ const FriendProfilScreen = (props) => {
   const [friendLineToDelete, setFriendLineToDelete] = useState(0);
   useFocusEffect(
     useCallback(() => {
-      if(!flagUserLevel){
+      if (!flagUserLevel) {
         UserService.getListOfRewards().then((value) => {
-          if(value?.data){
+          if (value?.data) {
             setUserLevel(calculateRankByUserReward(value.data, currentUser.rewardPoints));
           }
         });
-        if(user !== currentUser.userId) {
+        if (user !== currentUser.userId) {
 
 
           UserService.verifyFriend(user, currentUser.userFriendId).then((value) => {
-            if(value?.data.length > 0) {
+            if (value?.data.length > 0) {
               setAddFriend(false);
             } else {
               setAddFriend(true);
@@ -241,13 +241,13 @@ const FriendProfilScreen = (props) => {
             }
             UserService.verifyFriendWhoWantToBeAdded(user, currentUser.userId).then((value) => {
               console.log(value?.data);
-              if(value?.data.length > 0) {
+              if (value?.data.length > 0) {
                 setAddFriend(false);
                 const friend = value?.data[0];
-                if(friend.state === "WAITING") {
+                if (friend.state === "WAITING") {
                   setFriendLineToDelete(value?.data[0].friendLineId);
                   setValidateOrRefuseFriend(true);
-                  
+
                 } else {
                   setValidateOrRefuseFriend(false);
                 }
@@ -259,120 +259,120 @@ const FriendProfilScreen = (props) => {
       return () => setFlagUserLevel(true)
     }, [currentUser, userLevel])
   );
-  
+
   const calculateRankByUserReward = (listRewards, currentUserRewardPoints) => {
     let currentLevel = {};
-    if(currentUserRewardPoints === 0) {
+    if (currentUserRewardPoints === 0) {
       return listRewards[0];
-    } else if(currentUserRewardPoints >= listRewards[listRewards.length - 1]) {
+    } else if (currentUserRewardPoints >= listRewards[listRewards.length - 1]) {
       return listRewards[listRewards.length - 1];
     } else {
-      for (let i = 1; i < listRewards.length -1 ; i++) {
-      
-        if (i > 0 && currentUserRewardPoints >= listRewards[i].rewardPointToReach && currentUserRewardPoints < listRewards[i+1].rewardPointToReach){
+      for (let i = 1; i < listRewards.length - 1; i++) {
+
+        if (i > 0 && currentUserRewardPoints >= listRewards[i].rewardPointToReach && currentUserRewardPoints < listRewards[i + 1].rewardPointToReach) {
           currentLevel = listRewards[i]
           break;
         }
       }
       return currentLevel;
     }
-    
+
   }
   const addToFriend = () => {
-    UserService.addFriendRequest(user, currentUser.userFriendId).then((value) => {
-      if(value.data) {
+    UserService.addFriendRequest(user, currentUser.userId).then((value) => {
+      if (value.data) {
         props.navigation.pop(2);
       }
     })
   }
   const acceptFriend = () => {
     UserService.validateFriendRequest(currentUser.userId, user).then((value) => {
-      if(value.data) {
+      if (value.data) {
         props.navigation.pop(2);
       }
     })
   }
   const refuseFriend = () => {
     UserService.rejectOrDeleteFriendById(friendLineToDelete).then((value) => {
-      if(value.data) {
+      if (value.data) {
         props.navigation.pop(2);
       }
     })
   }
-    return (
-        <Container>
-        <StatusBar hidden />
-            <SafeAreaView>
-            <BgContainer source={require("../assets/default/default-bg.jpg")}/>
-            <TitleBar>
-                <CloseButton>
-                  <TouchableOpacity onPress={() => props.navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-                  </TouchableOpacity>
-                </CloseButton>
-            </TitleBar>
-            <AvatarContainer>
-              <AvatarCircle colortheme={currentUser.colorProfil}>
-                  <AvatarText>{useInitials(currentUser.firstName)}</AvatarText>
-              </AvatarCircle>
-            </AvatarContainer>
-            {addFriend &&<TouchableOpacity onPress={() => addToFriend()}>
-             <UserEditContainer>
-              <UserEditIcon>
-                <Ionicons name="add-circle" size={10} color="#FFFFFF" />
-                </UserEditIcon>
-                <UserEditContent>Ajouter un ami</UserEditContent>
-              </UserEditContainer>
-              
-            </TouchableOpacity>}
-            {!addFriend && !validateOrRefuseFriend && <UserEditContainerEmpty />}
-            {validateOrRefuseFriend &&
-            <UserAcceptOrRefuseContainer>
-              <TouchableOpacity onPress={() => acceptFriend()}>
-              <UserAcceptOrRefuseActions style={{backgroundColor:"#2ecc71"}}>
-                  <UserEditContent>Accepter sa demande d'amis</UserEditContent>
-                </UserAcceptOrRefuseActions>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => refuseFriend()}>
-              <UserAcceptOrRefuseActions style={{backgroundColor:"#c0392b"}}>
-                  <UserEditContent>Refuser sa demande d'amis</UserEditContent>
-                </UserAcceptOrRefuseActions>
-              </TouchableOpacity>
-            </UserAcceptOrRefuseContainer>}
-            <UserInfoContainer>
-              <UserName>{currentUser.lastName} {currentUser.firstName}</UserName>
-              <RewardSection>
-                <RewardCard>
-                  <RewardNumber>
-                      {currentUser.rewardPoints}
-                  </RewardNumber>
-                  <RewardLabel>
-                    Points
-                  </RewardLabel>
-                </RewardCard>
-                <RewardAssociation>
-                  <MaterialCommunityIcons name="arrow-right-thin" size={24} color="white" />
-                </RewardAssociation>
-                <RewardLevelCardImage >
-                  <RewardLevelCard source={imgLevel[userLevel?.levelName]}/>
-                  <RewardLabel>
-                    {userLevel?.levelName}
-                  </RewardLabel>
-                </RewardLevelCardImage>
-              </RewardSection>
-            </UserInfoContainer>
-            <Separator />
-            <UserContainer>
-              <UserTitle>Bio</UserTitle>
-              <UserContent>{currentUser.bio === "" ? "Pas encore de bio" : currentUser.bio}</UserContent>
-            </UserContainer>
-            <UserContainer>
-              <UserTitle>Région</UserTitle>
-              <UserContent>{currentUser.region === "" ? "Région non renseigné" : currentUser.region }</UserContent>
-            </UserContainer>
-          </SafeAreaView>
-        </Container>
-        );
+  return (
+    <Container>
+      <StatusBar hidden />
+      <SafeAreaView>
+        <BgContainer source={require("../assets/default/default-bg.jpg")} />
+        <TitleBar>
+          <CloseButton>
+            <TouchableOpacity onPress={() => props.navigation.goBack()}>
+              <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+          </CloseButton>
+        </TitleBar>
+        <AvatarContainer>
+          <AvatarCircle colortheme={currentUser.colorProfil}>
+            <AvatarText>{useInitials(currentUser.firstName)}</AvatarText>
+          </AvatarCircle>
+        </AvatarContainer>
+        {addFriend && <TouchableOpacity onPress={() => addToFriend()}>
+          <UserEditContainer>
+            <UserEditIcon>
+              <Ionicons name="add-circle" size={10} color="#FFFFFF" />
+            </UserEditIcon>
+            <UserEditContent>Ajouter un ami</UserEditContent>
+          </UserEditContainer>
+
+        </TouchableOpacity>}
+        {!addFriend && !validateOrRefuseFriend && <UserEditContainerEmpty />}
+        {validateOrRefuseFriend &&
+          <UserAcceptOrRefuseContainer>
+            <TouchableOpacity onPress={() => acceptFriend()}>
+              <UserAcceptOrRefuseActions style={{ backgroundColor: "#2ecc71" }}>
+                <UserEditContent>Accepter sa demande d'amis</UserEditContent>
+              </UserAcceptOrRefuseActions>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => refuseFriend()}>
+              <UserAcceptOrRefuseActions style={{ backgroundColor: "#c0392b" }}>
+                <UserEditContent>Refuser sa demande d'amis</UserEditContent>
+              </UserAcceptOrRefuseActions>
+            </TouchableOpacity>
+          </UserAcceptOrRefuseContainer>}
+        <UserInfoContainer>
+          <UserName>{currentUser.lastName} {currentUser.firstName}</UserName>
+          <RewardSection>
+            <RewardCard>
+              <RewardNumber>
+                {currentUser.rewardPoints}
+              </RewardNumber>
+              <RewardLabel>
+                Points
+              </RewardLabel>
+            </RewardCard>
+            <RewardAssociation>
+              <MaterialCommunityIcons name="arrow-right-thin" size={24} color="white" />
+            </RewardAssociation>
+            <RewardLevelCardImage >
+              <RewardLevelCard source={imgLevel[userLevel?.levelName]} />
+              <RewardLabel>
+                {userLevel?.levelName}
+              </RewardLabel>
+            </RewardLevelCardImage>
+          </RewardSection>
+        </UserInfoContainer>
+        <Separator />
+        <UserContainer>
+          <UserTitle>Bio</UserTitle>
+          <UserContent>{currentUser.bio === "" ? "Pas encore de bio" : currentUser.bio}</UserContent>
+        </UserContainer>
+        <UserContainer>
+          <UserTitle>Région</UserTitle>
+          <UserContent>{currentUser.region === "" ? "Région non renseigné" : currentUser.region}</UserContent>
+        </UserContainer>
+      </SafeAreaView>
+    </Container>
+  );
 }
 
 export default FriendProfilScreen;

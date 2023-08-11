@@ -29,20 +29,20 @@ color: #FFFFFF;
   margin-right: 40px;
 `;
 const ProgresScreen = () => {
-    return (
-        <Container source={require("../assets/brainsport-bg.png")}>
-            <StatusBar style="auto" />
-        <SafeAreaView>
-          <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
-            <TitleBar>
-                <Title>Progression</Title>
-            </TitleBar>
-            <Subtitle >
-                Coming soon
-            </Subtitle>
-            </ScrollView>
-          </SafeAreaView>
-        </Container>);
+  return (
+    <Container source={require("../assets/brainsport-bg.png")}>
+      <StatusBar style="light" backgroundColor='#000000' />
+      <SafeAreaView>
+        <ScrollView style={{ height: "100%" }} showsVerticalScrollIndicator={false}>
+          <TitleBar>
+            <Title>Progression</Title>
+          </TitleBar>
+          <Subtitle >
+            Coming soon
+          </Subtitle>
+        </ScrollView>
+      </SafeAreaView>
+    </Container>);
 }
 
 export default ProgresScreen;
