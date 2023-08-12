@@ -145,7 +145,7 @@ const ClassementRoute = ({ groupId }) => {
             <ScrollView style={{ height: "100%" }} showsVerticalScrollIndicator={false}>
                 <ClassementSection>
                     {userList.map((item, index) => (
-                        <ClassementUserCardContainer>
+                        <ClassementUserCardContainer key={index}>
                             <UserCard
                                 key={"classement" + index + "" + item._id}
                                 rewardPoints={item.rewardPoints}
@@ -244,7 +244,7 @@ const DiscussionRoute = ({ groupData, currentUserId }) => {
             <ScrollView style={{ height: "100%" }} showsVerticalScrollIndicator={false}>
                 <DiscussionMessages>
                     {messageList.map((item, index) => (
-                        <DiscussionUserContainer>
+                        <DiscussionUserContainer key={index}>
                             <UserConversation
                                 color={item.colorProfil}
                                 dateOfCreation={item.dateEnvoi}
@@ -357,11 +357,11 @@ const GroupScreen = (props) => {
     const renderScene = ({ route }) => {
         switch (route.key) {
             case 'first':
-                return <ClassementRoute groupId={groupData?.id} />;
+                return <ClassementRoute key={route.key} groupId={groupData?.id} />;
             case 'second':
-                return <DiscussionRoute groupData={groupData} currentUserId={currentUserId} />;
+                return <DiscussionRoute key={route.key} groupData={groupData} currentUserId={currentUserId} />;
             case 'third':
-                return <AProposRoute description={groupData?.description} creator={groupData?.userOwner} />;
+                return <AProposRoute key={route.key} description={groupData?.description} creator={groupData?.userOwner} />;
             default:
                 return null;
         }

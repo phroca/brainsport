@@ -1,106 +1,111 @@
 {
-    "hero" :{
-        "1":[
-            "Daredevil",
-            "Doctor Strange",
-            "Deadpool",
-            "Thor",
-            "Tony Stark"
+    "hero": {
+        "1": [
+            "Donald",
+            "Dumbo",
+            "Tony"
         ],
-        "2":[
-            "Naruto",
-            "Nightcrawler"
+        "2": [
+            "Némo",
+            "Nanny",
+            "Nash",
+            "Napoléon"
         ],
-        "3":[
-            "Mario",
-            "Mulan"
+        "3": [
+            "Marlin",
+            "Minnie",
+            "Mike",
+            "Marie"
         ],
-        "4":[
-            "Robin",
-            "Ryu",
-            "Ratchet"
+        "4": [
+            "Robin des bois",
+            "Raja",
+            "Rabbit"
         ],
-        "5":[
-            "Lara Croft",
-            "Link",
-            "Luke Skywalker",
-            "Luigi"
+        "5": [
+            "Lucifer",
+            "Linguini",
+            "Louie",
+            "Lady"
         ],
-        "6":[
-            "Chun-Li",
-            "Goku",
-            "Gandalf",
-            "Green Lantern",
-            "James Bond",
-            "Juggernaut"
+        "6": [
+            "Goofy",
+            "Chen",
+            "Jiminy Cricket",
+            "Jafar"
         ],
-        "7":[
-            "Kratos",
-            "Quicksilver",
-            "Guile",
-            "Groot",
-            "Guts"
+        "7": [
+            "Gusteau",
+            "Kaa",
+            "Khan",
+            "Guido"
         ],
-        "8":[
-            "Frodon",
-            "Frank Castle",
-            "Voldemort",
-            "Vegeta"
+        "8": [
+            "Flash",
+            "Flik",
+            "Farouk",
+            "Violet"
         ],
-        "9":[
-            "Batman",
-            "Black Widow",
-            "Bowser",
-            "Buffy",
-            "Peter Parker",
-            "Prince of Persia",
-            "Professeur X"
+        "9": [
+            "Bagheera",
+            "Bambi",
+            "Pinocchio",
+            "Pluto"
         ],
-        "10":[
-
+        "10": [
+            "Bianca",
+            "Belle",
+            "Jasmine"
         ],
-        "V":[
-
+        "V": [
+            "Bernard",
+            "La Bête",
+            "Aladdin"
         ],
-        "D":[
-
+        "D": [
+            "Jane",
+            "Cendrillon",
+            "Nala",
+            "La Belle"
         ],
-        "R":[
-
+        "R": [
+            "Tarzan",
+            "Prince Charmant",
+            "Simba",
+            "Le Clochard"
         ]
     },
-
-    "star" :{
-        "1":[
+    "star": {
+        "1": [
             "Dwayne Johnson",
             "Daniel Radcliffe",
             "David Beckham",
             "Denzel Washington",
             "Tom Hanks",
             "Taylor Swift",
-            "Tom Cruise" 
+            "Tom Cruise"
         ],
-        "2":[
+        "2": [
             "Natalie Portman",
             "Nicolas Cage",
             "Nicole Kidman"
         ],
-        "3":[
+        "3": [
             "Meryl Streep",
             "Matt Damon",
             "Margot Robbie",
             "Mark Wahlberg"
         ],
-        "4":[
+        "4": [
             "Robert Downey Jr.",
             "Ryan Reynolds",
             "Rihanna"
         ],
-        "5":[
+        "5": [
             "Leonardo DiCaprio",
             "Lady Gaga"
         ],
-        "6":[
+        "6": [
             "Charlize Theron",
             "Cameron Diaz",
             "George Clooney",
@@ -111,7 +116,7 @@
             "Julia Roberts",
             "Justin Timberlake"
         ],
-        "7":[
+        "7": [
             "Kristen Stewart",
             "Kit Harington",
             "Keanu Reeves",
@@ -121,11 +126,11 @@
             "Gal Gadot",
             "Gwyneth Paltrow"
         ],
-        "8":[
+        "8": [
             "Vin Diesel",
             "Vanessa Hudgens"
         ],
-        "9":[
+        "9": [
             "Beyoncé",
             "Brad Pitt",
             "Ben Affleck",
@@ -134,76 +139,57 @@
             "Penélope Cruz",
             "Pharrell Williams"
         ],
-        "10":[
-
-        ],
-        "V":[
-
-        ],
-        "D":[
-
-        ],
-        "R":[
-
-        ]
+        "10": [],
+        "V": [],
+        "D": [],
+        "R": []
     },
     "villain": {
-        "1":[
+        "1": [
             "Dark Vador",
             "Dracula",
             "Thanos"
         ],
-        "2":[
+        "2": [
             "Negan ",
             "Nappa"
-            
         ],
-        "3":[
+        "3": [
             "Maléfique",
             "Magneto "
         ],
-        "4":[
+        "4": [
             "Reine des neiges",
             "Rastapopoulos"
         ],
-        "5":[
+        "5": [
             "Lex Luthor",
             "Loki"
         ],
-        "6":[
+        "6": [
             "General Zod",
             "Joker",
             "Jigsaw"
         ],
-        "7":[
+        "7": [
             "Keyser Söze",
             "Gollum",
             "Gaston"
         ],
-        "8":[
+        "8": [
             "Freddy Krueger",
             "Venom ",
             "Voldemort"
-
         ],
-        "9":[
-
+        "9": [
             "Bellatrix Lestrange",
             "Bowser",
             "Palpatine",
             "Pennywise"
         ],
-        "10":[
-
-        ],
-        "V":[
-
-        ],
-        "D":[
-
-        ],
-        "R":[
-
-        ]
+        "10": [],
+        "V": [],
+        "D": [],
+        "R": []
     }
 }

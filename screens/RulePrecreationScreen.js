@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import {Auth} from "aws-amplify";
+import { Auth } from "aws-amplify";
 import React, { useRef, useState } from "react";
 import { Animated, Dimensions } from "react-native";
 import styled from "styled-components/native";
@@ -8,8 +8,8 @@ import UserService from "../services/User.service";
 import { updateUser } from "../slices/userSlice";
 import { useDispatch } from "react-redux";
 
-const {width, height} = Dimensions.get("screen");
-const widthContent = width  - 50;
+const { width, height } = Dimensions.get("screen");
+const widthContent = width - 50;
 
 const Container = styled.ImageBackground`
     flex: 1;
@@ -55,7 +55,7 @@ const ContainerIndicator = styled.View`
 
 const SigninButton = styled.View`
   position: absolute;
-  bottom: 200px;
+  bottom: 150px;
   flex-direction: row;
 `;
 
@@ -110,159 +110,179 @@ const TextSignin = styled.Text`
 
 const DATA = [
     {
-      "key": "001",
-      "text": "Vous êtes capable de mémoriser un jeu de 52 cartes en moins de 10 minutes.\n\nPas convaincu ?\n\nOn vous aide à relever le challenge.\n\nVous allez définir pour chaque carte :\nUn Personnage, un Verbe d’action, un Objet et un lieu.",
+        "key": "001",
+        "text": "En mémorisant ce jeu de 52 cartes en moins de 10mn, vous renforcez votre mémoire, et votrecapacité à gérer vos émotions : Passer des émotions au Cognitif.\n\nVous pensez que vous en êtes incapables ?\n\nPas à pas, jour après jour, vous allez y arriver.\n\nLaissez-vous guider.\n\nMais avant de commencer…\n\n",
     },
     {
-      "key": "002",
-      "text": "Vous allez avoir des listes de familles à remplir, selon les couleurs des cartes.\n\nPour les mémoriser nous vous conseillons de créer une histoire, en y associant les images les plus marquantes possibles.\n\nJouer sur les tailles, les couleurs, les sons, les registres (Ridicules, sexuels, dangereux).",
+        "key": "002",
+        "text": "Remplissez votre Profil. Dernier Bouton en bas de l’écran.\n\nCochez l’ensemble des aides. Vous pourrez les déconnecter ensuite.\n\n",
     },
     {
-      "key": "003",
-      "text": "Les règles pour débuter : \n\nLa première carte : prenez le personnage dans sa carte d’identité. \nLa seconde carte : Prenez le lieu dans sa carte d’identité \nLa troisième carte : prenez l’objet dans sa carte d’identité. \nLa quatrième carte : faite faire à votre personnage l’action du verbe.",
+        "key": "003",
+        "text": "Dans un premier temps, nous vous permettons de mémoriser 8 cartes, en créant deux histoires.\n\nChaque couleur de Cartes (Cœur, carreau, Trèfle, Pique) donne le thème d’un groupe.\n\nVous choisissez le thème lié à cette couleur.",
     },
     {
-      "key": "004",
-      "text": "Lorsque vous aurez réussi, vous serez pret à passer à l’étape suivante : Créer votre propre tableau.",
+        "key": "004",
+        "text": "Pour débuter, nous vous proposons un choix , en ce qui concerne la couleur cœur :\n\n-Soit vous choisissez parmi nos propositions des noms de personnages de la famille Disney.\n-Soit vous vous choisissiez des personnes de votre famille ou de vos amis.\n\nPuis pour chaque carte, vous associez au personnage choisi :\n- un Verbe d’action facilement visualisable\n- un objet\n- un lieu.",
     },
-  ]
+    {
+        "key": "005",
+        "text": "Pour aider à la mémorisation, nous vous recommandons de choisir des personnages, des verbes d’actions, des objets, et des lieux en y associant les images les plus marquantes possibles, et qui font appel le plus possible à vos sens (Émotions, sons, odeurs, goûts, etc…).\n\nJouer sur les tailles, les couleurs, les sons, les registres (ridicules, sexuels, dangereux, etc…)",
+    },
+    {
+        "key": "006",
+        "text": "Pour mémoriser les cartes, vous allez passer par la création d’histoires :\n\nUne histoire est créée par la composition les éléments de 4 cartes\n\nUne histoire de 4 cartes (1,2,3 et 4) :\n1 : Un personnage fait\n2 : une action avec\n3 : un objet dans\n4 : un lieu",
+    },
+    {
+        "key": "007",
+        "text": "Ces 4 premières cartes vont vous permettre de créer votre première histoire.\nVous créez votre seconde histoire avec les 4 cartes suivantes.\n\n\Compris ?",
+    },
+    {
+        "key": "008",
+        "text": "Allez, on vous lâche la main, on enlève les petites roues :\nIl n’y a plus qu’à remplir votre tableau.\n\n«  Mon tableau ? »\n\nOui, définir une famille par couleur de cartes, et remplir pour chaque carte ses caractéristiques (Personnage, Verbe, Objet, Lieu).\nPuis apprendre les 4 éléments de chaque carte de chacune de vos 4 familles, soit de vos 52 cartes.\n\nC’est ce que l’on nomme connaître son Tableau.",
+    },
+    {
+        "key": "009",
+        "text": "\nQuand vous pourrez réciter les 4 éléments pour chaque carte en moins de 10 mn, vous pourrez dire :\n« Je connais mon tableau. »\n\nPuis vous pourrez créer 6 histoires, puis 10 histoires, puis 13 histoires.\nQuand vous réciterez vos 13 histoires, en passant les 52 cartes, en moins de 10mn, vous accéderez au Club très fermé de ceux qui peuvent participer au GAME.\n\nMais Chut ! Ça c’est pour après.\nVotre Coach- accompagnant vous en parlera.",
+    },
+]
 
-const Indicator = ({scrollX}) => {
+const Indicator = ({ scrollX }) => {
     return (
         <ContainerIndicator>
             {DATA.map((_, i) => {
-                const inputRange = [(i - 1)* width, i * width, (i + 1) * width];
+                const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
                 const scale = scrollX.interpolate({
                     inputRange,
-                    outputRange:[0.5,1.4,0.5],
+                    outputRange: [0.5, 1.4, 0.5],
                     extrapolate: 'clamp'
                 });
                 const opacity = scrollX.interpolate({
                     inputRange,
-                    outputRange: [0.5,1,0.5],
+                    outputRange: [0.5, 1, 0.5],
                     extrapolate: 'clamp'
                 })
                 return (
-                    <Animated.View key={`indicator-${i}`} 
+                    <Animated.View key={`indicator-${i}`}
                         style={{
-                          height: 2,
-                          width: 10,
-                          borderRadius: 2,
-                          backgroundColor: '#FFFFFF',
-                          marginHorizontal: 3,
-                          opacity,
-                          transform: [
-                              {
-                                  scale,
-                                  
-                              }
-                          ]
+                            height: 2,
+                            width: 10,
+                            borderRadius: 2,
+                            backgroundColor: '#FFFFFF',
+                            marginHorizontal: 3,
+                            opacity,
+                            transform: [
+                                {
+                                    scale,
+
+                                }
+                            ]
                         }}
                     />
-                    
+
                 )
             })}
         </ContainerIndicator>
     )
 }
 
-const RulePrecreationScreen = ({navigation}) => {
-//Changement de la valeur lors du scroll pour les éléments de la liste
-const scrollX  = useRef(new Animated.Value(0)).current;
-const ref = useRef(null);
-const [currentItemIndex, setCurrentItemIndex] = useState(0);
-const dispatch = useDispatch();
+const RulePrecreationScreen = ({ navigation }) => {
+    //Changement de la valeur lors du scroll pour les éléments de la liste
+    const scrollX = useRef(new Animated.Value(0)).current;
+    const ref = useRef(null);
+    const [currentItemIndex, setCurrentItemIndex] = useState(0);
+    const dispatch = useDispatch();
 
-const updateCurrentItemIndex = element => {
-    const contentOffsetX = element.nativeEvent.contentOffset.x;
-    const currentIndex = Math.round(contentOffsetX / width);
-    setCurrentItemIndex(currentIndex);
-};
-const goNextItem = () => {
-    const nextItemIndex = currentItemIndex + 1;
-    const offset = nextItemIndex * width;
-    ref?.current?.scrollToOffset({offset});
-    setCurrentItemIndex(nextItemIndex);
-};
-const skip = () => {
-    const lastItemIndex = DATA.length - 1;
-    const offset = lastItemIndex * width;
-    ref?.current?.scrollToOffset({offset});
-    setCurrentItemIndex(lastItemIndex);
-}
+    const updateCurrentItemIndex = element => {
+        const contentOffsetX = element.nativeEvent.contentOffset.x;
+        const currentIndex = Math.round(contentOffsetX / width);
+        setCurrentItemIndex(currentIndex);
+    };
+    const goNextItem = () => {
+        const nextItemIndex = currentItemIndex + 1;
+        const offset = nextItemIndex * width;
+        ref?.current?.scrollToOffset({ offset });
+        setCurrentItemIndex(nextItemIndex);
+    };
+    const skip = () => {
+        const lastItemIndex = DATA.length - 1;
+        const offset = lastItemIndex * width;
+        ref?.current?.scrollToOffset({ offset });
+        setCurrentItemIndex(lastItemIndex);
+    }
 
-const handleGotoHomePrecreation = async() => {
-    const user = await Auth.currentAuthenticatedUser();
-    const userId = user?.attributes?.sub;
-    dispatch(updateUser({userId: user?.attributes?.sub}));
-    UserService.saveUserStepperData({userId}).then((result)=> {
-        if(result?.data){
-            UserService.getUserStepperData(userId).then((result) => {
-                if(result?.data){
-                    const stepperData = result?.data[0];
-                    console.log(stepperData);
-                    if(!stepperData.prePlayHint) {
-                        UserService.saveDataCard(userId).then((result) => {
-                            if(result?.data){
-                                UserService.saveUserFamillyProgressData(userId).then((result) => {
-                                    if(result?.data) navigation.push("Accueil Preliminaire");
-                                });
-                            }
-                        });
+    const handleGotoHomePrecreation = async () => {
+        const user = await Auth.currentAuthenticatedUser();
+        const userId = user?.attributes?.sub;
+        dispatch(updateUser({ userId: user?.attributes?.sub }));
+        UserService.saveUserStepperData({ userId }).then((result) => {
+            if (result?.data) {
+                UserService.getUserStepperData(userId).then((result) => {
+                    if (result?.data) {
+                        const stepperData = result?.data[0];
+                        console.log(stepperData);
+                        if (!stepperData.prePlayHint) {
+                            UserService.saveDataCard(userId).then((result) => {
+                                if (result?.data) {
+                                    UserService.saveUserFamillyProgressData(userId).then((result) => {
+                                        if (result?.data) navigation.push("Accueil Preliminaire");
+                                    });
+                                }
+                            });
+                        }
                     }
+                });
+            }
+        });
+    }
+
+    return (
+
+        <Container source={require("../assets/brainsport-bg.png")}>
+            <BrainsportIcon source={require("../assets/brainsport-logo.png")} />
+            <StatusBar hidden />
+            <Title>« Vous êtes prêt à transformer votre cerveau maintenant. »</Title>
+            <Animated.FlatList
+                data={DATA}
+                ref={ref}
+                keyExtractor={item => item.key}
+                horizontal
+                scrollEventThrottle={32}
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                    { useNativeDriver: false }
+                )}
+                onMomentumScrollEnd={updateCurrentItemIndex}
+                contentContainerStyle={{ paddingBottom: 100 }}
+                showsHorizontalScrollIndicator={false}
+                pagingEnabled
+                renderItem={({ item }) => {
+                    return (<FlatView>
+                        <FlatText>{item.text}</FlatText>
+                    </FlatView>
+
+                    );
+                }}
+            />
+            <SigninButton>
+                {
+                    currentItemIndex === DATA.length - 1 ?
+                        (<TouchableBtnSignin onPress={handleGotoHomePrecreation}>
+                            <TextSignin>Commencer</TextSignin>
+                        </TouchableBtnSignin>) :
+                        (<><TouchableBtn onPress={() => skip()}>
+                            <TextPasser>Passer</TextPasser>
+                        </TouchableBtn>
+                            <ViewSpace />
+                            <TouchableBtnPlein onPress={() => goNextItem()}>
+                                <TextSuivant>Suivant</TextSuivant><Ionicons name="arrow-forward" size={20} color="#000000" />
+                            </TouchableBtnPlein></>)
+
                 }
-            });
-        }
-    });
-}
-
-return (
-        
-    <Container source={require("../assets/brainsport-bg.png")}> 
-        <BrainsportIcon source={require("../assets/brainsport-logo.png")}/>
-        <StatusBar hidden />
-        <Title>« Vous êtes prêt à transformer votre cerveau maintenant. »</Title>
-        <Animated.FlatList 
-            data={DATA}
-            ref={ref}
-            keyExtractor={item => item.key}
-            horizontal
-            scrollEventThrottle={32}
-            onScroll={Animated.event(
-                [{nativeEvent: {contentOffset: {x: scrollX}}}],
-                {useNativeDriver: false}
-            )}
-            onMomentumScrollEnd={updateCurrentItemIndex}
-            contentContainerStyle={{paddingBottom: 100}}
-            showsHorizontalScrollIndicator={false}
-            pagingEnabled
-            renderItem={({item}) => {
-                return (<FlatView>
-                    <FlatText>{item.text}</FlatText>
-                </FlatView>
-
-                );
-            }}
-        />
-        <SigninButton>
-        {
-            currentItemIndex === DATA.length -1 ? 
-            (<TouchableBtnSignin onPress={handleGotoHomePrecreation}>
-                <TextSignin>Commencer</TextSignin>
-            </TouchableBtnSignin>) : 
-            (<><TouchableBtn onPress={() => skip()}>
-                    <TextPasser>Passer</TextPasser>
-                </TouchableBtn>
-                <ViewSpace />
-                <TouchableBtnPlein onPress={() => goNextItem()}>
-                    <TextSuivant>Suivant</TextSuivant><Ionicons name="arrow-forward" size={20} color="#000000" />
-                </TouchableBtnPlein></>)
-                
-        }    
-        </SigninButton>
-        <Indicator scrollX={scrollX}/>
-    </Container>
-)
+            </SigninButton>
+            <Indicator scrollX={scrollX} />
+        </Container>
+    )
 }
 
 

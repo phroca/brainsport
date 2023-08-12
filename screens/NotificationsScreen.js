@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import styled from 'styled-components/native';
 import { ActivityIndicator, SafeAreaView, Animated, Dimensions, TouchableOpacity, TouchableWithoutFeedback, KeyboardAvoidingView, ScrollView, View, Platform } from "react-native";
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 import { useSelector } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
 import UserService from "../services/User.service";
@@ -12,7 +12,7 @@ import GroupCard from "../components/GroupCard";
 import CommunityService from "../services/Community.service";
 
 
-const {width, height} = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 const widthContent = width - 50;
 
 
@@ -185,39 +185,39 @@ const PrivateGroupToAddCardContainer = styled.View`
 `
 
 
-const NotificationsScreen = ({navigation}) => {
-    const [search, setSearch] =useState("");
-    const user = useSelector(state => state.user.value);
-    const [friendToAddList, setFriendToAddList] = useState([]);
-    const [privateGroupToAddList, setPrivateGroupToAddList] = useState([]);
-    const [flagListsNotifs, setFlagListNotifs] = useState(false);
-    useFocusEffect(
-      useCallback(()=> {
-        if(!flagListsNotifs){
-          UserService.getFriendsWhoAddedCurrentUser(user, "WAITING").then((result) => {
-            if(result?.data){
-              setFriendToAddList(result?.data);
-            }
-          });
-          CommunityService.getWaitingGroupsFromCurrentUser(user).then((result) => {
-            if(result?.data){
-              setPrivateGroupToAddList(result?.data);
-            }
-          });
-        }
-        return () => setFlagListNotifs(true)
-      }, [friendToAddList, privateGroupToAddList])
-    );
+const NotificationsScreen = ({ navigation }) => {
+  const [search, setSearch] = useState("");
+  const user = useSelector(state => state.user.value);
+  const [friendToAddList, setFriendToAddList] = useState([]);
+  const [privateGroupToAddList, setPrivateGroupToAddList] = useState([]);
+  const [flagListsNotifs, setFlagListNotifs] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      if (!flagListsNotifs) {
+        UserService.getFriendsWhoAddedCurrentUser(user, "WAITING").then((result) => {
+          if (result?.data) {
+            setFriendToAddList(result?.data);
+          }
+        });
+        CommunityService.getWaitingGroupsFromCurrentUser(user).then((result) => {
+          if (result?.data) {
+            setPrivateGroupToAddList(result?.data);
+          }
+        });
+      }
+      return () => setFlagListNotifs(true)
+    }, [friendToAddList, privateGroupToAddList])
+  );
 
 
-    return(
+  return (
     <Container>
       <Header>
         <TitleBar>
           <CloseButton>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
               <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-              </TouchableOpacity>
+            </TouchableOpacity>
           </CloseButton>
           <Title>Notifications</Title>
         </TitleBar>
@@ -228,32 +228,32 @@ const NotificationsScreen = ({navigation}) => {
             <NotificationTitle>Mes demandes d'amis</NotificationTitle>
           </NotificationHeader>
           <NotificationList>
-          {friendToAddList.length > 0 ?
-            (
+            {friendToAddList.length > 0 ?
+              (
                 <FriendsToAddList>
-                {friendToAddList.map((item, index) => (
-                    <TouchableOpacity onPress={() => navigation.navigate("AmisProfil", {currentUser: item})}>
-                        <FriendsToAddCardContainer>
-                            <UserCard
-                            key={"classement"+index+"" + item._id}
-                            rewardPoints={item.rewardPoints}
-                            firstName={item.firstName}
-                            color={item.colorProfil}
-                            />
-                        </FriendsToAddCardContainer>
+                  {friendToAddList.map((item, index) => (
+                    <TouchableOpacity key={index} onPress={() => navigation.navigate("AmisProfil", { currentUser: item })}>
+                      <FriendsToAddCardContainer>
+                        <UserCard
+                          key={"classement" + index + "" + item._id}
+                          rewardPoints={item.rewardPoints}
+                          firstName={item.firstName}
+                          color={item.colorProfil}
+                        />
+                      </FriendsToAddCardContainer>
                     </TouchableOpacity>
-                    ))}
+                  ))}
                 </FriendsToAddList>
-            ) : 
-            (
+              ) :
+              (
                 <NotificationEmptyList>
-                <NotificationEmptyListText>
+                  <NotificationEmptyListText>
                     Aucune demande d'amis
-                </NotificationEmptyListText>
+                  </NotificationEmptyListText>
                 </NotificationEmptyList>
-            )
+              )
 
-        }
+            }
           </NotificationList>
         </NotificationContainer>
         <Separator />
@@ -262,32 +262,32 @@ const NotificationsScreen = ({navigation}) => {
             <NotificationTitle>Mes demandes de groupes</NotificationTitle>
           </NotificationHeader>
           <NotificationList>
-          {privateGroupToAddList.length > 0 ?
-            (
+            {privateGroupToAddList.length > 0 ?
+              (
                 <PrivateGroupToAddList>
-                {privateGroupToAddList.map((item, index) => (
-                    <TouchableOpacity onPress={() => navigation.navigate("GroupInvitation", {groupData: item, currentUserId: user})}>
-                        <PrivateGroupToAddCardContainer>
-                            <GroupCard
-                            key={"card-"+item.id}
-                            nbMembres={item.nbMember}
-                            title={item.title}
-                            colortheme={item.colortheme}
-                            />
-                        </PrivateGroupToAddCardContainer>
+                  {privateGroupToAddList.map((item, index) => (
+                    <TouchableOpacity key={index} onPress={() => navigation.navigate("GroupInvitation", { groupData: item, currentUserId: user })}>
+                      <PrivateGroupToAddCardContainer>
+                        <GroupCard
+                          key={"card-" + item.id}
+                          nbMembres={item.nbMember}
+                          title={item.title}
+                          colortheme={item.colortheme}
+                        />
+                      </PrivateGroupToAddCardContainer>
                     </TouchableOpacity>
-                    ))}
+                  ))}
                 </PrivateGroupToAddList>
-            ) : 
-            (
+              ) :
+              (
                 <NotificationEmptyList>
-                <NotificationEmptyListText>
+                  <NotificationEmptyListText>
                     Aucune demande de groupe
-                </NotificationEmptyListText>
+                  </NotificationEmptyListText>
                 </NotificationEmptyList>
-            )
+              )
 
-        }
+            }
           </NotificationList>
         </NotificationContainer>
       </NotifContainer>
