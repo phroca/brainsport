@@ -2,7 +2,7 @@
     "expo": {
         "name": "brainsport",
         "slug": "brainsport",
-        "version": "0.0.16",
+        "version": "0.0.17",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "light",
@@ -35,7 +35,8 @@
             "permissions": [
                 "android.permission.RECORD_AUDIO"
             ],
-            "intentFilters": [{
+            "intentFilters": [
+                {
                     "action": "android.speech.RecognitionService"
                 },
                 {
@@ -47,7 +48,6 @@
         "web": {
             "favicon": "./assets/favicon.png"
         },
-
         "extra": {
             "eas": {
                 "projectId": "77686e4a-6456-4620-b8ad-baf81be012d5"
@@ -61,7 +61,9 @@
                     "speechRecognitionPermission": "Cette application requiert l'autorisation d'accès à la reconnaissance vocale de l'appareil de l'utilisateur."
                 }
             ],
-            ["./native-config/android-manifest.plugin.js"]
+            [
+                "./native-config/android-manifest.plugin.js"
+            ]
         ]
     }
 }
