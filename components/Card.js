@@ -7,8 +7,8 @@ import { cardIllustration } from "../cardIllustration";
 const CardContainer = styled.View`
     width: ${props => props.w ?? "150"}px;
     height: ${props => props.h ?? "250"}px;
-    background-color: ${props=> props.isFold === true ? "black": "white"};
-    border: ${props=> props.isFold === true ? " 1px solid white": "none"};
+    background-color: ${props => props.isFold === true ? "black" : "white"};
+    border: ${props => props.isFold === true ? " 1px solid white" : "none"};
     border-radius: 15px;
 `;
 
@@ -73,45 +73,45 @@ const ImageIllustration = styled.Image`
     z-index: 3;
     border-radius: 15px; 
 `
-const ValidValue = ["D", "R"];
-const ValidColor = ["pique"];
+const ValidValue = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "V", "D", "R"];
+const ValidColor = ["carreau", "coeur", "trefle", "pique"];
 
-const Card = ({valeur, couleur, isFold = false, width = 150, height = 250}) => {
+const Card = ({ valeur, couleur, isFold = false, width = 150, height = 250 }) => {
 
     const namingColorCard = (couleur) => {
-        if(couleur === "pique"){
+        if (couleur === "pique") {
             return <MaterialCommunityIcons name="cards-spade" size={20} color="black" />;
-        } 
-        if(couleur === "carreau"){
+        }
+        if (couleur === "carreau") {
             return <MaterialCommunityIcons name="cards-diamond" size={20} color="red" />;
-        } 
-        if(couleur === "coeur"){
+        }
+        if (couleur === "coeur") {
             return <MaterialCommunityIcons name="cards-heart" size={20} color="red" />;
-        } 
-        if(couleur === "trefle"){
+        }
+        if (couleur === "trefle") {
             return <MaterialCommunityIcons name="cards-club" size={20} color="black" />;
-        } 
+        }
     }
     return (
-  
-                <CardContainer isFold={isFold} w={width} h={height} >
-                      {
-                        isFold === true ? 
-                        (
-                            
-                            <FoldColorContainer>
-                            <BrainsportIcon source={require("../assets/brainsport-logo.png")}/>
-                            </FoldColorContainer>
-                            
-                        ) 
-                    :   ValidValue.includes(valeur) && ValidColor.includes(couleur) ? 
-                    (<>
-                        <ValueContainer>
-                            <ImageTexte source={cardIllustration[valeur][couleur].texte}/>
-                            <ImageIllustration source={cardIllustration[valeur][couleur].illustration}/>
-                        </ValueContainer>
-                    </>) : 
-                    (<>
+
+        <CardContainer isFold={isFold} w={width} h={height} >
+            {
+                isFold === true ?
+                    (
+
+                        <FoldColorContainer>
+                            <BrainsportIcon source={require("../assets/brainsport-logo.png")} />
+                        </FoldColorContainer>
+
+                    )
+                    : ValidValue.includes(valeur) && ValidColor.includes(couleur) ?
+                        (<>
+                            <ValueContainer>
+                                <ImageTexte source={cardIllustration[valeur][couleur].texte} />
+                                <ImageIllustration source={cardIllustration[valeur][couleur].illustration} />
+                            </ValueContainer>
+                        </>) :
+                        (<>
                             <ValueContainerHeader>
                                 <TextHeader couleur={couleur}>{namingColorCard(couleur)}</TextHeader>
                             </ValueContainerHeader>
@@ -122,10 +122,10 @@ const Card = ({valeur, couleur, isFold = false, width = 150, height = 250}) => {
                                 <TextFooter couleur={couleur}>{namingColorCard(couleur)}</TextFooter>
                             </ValueContainerFooter>
                         </>)
-                     }
-                </CardContainer>
-         
-        
+            }
+        </CardContainer>
+
+
     )
 }
 
