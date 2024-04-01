@@ -694,10 +694,10 @@ const CardAssociationPerFamillyScreen = (props) => {
 
                                 <PostTextWithArrow>
                                     {isPersoClicked && <TouchableOpacity style={{ width: 30 }} onPress={() => setIsPersoClicked(false)}>
-                                        <Ionicons name="md-caret-up" size={20} color="white" />
+                                        <Ionicons name="caret-up" size={20} color="white" />
                                     </TouchableOpacity>}
                                     {!isPersoClicked && <TouchableOpacity style={{ width: 30 }} onPress={() => setIsPersoClicked(true)}>
-                                        <Ionicons name="md-caret-down" size={20} color="white" />
+                                        <Ionicons name="caret-down" size={20} color="white" />
                                     </TouchableOpacity>}
                                     {!recordPersonnageStarted && <TouchableOpacity onPress={() => handleStartSpeechForPersonnage()}>
                                         <MaterialCommunityIcons name="text-to-speech" size={20} color="white" />
