@@ -14,7 +14,7 @@ import { useCalculatePoints } from "../hooks/useCalculatePoints";
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const widthContent = screenWidth  - 50;
+const widthContent = screenWidth - 50;
 
 const Container = styled.ImageBackground`
   flex:1;
@@ -188,7 +188,7 @@ const TipSection = styled.View`
 `;
 
 const TipText = styled.Text`
-  width: ${widthContent-80}px;
+  width: ${widthContent - 80}px;
   color: #FFFFFF;
   font-size: 14px;
 `;
@@ -198,13 +198,13 @@ const TipSwitch = styled.Switch`
   right: 20px;
 `;
 
-const ProfilScreen = ({navigation}) => {
+const ProfilScreen = ({ navigation }) => {
   const [listProgress, setListProgress] = useState([]);
   const [consecutiveDays, setConsecutiveDays] = useState(0);
   //const [prePlayDataIn, setPrePlayDataIn] = useState(null);
-  let padToTwo = (number) => (number <= 9 ? `0${number}`: number);
+  let padToTwo = (number) => (number <= 9 ? `0${number}` : number);
   const [flagUserDataCard, setFlagUserDataCard] = useState(false);
-  const [currentUserDataCard, setCurrentUserDataCard] = useState({"userId": "", "cards": []})
+  const [currentUserDataCard, setCurrentUserDataCard] = useState({ "userId": "", "cards": [] })
   const [isAppFirstLaunched, setIsAppFirstLaunched] = useState(null);
   const [isInitHomeEnabled, setIsInitHomeEnabled] = useState(false);
   const [isInitCardAssociation, setIsInitCardAssociation] = useState(false);
@@ -218,7 +218,7 @@ const ProfilScreen = ({navigation}) => {
   useFocusEffect(
     useCallback(() => {
       UserService.getUserStepperData(user).then((value) => {
-        if(value?.data) {
+        if (value?.data) {
           const stepData = value?.data[0];
           setIsInitHomeEnabled(stepData?.initHomeScreen);
           setIsInitCardAssociation(stepData?.initCardAssociation);
@@ -226,15 +226,15 @@ const ProfilScreen = ({navigation}) => {
           setIsPrePlayHint(stepData?.prePlayHint);
         }
       })
-    },[])
+    }, [])
   );
 
-  useEffect(()=> {
-    (async() => {
+  useEffect(() => {
+    (async () => {
       const resultPoints = await useCalculatePoints(user);
       UserService.getUserByUserId(user).then((value) => {
         const userDataRewardPoints = value.data[0].rewardPoints;
-        if(userDataRewardPoints === 0){
+        if (userDataRewardPoints === 0) {
           UserService.updateRewardPointsForUser(user, resultPoints);
         }
       }).catch((error) => {
@@ -245,7 +245,7 @@ const ProfilScreen = ({navigation}) => {
 
   useEffect(() => {
     UserService.getProgressionTime(user).then((value) => {
-      if(value.data){
+      if (value.data) {
         setListProgress(value.data);
         calculateConsecutiveDays(value.data);
       }
@@ -254,11 +254,11 @@ const ProfilScreen = ({navigation}) => {
 
   useFocusEffect(
     useCallback(() => {
-      if(!flagUserDataCard){
+      if (!flagUserDataCard) {
         UserService.getDataCard(user).then((value) => {
           const dataRaw = value?.data[0];
-          const userDataFromServer= JSON.parse(dataRaw.cards);
-          setCurrentUserDataCard({"userId": dataRaw.userId, "cards": userDataFromServer});
+          const userDataFromServer = JSON.parse(dataRaw.cards);
+          setCurrentUserDataCard({ "userId": dataRaw.userId, "cards": userDataFromServer });
         });
       }
       return () => setFlagUserDataCard(true)
@@ -266,7 +266,7 @@ const ProfilScreen = ({navigation}) => {
   );
   useFocusEffect(
     useCallback(() => {
-      if(!flagNbNotifs){
+      if (!flagNbNotifs) {
         UserService.getNbNotifs(user).then((value) => {
           setNbNotifs(value);
         });
@@ -276,32 +276,32 @@ const ProfilScreen = ({navigation}) => {
   );
 
   const handleReinit = () => {
-    CardService.clearAll().then(()=> {
+    CardService.clearAll().then(() => {
       Toast.show({
         type: 'success',
         text1: 'Réinitalisation réussie',
-        text2:  "Les données utilisateurs sont bien réinitialisées."
+        text2: "Les données utilisateurs sont bien réinitialisées."
       });
     });
     UserService.clearAll(user).then(() => {
       Toast.show({
         type: 'success',
         text1: 'Réinitalisation réussie',
-        text2:  "Les données utilisateurs sont bien réinitialisées."
+        text2: "Les données utilisateurs sont bien réinitialisées."
       });
     })
   };
 
-  useEffect(()=> {
+  useEffect(() => {
     CardService.getCitation().then((value) => {
-      if(value !== null) {
+      if (value !== null) {
         setIsAppFirstLaunched(value);
       }
     })
   }, []);
 
   const handleToggleHideCitation = () => {
-    if(isAppFirstLaunched) {
+    if (isAppFirstLaunched) {
       CardService.terminateCitation().then(() => {
         setIsAppFirstLaunched(false);
       })
@@ -312,8 +312,8 @@ const ProfilScreen = ({navigation}) => {
     }
   }
 
-  const disconnect = async() => {
-    Auth.signOut().then(()=> {
+  const disconnect = async () => {
+    Auth.signOut().then(() => {
       navigation.navigate("Signin");
     })
   }
@@ -321,16 +321,16 @@ const ProfilScreen = ({navigation}) => {
   const getBestTime = (listProgress) => {
     const array = [];
     listProgress.forEach(item => array.push(item.time))
-    const arraySorted = array.sort((a, b) => {return b - a});
+    const arraySorted = array.sort((a, b) => { return b - a });
     if (arraySorted.length === 0) return 0;
-    return arraySorted[arraySorted.length -1];
+    return arraySorted[arraySorted.length - 1];
   }
 
   const calculateConsecutiveDays = (valueData) => {
     const dates = new Set();
     const numberConsecutive = [];
     valueData.forEach(elt => {
-      const dateTemp = moment(new Date(elt.datePlayed));
+      const dateTemp = moment(new Date(elt.datePlayed), "MM/DD/YYYY");
       dates.add(dateTemp.format("MM/DD/YYYY"));
     })
     const consecutiveDates = Array.from(dates).reduce((acc, date) => {
@@ -352,68 +352,68 @@ const ProfilScreen = ({navigation}) => {
   }
 
   const handleLibrary = () => {
-    navigation.push("Bibliothèque", {userCards: currentUserDataCard});
+    navigation.push("Bibliothèque", { userCards: currentUserDataCard });
   }
 
   const toggleSwitchInitHome = (value) => {
-    UserService.updateInitHomeScreen({userId: user, initHomeScreen: value});
+    UserService.updateInitHomeScreen({ userId: user, initHomeScreen: value });
     setIsInitHomeEnabled(value);
   }
 
   const toggleSwitchInitCardAssociation = (value) => {
-    UserService.updateInitCardAssociation({userId: user, initHomeScreen: value});
+    UserService.updateInitCardAssociation({ userId: user, initHomeScreen: value });
     setIsInitCardAssociation(value);
   }
-  
+
   const toggleSwitchInitPrePlay = (value) => {
-    UserService.updateInitPrePlay({userId: user, initHomeScreen: value});
+    UserService.updateInitPrePlay({ userId: user, initHomeScreen: value });
     setIsInitPrePlay(value);
   }
 
   const toggleSwitchPrePlayHint = (value) => {
-    UserService.updatePrePlayHint({userId: user, prePlayHint: value});
+    UserService.updatePrePlayHint({ userId: user, prePlayHint: value });
     setIsPrePlayHint(value);
   }
 
   const handleInsertDataToLocalStorage = () => {
-    CardService.initPrePlayData().then((value)=> {
-      if(value){
-          CardService.initStepperBeforePlay().then((stepValue)=> {
-              if(stepValue){
-                  CardService.initPrePlayHintData().then((preplayHintValue) => {
-                      if(preplayHintValue === false){
-                          CardService.generateCardMock(user).then((data) => {
-                              if(data) {
-                                  CardService.initFamillyProgress().then((famillyprogressData) => {
-                                      if(famillyprogressData) console.log("insertion done");
-                                  });
-                              }
-                          });
-                      }
-                  })
+    CardService.initPrePlayData().then((value) => {
+      if (value) {
+        CardService.initStepperBeforePlay().then((stepValue) => {
+          if (stepValue) {
+            CardService.initPrePlayHintData().then((preplayHintValue) => {
+              if (preplayHintValue === false) {
+                CardService.generateCardMock(user).then((data) => {
+                  if (data) {
+                    CardService.initFamillyProgress().then((famillyprogressData) => {
+                      if (famillyprogressData) console.log("insertion done");
+                    });
+                  }
+                });
               }
-          });
+            })
+          }
+        });
       }
-  });
+    });
   }
-    return (
-        <Container source={require("../assets/brainsport-bg.png")}>
-        <SafeAreaView>
-          <ScrollView style={{height: "100%"}} showsVerticalScrollIndicator={false}>
-            <TitleBar>
-                <Title>Profil</Title>
-            </TitleBar>
-            <TouchableOpacity onPress={()=>navigation.navigate("Progres")}>
-              <ProgresSection>
-                <ProgresHeader>
+  return (
+    <Container source={require("../assets/brainsport-bg.png")}>
+      <SafeAreaView>
+        <ScrollView style={{ height: "100%" }} showsVerticalScrollIndicator={false}>
+          <TitleBar>
+            <Title>Profil</Title>
+          </TitleBar>
+          <TouchableOpacity onPress={() => navigation.navigate("Progres")}>
+            <ProgresSection>
+              <ProgresHeader>
                 <ProgresTitle>
                   Mon Progrès
                 </ProgresTitle>
-                </ProgresHeader>
-                <ProgresCards>
+              </ProgresHeader>
+              <ProgresCards>
                 <ProgresCard>
                   <ProgresNumber>
-                      {consecutiveDays}
+                    {consecutiveDays}
                   </ProgresNumber>
                   <ProgresLabelCenter>
                     jours consécutifs
@@ -421,7 +421,7 @@ const ProfilScreen = ({navigation}) => {
                 </ProgresCard>
                 <ProgresCard>
                   <ProgresNumberLittle>
-                  {padToTwo(Math.trunc(getBestTime(listProgress)/60))}: {padToTwo(getBestTime(listProgress)%60)}
+                    {padToTwo(Math.trunc(getBestTime(listProgress) / 60))}: {padToTwo(getBestTime(listProgress) % 60)}
                   </ProgresNumberLittle>
                   <ProgresLabelCenter>
                     meilleur temps
@@ -429,139 +429,139 @@ const ProfilScreen = ({navigation}) => {
                 </ProgresCard>
                 <ProgresCard>
                   <ProgresNumber>
-                      {listProgress.length}
+                    {listProgress.length}
                   </ProgresNumber>
                   <ProgresLabel>
                     exos
                   </ProgresLabel>
                 </ProgresCard>
-                </ProgresCards>
-              </ProgresSection>
+              </ProgresCards>
+            </ProgresSection>
+          </TouchableOpacity>
+          <ProfilActions>
+            <TouchableOpacity onPress={() => handleAvatar()}>
+              <ProfilAction>
+                <ActionTitle>
+                  Mon avatar
+                </ActionTitle>
+                <ActionButton>
+                  <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                </ActionButton>
+              </ProfilAction>
             </TouchableOpacity>
-            <ProfilActions>
-              <TouchableOpacity onPress={()=> handleAvatar()}>
-                <ProfilAction>
-                  <ActionTitle>
-                    Mon avatar
-                  </ActionTitle>
-                  <ActionButton>
-                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                  </ActionButton>
-                </ProfilAction>
-              </TouchableOpacity>
-              <TouchableOpacity  onPress={()=> handleLibrary()}>
-                <ProfilAction>
-                  <ActionTitle>
-                    Ma bibliothèque
-                  </ActionTitle>
-                  <ActionButton>
-                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                  </ActionButton>
-                </ProfilAction>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={()=> navigation.navigate("Statistiques")}>
-                <ProfilAction>
-                  <ActionTitle>
-                    Statistiques
-                  </ActionTitle>
-                  <ActionButton>
-                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                  </ActionButton>
-                </ProfilAction>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={()=> navigation.navigate("Amis")}>
-                <ProfilAction>
-                  <ActionTitle>
-                    Amis
-                  </ActionTitle>
-                  <ActionButton>
-                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                  </ActionButton>
-                </ProfilAction>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={()=> navigation.navigate("Notifications")}>
-                <ProfilAction>
-                  <ActionTitle>
-                    Mes notifications
-                  </ActionTitle>
-                  <ActionPastille>
+            <TouchableOpacity onPress={() => handleLibrary()}>
+              <ProfilAction>
+                <ActionTitle>
+                  Ma bibliothèque
+                </ActionTitle>
+                <ActionButton>
+                  <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                </ActionButton>
+              </ProfilAction>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Statistiques")}>
+              <ProfilAction>
+                <ActionTitle>
+                  Statistiques
+                </ActionTitle>
+                <ActionButton>
+                  <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                </ActionButton>
+              </ProfilAction>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Amis")}>
+              <ProfilAction>
+                <ActionTitle>
+                  Amis
+                </ActionTitle>
+                <ActionButton>
+                  <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                </ActionButton>
+              </ProfilAction>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
+              <ProfilAction>
+                <ActionTitle>
+                  Mes notifications
+                </ActionTitle>
+                <ActionPastille>
                   <Pastille>
                     <PastilleText>
-                          {nbNotifs}
+                      {nbNotifs}
                     </PastilleText>
                   </Pastille>
-                  </ActionPastille>
-                  <ActionButton>
-                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                  </ActionButton>
-                </ProfilAction>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={()=> navigation.navigate("Support")}>
-                <ProfilAction>
-                  <ActionTitle>
-                    Support
-                  </ActionTitle>
-                  <ActionButton>
-                    <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-                  </ActionButton>
-                </ProfilAction>
-              </TouchableOpacity>
-            </ProfilActions>  
-            <TipActions>
-              <TipSection>
-                <TipText>
-                  Aide contextuel sur les règles de départ
-                </TipText>
-                <TipSwitch 
-                  trackColor={{false: '#767577', true: '#3e3e3e'}}
-                  thumbColor={isInitHomeEnabled ? '#A138F2' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={(val) =>toggleSwitchInitHome(val)}
-                  value={isInitHomeEnabled}
-                />
-              </TipSection>
-              <TipSection>
-                <TipText>
-                  Aide contextuel sur la création des familles de cartes
-                </TipText>
-                <TipSwitch 
-                  trackColor={{false: '#767577', true: '#3e3e3e'}}
-                  thumbColor={isInitCardAssociation ? '#A138F2' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={(val) =>toggleSwitchInitCardAssociation(val)}
-                  value={isInitCardAssociation}
-                />
-              </TipSection>
-              <TipSection>
-                <TipText>
-                  Aide contextuel sur la création des histoire
-                </TipText>
-                <TipSwitch 
-                  trackColor={{false: '#767577', true: '#3e3e3e'}}
-                  thumbColor={isInitPrePlay ? '#A138F2' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={(val) =>toggleSwitchInitPrePlay(val)}
-                  value={isInitPrePlay}
-                />
-              </TipSection>
-              <TipSection>
-                <TipText>
-                  Aide de mémorisation lors de l'apprentissage du tableau
-                </TipText>
-                <TipSwitch 
-                  trackColor={{false: '#767577', true: '#3e3e3e'}}
-                  thumbColor={isPrePlayHint ? '#A138F2' : '#f4f3f4'}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={(val) =>toggleSwitchPrePlayHint(val)}
-                  value={isPrePlayHint}
-                />
-              </TipSection>
-            </TipActions>     
+                </ActionPastille>
+                <ActionButton>
+                  <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                </ActionButton>
+              </ProfilAction>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Support")}>
+              <ProfilAction>
+                <ActionTitle>
+                  Support
+                </ActionTitle>
+                <ActionButton>
+                  <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
+                </ActionButton>
+              </ProfilAction>
+            </TouchableOpacity>
+          </ProfilActions>
+          <TipActions>
+            <TipSection>
+              <TipText>
+                Aide contextuel sur les règles de départ
+              </TipText>
+              <TipSwitch
+                trackColor={{ false: '#767577', true: '#3e3e3e' }}
+                thumbColor={isInitHomeEnabled ? '#A138F2' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={(val) => toggleSwitchInitHome(val)}
+                value={isInitHomeEnabled}
+              />
+            </TipSection>
+            <TipSection>
+              <TipText>
+                Aide contextuel sur la création des familles de cartes
+              </TipText>
+              <TipSwitch
+                trackColor={{ false: '#767577', true: '#3e3e3e' }}
+                thumbColor={isInitCardAssociation ? '#A138F2' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={(val) => toggleSwitchInitCardAssociation(val)}
+                value={isInitCardAssociation}
+              />
+            </TipSection>
+            <TipSection>
+              <TipText>
+                Aide contextuel sur la création des histoire
+              </TipText>
+              <TipSwitch
+                trackColor={{ false: '#767577', true: '#3e3e3e' }}
+                thumbColor={isInitPrePlay ? '#A138F2' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={(val) => toggleSwitchInitPrePlay(val)}
+                value={isInitPrePlay}
+              />
+            </TipSection>
+            <TipSection>
+              <TipText>
+                Aide de mémorisation lors de l'apprentissage du tableau
+              </TipText>
+              <TipSwitch
+                trackColor={{ false: '#767577', true: '#3e3e3e' }}
+                thumbColor={isPrePlayHint ? '#A138F2' : '#f4f3f4'}
+                ios_backgroundColor="#3e3e3e"
+                onValueChange={(val) => toggleSwitchPrePlayHint(val)}
+                value={isPrePlayHint}
+              />
+            </TipSection>
+          </TipActions>
           <ButtonAction>
-          <PrePlaySection>
-          <CheckBox value={isAppFirstLaunched} label="Activer les citations au démarrage" onPress={() => handleToggleHideCitation()} />
-          </PrePlaySection>
-            <TouchableOpacity onPress={()=> handleReinit()}>
+            <PrePlaySection>
+              <CheckBox value={isAppFirstLaunched} label="Activer les citations au démarrage" onPress={() => handleToggleHideCitation()} />
+            </PrePlaySection>
+            <TouchableOpacity onPress={() => handleReinit()}>
               <ButtonView>
                 <ButtonText>Tout Reinitialiser</ButtonText>
               </ButtonView>
@@ -571,15 +571,15 @@ const ProfilScreen = ({navigation}) => {
                 <ButtonText>Generer donnees fictives</ButtonText>
               </ButtonView>
             </TouchableOpacity> */}
-            <TouchableOpacity onPress={()=> disconnect()}>
+            <TouchableOpacity onPress={() => disconnect()}>
               <ButtonView>
                 <ButtonText>Se déconnecter</ButtonText>
               </ButtonView>
             </TouchableOpacity>
           </ButtonAction>
-          </ScrollView>
-          </SafeAreaView>
-        </Container>);
+        </ScrollView>
+      </SafeAreaView>
+    </Container>);
 }
 
 export default ProfilScreen;

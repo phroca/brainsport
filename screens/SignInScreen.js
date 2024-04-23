@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const widthContent = screenWidth  - 80;
+const widthContent = screenWidth - 80;
 
 const Container = styled.ImageBackground`
   width: 100%;
@@ -163,128 +163,128 @@ const ButtonFooter = styled.View`
     bottom: 150px;
 `
 
-const SignInScreen = ({navigation}) => {
+const SignInScreen = ({ navigation }) => {
 
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [showPass, setShowPass] = useState(false);
-    const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-    const refEmail = useRef(null);
-    const handleFocusEmail = () => {
-      refEmail.current.focus();
-    }
+  const refEmail = useRef(null);
+  const handleFocusEmail = () => {
+    refEmail.current.focus();
+  }
 
-    const refPassword = useRef(null);
-    const handleFocusPassword = () => {
-      refPassword.current.focus();
-    }
+  const refPassword = useRef(null);
+  const handleFocusPassword = () => {
+    refPassword.current.focus();
+  }
 
 
-    useEffect(() => {
-      Auth.currentAuthenticatedUser().then((result) => {
-        if(result) {
-          navigation.navigate("Main");
-        }
-        setLoading(false);
+  useEffect(() => {
+    Auth.currentAuthenticatedUser().then((result) => {
+      if (result) {
+        navigation.navigate("Main");
+      }
+      setLoading(false);
+    }).catch((error) => {
+      setLoading(false);
+    })
+  }, []);
+
+  async function handleSignIn() {
+
+    try {
+      setIsLoading(true);
+      Auth.signIn(email, password).then((user) => {
+        setIsLoading(false);
+        Toast.show({
+          type: 'success',
+          text1: 'Connexion réussie',
+          text2: "Bienvenue sur Brainsport."
+        });
+        navigation.navigate("Main");
       }).catch((error) => {
-        setLoading(false);
-      })
-    },[]);
+        setIsLoading(false);
+        Toast.show({
+          type: 'error',
+          text1: "Erreur de connexion",
+          text2: "veuillez réessayer ultérieurement."
+        });
+      });
 
-    async function handleSignIn() {
-           
-        try {
-          setIsLoading(true);
-          Auth.signIn(email, password).then((user)=>{
-            setIsLoading(false);
-            Toast.show({
-              type: 'success',
-              text1: 'Connexion réussie',
-              text2:  "Bienvenue sur Brainsport."
-            });
-            navigation.navigate("Main");
-          }).catch((error) => {
-            setIsLoading(false);
-            Toast.show({
-              type: 'error',
-              text1: "Erreur de connexion" ,
-              text2: "veuillez réessayer ultérieurement."
-            });
-          });
+    } catch (error) {
+      setIsLoading(false);
+      const causeError = (e) => {
+        if (e.includes("AuthError")) return "l'email ne peut pas être vide.";
+        if (e.includes("InvalidParameterException")) return " l'email est malformé.";
+        if (e.includes("NotAuthorizedException")) return "email ou mot de passe incorrect.";
+      }
+      Toast.show({
+        type: 'error',
+        text1: 'Erreur de connexion',
+        text2: causeError("" + error)
+      });
+      console.log('error signing in', error);
+    }
+  };
 
-        } catch (error) {
-            setIsLoading(false);
-            const causeError = (e) => {
-              if(e.includes("AuthError")) return "l'email ne peut pas être vide.";
-              if(e.includes("InvalidParameterException")) return " l'email est malformé.";
-              if(e.includes("NotAuthorizedException")) return "email ou mot de passe incorrect.";
-            }
-            Toast.show({
-              type: 'error',
-              text1: 'Erreur de connexion',
-              text2:  causeError(""+error)
-            });
-            console.log('error signing in', error);
-        }
-    };
-
-    return loading === true ? (
-      <VideoContainer>
-        {/* <ActivityIndicator size="large" color="#A138F2" />
+  return loading === true ? (
+    <VideoContainer>
+      {/* <ActivityIndicator size="large" color="#A138F2" />
         <TextLoading>Chargement en cours...</TextLoading> */}
-      </VideoContainer>
-    ) :
+    </VideoContainer>
+  ) :
     (
-    <Container source={require("../assets/brainsport-bg.png")}>
-      <BrainsportIcon source={require("../assets/brainsport-logo.png")}/>
-      <BrainsportIconText source={require("../assets/logo-brainsport.png")}/>
-      <SigninForm >
-        <TouchableWithoutFeedback onPress={()=> handleFocusEmail()}>
-          <InputContainer >
+      <Container source={require("../assets/brainsport-bg.png")}>
+        <BrainsportIcon source={require("../assets/brainsport-logo.png")} />
+        <BrainsportIconText source={require("../assets/logo-brainsport.png")} />
+        <SigninForm >
+          <TouchableWithoutFeedback onPress={() => handleFocusEmail()}>
+            <InputContainer >
               <PreText>Email</PreText>
-              <TextInput ref={refEmail} keyboardType="email-address" onChangeText={(e)=> setEmail(e)} />
-          </InputContainer>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={()=> handleFocusPassword()}>
-          <InputContainer>
+              <TextInput ref={refEmail} keyboardType="email-address" onChangeText={(e) => setEmail(e)} />
+            </InputContainer>
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={() => handleFocusPassword()}>
+            <InputContainer>
               <PreText>Mot de passe</PreText>
-              <TextInputPass ref={refPassword} secureTextEntry={!showPass} onChangeText={(p)=> setPassword(p)} />
+              <TextInputPass ref={refPassword} secureTextEntry={!showPass} onChangeText={(p) => setPassword(p)} />
               <PostIcon>
-              <TouchableOpacity onPress={()=> setShowPass(pass => !pass)}>
-                {!showPass && <Ionicons name="eye-off-outline" size={16} color="#FFFFFF" />}
-                {showPass && <Ionicons name="eye-outline" size={16} color="#FFFFFF" />}
+                <TouchableOpacity onPress={() => setShowPass(pass => !pass)}>
+                  {!showPass && <Ionicons name="eye-off-outline" size={16} color="#FFFFFF" />}
+                  {showPass && <Ionicons name="eye-outline" size={16} color="#FFFFFF" />}
                 </TouchableOpacity>
               </PostIcon>
-          </InputContainer>
-        </TouchableWithoutFeedback>
-        <TouchableOpacity onPress={()=> navigation.navigate("Mdp Oublié")}>
+            </InputContainer>
+          </TouchableWithoutFeedback>
+          <TouchableOpacity onPress={() => navigation.navigate("Mdp Oublié")}>
             <ButtonViewLink>
               <ButtonTextLink>Mot de passe oublié ?</ButtonTextLink>
             </ButtonViewLink>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={()=> handleSignIn()}>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleSignIn()}>
             <ButtonView>
-            <ButtonText>Se connecter</ButtonText>
+              <ButtonText>Se connecter</ButtonText>
             </ButtonView>
-        </TouchableOpacity>
-        {/* <TouchableOpacity >
+          </TouchableOpacity>
+          {/* <TouchableOpacity >
         <Button title="Sign in with Google" onPress={() => {promptAsync();}} />
         </TouchableOpacity> */}
-        
-        <ButtonFooter>
-            <TouchableOpacity onPress={()=> navigation.navigate("Signup")}>
-                <ButtonViewSecondary>
-                <ButtonTextSecondary>Créer un compte</ButtonTextSecondary>
-                </ButtonViewSecondary>
-            </TouchableOpacity>
-        </ButtonFooter>
-      </SigninForm>
-      <Loading isActive={isLoading} />
-    </Container>
-)
+
+
+          <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+            <ButtonViewSecondary>
+              <ButtonTextSecondary>Créer un compte</ButtonTextSecondary>
+            </ButtonViewSecondary>
+          </TouchableOpacity>
+
+        </SigninForm>
+        <Loading isActive={isLoading} />
+      </Container>
+    )
 }
 
 export default SignInScreen;
