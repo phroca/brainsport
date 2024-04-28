@@ -264,7 +264,7 @@ const HomeScreenPreplay = (props) => {
         Toast.show({
           type: 'error',
           text1: "Erreur de récupération des données ",
-          text2: "Veuillez réessayer ultérieurement."
+          text2: error
         });
       })
     })();
