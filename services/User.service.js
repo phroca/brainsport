@@ -4,146 +4,146 @@ import CommunityService from "./Community.service";
 
 const API = "http://ec2-13-38-100-228.eu-west-3.compute.amazonaws.com:3000";
 //const API = "http://192.168.1.19:3000";
+const headers = { headers: { 'Content-Type': 'application/json' } };
 
 
 
 
-
-const getUsersByChar = async(char) => {
-    try{
+const getUsersByChar = async (char) => {
+    try {
         return axios.get(API + "/users/byChar/" + char);
     } catch (error) {
         console.error("ERREUR", error)
     }
 }
-const saveUser = async({userId= "", email = "", firstName = "", lastName= "", birthDate = new Date().getTime(), phoneNumber ="", bio = "", colorProfil="#000000", rewardPoints = 0, address= "", zipCode = "", city= "", region= ""}) => {
-    try{
-        return axios.put(API + "/users", {userId, email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region});
+const saveUser = async ({ userId = "", email = "", firstName = "", lastName = "", birthDate = new Date().getTime(), phoneNumber = "", bio = "", colorProfil = "#000000", rewardPoints = 0, address = "", zipCode = "", city = "", region = "" }) => {
+    try {
+        return axios.put(API + "/users", { userId, email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region });
     } catch (error) {
         console.error("ERREUR", error)
     }
 }
-const updateUser = async({userId, email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region}) => {
-    try{
-        return axios.post(API + "/users/" + userId, {email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region});
+const updateUser = async ({ userId, email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region }) => {
+    try {
+        return axios.post(API + "/users/" + userId, { email, firstName, lastName, birthDate, phoneNumber, bio, colorProfil, rewardPoints, address, zipCode, city, region });
     } catch (error) {
         console.error("ERREUR", error)
     }
 }
 
-const getRewardPointsForUser = async(userId) => {
+const getRewardPointsForUser = async (userId) => {
     try {
         return axios.get(API + "/users/" + userId + "/rewardPoints");
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
-const incrementRewardPointsForUser = async(userId, rewardPoints) => {
+const incrementRewardPointsForUser = async (userId, rewardPoints) => {
     try {
         const currentAwardPoints = await getRewardPointsForUser(userId);
         const newCurrentAwardPoints = currentAwardPoints.data[0].rewardPoints + rewardPoints;
-        return axios.post(API + "/users/" + userId + "/rewardPoints", {rewardPoints: newCurrentAwardPoints});
+        return axios.post(API + "/users/" + userId + "/rewardPoints", { rewardPoints: newCurrentAwardPoints });
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
 
 
-const updateRewardPointsForUser = async(userId, rewardPoints) => {
+const updateRewardPointsForUser = async (userId, rewardPoints) => {
     try {
-        return axios.post(API + "/users/" + userId + "/rewardPoints", {rewardPoints});
+        return axios.post(API + "/users/" + userId + "/rewardPoints", { rewardPoints });
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
 
-const getUserByUserId = async(userId) => {
-    try{
-        return axios.get(API + "/users/"+ userId);
+const getUserByUserId = async (userId) => {
+    try {
+        return axios.get(API + "/users/" + userId, headers);
     } catch (error) {
         console.error("ERREUR", error)
     }
 }
 
 
-const getDataCard = async(userId) => {
+const getDataCard = async (userId) => {
     try {
         return axios.get(API + "/userdatacard/" + userId);
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
 
-const saveOneCard = async(userCardsIn, currentCardIndexIn, personnage, verbe, objet, lieu) => {
+const saveOneCard = async (userCardsIn, currentCardIndexIn, personnage, verbe, objet, lieu) => {
     try {
-        let userCards = {...userCardsIn};
+        let userCards = { ...userCardsIn };
         userCards.cards[currentCardIndexIn].personnage = personnage;
         userCards.cards[currentCardIndexIn].verbe = verbe;
         userCards.cards[currentCardIndexIn].objet = objet;
         userCards.cards[currentCardIndexIn].lieu = lieu;
         const jsonValue = JSON.stringify(userCards.cards);
-        return axios.post(API + "/userdatacard/" + userCards.userId, {cards: jsonValue});
+        return axios.post(API + "/userdatacard/" + userCards.userId, { cards: jsonValue });
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
-const saveDataCard = async(userId) => {
+const saveDataCard = async (userId) => {
     try {
-        const userCards = {userId: userId, cards: []};
-        cardStructure.couleurs.forEach((couleur)=> {
-            cardStructure.valeurs.forEach((valeur)=>{
-                    const card = {
-                        "valeur": valeur.valeur,
-                        "couleur": couleur,
-                        "personnage": "",
-                        "verbe": "",
-                        "objet": "",
-                        "lieu": "",
-                        "conditions": valeur.conditions
-                    }
-                    userCards.cards.push(card);
+        const userCards = { userId: userId, cards: [] };
+        cardStructure.couleurs.forEach((couleur) => {
+            cardStructure.valeurs.forEach((valeur) => {
+                const card = {
+                    "valeur": valeur.valeur,
+                    "couleur": couleur,
+                    "personnage": "",
+                    "verbe": "",
+                    "objet": "",
+                    "lieu": "",
+                    "conditions": valeur.conditions
+                }
+                userCards.cards.push(card);
             });
         });
         const dataCardForUser = await getDataCard(userId);
-        if(dataCardForUser?.data.length === 0){
+        if (dataCardForUser?.data.length === 0) {
             const userDatacard = JSON.stringify(userCards.cards);
-            return axios.put(API + "/userdatacard", {userId, cards: userDatacard});
+            return axios.put(API + "/userdatacard", { userId, cards: userDatacard });
         }
-        
+
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
-const saveDataCardFromLocal = async({userId, userDatacard}) => {
+const saveDataCardFromLocal = async ({ userId, userDatacard }) => {
     try {
-        return axios.put(API + "/userdatacard", {userId, cards: userDatacard});
+        return axios.put(API + "/userdatacard", { userId, cards: userDatacard });
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
 
-const getUserStepperData = async(userId) => {
+const getUserStepperData = async (userId) => {
     try {
         return axios.get(API + "/userstepperdata/" + userId);
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
-const saveUserStepperData = async({userId, initHomeScreen = true, initCardAssociation = true, initPrePlay = true, initPlayGame = true, prePlayHint = false, prePlayData = true}) => {
+const saveUserStepperData = async ({ userId, initHomeScreen = true, initCardAssociation = true, initPrePlay = true, initPlayGame = true, prePlayHint = false, prePlayData = true }) => {
     try {
-        return axios.put(API + "/userstepperdata", {userId, initHomeScreen, initCardAssociation, initPrePlay, initPlayGame, prePlayHint, prePlayData})
+        return axios.put(API + "/userstepperdata", { userId, initHomeScreen, initCardAssociation, initPrePlay, initPlayGame, prePlayHint, prePlayData })
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
 /**
  * UPDATE STEPPER DATAS
@@ -151,144 +151,144 @@ const saveUserStepperData = async({userId, initHomeScreen = true, initCardAssoci
  */
 
 
-const updateInitCardAssociation = async({userId, initCardAssociation}) => {
+const updateInitCardAssociation = async ({ userId, initCardAssociation }) => {
     try {
-        return axios.post(`${API}/userstepperdata/${userId}/initCardAssociation`, {initCardAssociation})
+        return axios.post(`${API}/userstepperdata/${userId}/initCardAssociation`, { initCardAssociation })
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
-const updateInitHomeScreen = async({userId, initHomeScreen}) => {
+const updateInitHomeScreen = async ({ userId, initHomeScreen }) => {
     try {
-        return axios.post(`${API}/userstepperdata/${userId}/initHomeScreen`, {initHomeScreen})
+        return axios.post(`${API}/userstepperdata/${userId}/initHomeScreen`, { initHomeScreen })
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
-const updateInitPrePlay = async({userId, initPrePlay}) => {
+const updateInitPrePlay = async ({ userId, initPrePlay }) => {
     try {
-        return axios.post(`${API}/userstepperdata/${userId}/initPrePlay`, {userId, initPrePlay})
+        return axios.post(`${API}/userstepperdata/${userId}/initPrePlay`, { userId, initPrePlay })
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
 
-const updateInitPlayGame = async({userId, initPlayGame}) => {
+const updateInitPlayGame = async ({ userId, initPlayGame }) => {
     try {
-        return axios.post(`${API}/userstepperdata/${userId}/initPlayGame`, {initPlayGame})
+        return axios.post(`${API}/userstepperdata/${userId}/initPlayGame`, { initPlayGame })
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
 
-const updatePrePlayHint = async({userId, prePlayHint}) => {
+const updatePrePlayHint = async ({ userId, prePlayHint }) => {
     try {
-        return axios.post(`${API}/userstepperdata/${userId}/prePlayHint`, {prePlayHint})
+        return axios.post(`${API}/userstepperdata/${userId}/prePlayHint`, { prePlayHint })
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
-const updatePrePlayData = async({userId, prePlayData}) => {
+const updatePrePlayData = async ({ userId, prePlayData }) => {
     try {
-        return axios.post(`${API}/userstepperdata/${userId}/prePlayData`, {prePlayData})
+        return axios.post(`${API}/userstepperdata/${userId}/prePlayData`, { prePlayData })
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
 
-const getUserFamillyProgressData = async(userId) => {
+const getUserFamillyProgressData = async (userId) => {
     try {
         return axios.get(API + "/userfamillyprogress/" + userId);
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
-const saveUserFamillyProgressData = async(userId) => {
+const saveUserFamillyProgressData = async (userId) => {
     try {
-        const famillyProgressObj = 
-            {   
-                "coeur": {
-                    "eightFirstCardFilled": false,
-                    "allCardFilled": false
-                },
-                "carreau": {
-                    "eightFirstCardFilled": undefined,
-                    "allCardFilled": undefined
-                },
-                "trefle": {
-                    "eightFirstCardFilled": undefined,
-                    "allCardFilled": undefined
-                },          
-                "pique": {
-                    "eightFirstCardFilled": undefined,
-                    "allCardFilled": undefined
-                },
-            };
-            const famillyProgress = JSON.stringify(famillyProgressObj);
-            console.log({userId, famillyProgress});
-            return axios.put(API + "/userfamillyprogress", {userId, famillyProgress})
+        const famillyProgressObj =
+        {
+            "coeur": {
+                "eightFirstCardFilled": false,
+                "allCardFilled": false
+            },
+            "carreau": {
+                "eightFirstCardFilled": undefined,
+                "allCardFilled": undefined
+            },
+            "trefle": {
+                "eightFirstCardFilled": undefined,
+                "allCardFilled": undefined
+            },
+            "pique": {
+                "eightFirstCardFilled": undefined,
+                "allCardFilled": undefined
+            },
+        };
+        const famillyProgress = JSON.stringify(famillyProgressObj);
+        console.log({ userId, famillyProgress });
+        return axios.put(API + "/userfamillyprogress", { userId, famillyProgress })
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
-const saveUserFamillyProgressDataFromLocal = async({userId, famillyProgress}) => {
+const saveUserFamillyProgressDataFromLocal = async ({ userId, famillyProgress }) => {
     try {
-        return axios.put(API + "/userfamillyprogress", {userId, famillyProgress})
+        return axios.put(API + "/userfamillyprogress", { userId, famillyProgress })
     } catch (error) {
         console.error("ERREUR", error);
     }
-        
+
 }
 
-const updateUserFamillyProgress = async(userId, famillyProgressIn, famillyCard, stringTypeCardFilled, flagFamillyRemplie) => {
-    try{
-        let famillyProgress = {...famillyProgressIn};
-        if(famillyCard === "carreau") {
+const updateUserFamillyProgress = async (userId, famillyProgressIn, famillyCard, stringTypeCardFilled, flagFamillyRemplie) => {
+    try {
+        let famillyProgress = { ...famillyProgressIn };
+        if (famillyCard === "carreau") {
             famillyProgress.carreau[stringTypeCardFilled] = flagFamillyRemplie;
         }
-        if(famillyCard === "coeur") {
+        if (famillyCard === "coeur") {
             famillyProgress.coeur[stringTypeCardFilled] = flagFamillyRemplie;
         }
-        if(famillyCard === "trefle") {
+        if (famillyCard === "trefle") {
             famillyProgress.trefle[stringTypeCardFilled] = flagFamillyRemplie;
         }
-        if(famillyCard === "pique") {
+        if (famillyCard === "pique") {
             famillyProgress.pique[stringTypeCardFilled] = flagFamillyRemplie;
         }
         const jsonValue = JSON.stringify(famillyProgress);
-        return axios.post(`${API}/userfamillyprogress/${userId}`, {famillyProgress: jsonValue})
+        return axios.post(`${API}/userfamillyprogress/${userId}`, { famillyProgress: jsonValue })
 
-    } catch(e){
+    } catch (e) {
         console.log(e);
     }
 }
 
-const getUserRankAndNumberUsers = async(userId) => {
-    try{
+const getUserRankAndNumberUsers = async (userId) => {
+    try {
         return axios.get(`${API}/users/${userId}/rank`);
     } catch (error) {
         console.error("Erreur à la récupération du rank de l'user " + userId);
     }
 }
 
-const saveProgressionTime = async({userId, typePlay, time, datePlayed, errorNumber = 0}) => {
-    try{
-        return axios.put(`${API}/userplayhistory/`, {userId, typePlay, time, datePlayed, errorNumber});
+const saveProgressionTime = async ({ userId, typePlay, time, datePlayed, errorNumber = 0 }) => {
+    try {
+        return axios.put(`${API}/userplayhistory/`, { userId, typePlay, time, datePlayed, errorNumber });
     } catch (error) {
         console.error("Erreur à la sauvegarde du temps de l'user" + userId);
     }
 }
 
-const getProgressionTime = async(userId) => {
-    try{
+const getProgressionTime = async (userId) => {
+    try {
         return axios.get(`${API}/userplayhistory/${userId}`);
     } catch (error) {
         console.error("Erreur à la récupération des temps de l'user " + userId);
@@ -296,30 +296,30 @@ const getProgressionTime = async(userId) => {
 }
 
 
-const getListOfRewards = async() => {
-    try{
+const getListOfRewards = async () => {
+    try {
         return axios.get(`${API}/progresspointdata`);
     } catch (error) {
         console.error("Erreur à la récupération des temps de l'user " + userId);
     }
 }
-const getRewardsData = async() => {
-    try{
+const getRewardsData = async () => {
+    try {
         return axios.get(`${API}/rewardsdata`);
     } catch (error) {
         console.error("Erreur à la récupération des temps de l'user " + userId);
     }
 }
 
-const getUserFriends = async(userId, state="VALIDATED") => {
-    try{
+const getUserFriends = async (userId, state = "VALIDATED") => {
+    try {
         return axios.get(`${API}/userfriends/${userId}/state/${state}`);
     } catch (error) {
         console.error("Erreur à la récupération de la liste des amis de l'user " + userId);
     }
 }
 
-const getNbNotifs = async(userId) => {
+const getNbNotifs = async (userId) => {
     let nbNotif = 0;
     const friendsNotifs = await getFriendsWhoAddedCurrentUser(userId, "WAITING");
     const groupNotifs = await CommunityService.getWaitingGroupsFromCurrentUser(userId);
@@ -327,60 +327,60 @@ const getNbNotifs = async(userId) => {
     return nbNotif;
 }
 
-const getFriendsWhoAddedCurrentUser = async(userId, state="VALIDATED") => {
-    try{
+const getFriendsWhoAddedCurrentUser = async (userId, state = "VALIDATED") => {
+    try {
         return axios.get(`${API}/userfriends/addedUser/${userId}/state/${state}`);
     } catch (error) {
         console.error("Erreur à la récupération de la liste d'attente d'amis de l'user " + userId);
     }
 }
 
-const verifyFriend = async(userId, userFriendId) => {
-    try{
+const verifyFriend = async (userId, userFriendId) => {
+    try {
         return axios.get(`${API}/userfriends/${userId}/verify/${userFriendId}`);
     } catch (error) {
-        console.error("Erreur à la récupération de l'ami "+ userFriendId +" de l'user " + userId);
+        console.error("Erreur à la récupération de l'ami " + userFriendId + " de l'user " + userId);
     }
 }
-const verifyFriendWhoWantToBeAdded = async(userId, userFriendId) => {
-    try{
+const verifyFriendWhoWantToBeAdded = async (userId, userFriendId) => {
+    try {
         return axios.get(`${API}/userfriends/addedUser/${userId}/verify/${userFriendId}`);
     } catch (error) {
-        console.error("Erreur à la récupération de la vérification de l'ajout de l'ami "+ userFriendId +" pour l'user " + userId);
+        console.error("Erreur à la récupération de la vérification de l'ajout de l'ami " + userFriendId + " pour l'user " + userId);
     }
 }
-const addFriendRequest = async(userId, userFriendId) => {
-    try{
+const addFriendRequest = async (userId, userFriendId) => {
+    try {
         return axios.put(`${API}/userfriends/${userId}/add/${userFriendId}`);
     } catch (error) {
         console.error("Erreur à l'ajout d'amis de l'user " + userId);
     }
 }
 
-const validateFriendRequest = async(userId, userFriendId) => {
-    try{
+const validateFriendRequest = async (userId, userFriendId) => {
+    try {
         return axios.post(`${API}/userfriends/${userId}/update/${userFriendId}`);
     } catch (error) {
         console.error("Erreur à la validation d'ajout d'amis de l'user " + userId);
     }
 }
-const rejectOrDeleteFriend = async(userId, userFriendId) => {
-    try{
+const rejectOrDeleteFriend = async (userId, userFriendId) => {
+    try {
         return axios.delete(`${API}/userfriends/${userId}/delete/${userFriendId}`);
     } catch (error) {
         console.error("Erreur à la suppression d'un ami de l'user " + userId);
     }
 }
-const rejectOrDeleteFriendById = async(friendLineId) => {
-    try{
+const rejectOrDeleteFriendById = async (friendLineId) => {
+    try {
         return axios.delete(`${API}/userfriends/byId/${friendLineId}`);
     } catch (error) {
         console.error("Erreur à la suppression d'un ami de l'user à la ligne" + friendLineId);
     }
 }
 
-const clearAll = async(userId) => {
-    try{
+const clearAll = async (userId) => {
+    try {
 
     } catch (error) {
         console.error("Erreur à la réinitialisation complète des données de l'user" + userId);
