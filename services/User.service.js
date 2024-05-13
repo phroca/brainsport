@@ -7,7 +7,9 @@ const API = "http://13.38.100.228:3000";
 const headers = { headers: { 'Content-Type': 'application/json' } };
 
 
-
+const showAPIURL = () => {
+    return API;
+}
 
 const getUsersByChar = async (char) => {
     try {
@@ -425,7 +427,8 @@ const UserService = {
     validateFriendRequest,
     rejectOrDeleteFriend,
     rejectOrDeleteFriendById,
-    clearAll
+    clearAll,
+    showAPIURL
 }
 
 export default UserService

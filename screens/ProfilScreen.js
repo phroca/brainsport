@@ -4,7 +4,7 @@ import styled from 'styled-components/native';
 import { useFocusEffect } from '@react-navigation/native';
 import CardService from '../services/Card.service';
 import Toast from 'react-native-toast-message';
-import { Auth } from 'aws-amplify';
+import { Auth, toast } from 'aws-amplify';
 import { Ionicons } from '@expo/vector-icons';
 import CheckBox from "../components/CheckBox";
 import UserService from "../services/User.service";
@@ -396,6 +396,16 @@ const ProfilScreen = ({ navigation }) => {
       }
     });
   }
+
+  const handleShowURLAPI = () => {
+    const APIURL = UserService.showAPIURL();
+    Toast.show({
+      type: 'success',
+      text1: 'API URL',
+      text2: "" + APIURL
+    });
+  }
+
   return (
     <Container source={require("../assets/brainsport-bg.png")}>
       <SafeAreaView>
@@ -564,6 +574,11 @@ const ProfilScreen = ({ navigation }) => {
             <TouchableOpacity onPress={() => handleReinit()}>
               <ButtonView>
                 <ButtonText>Tout Reinitialiser</ButtonText>
+              </ButtonView>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleShowURLAPI()}>
+              <ButtonView>
+                <ButtonText>Dev : API</ButtonText>
               </ButtonView>
             </TouchableOpacity>
             {/* <TouchableOpacity onPress={()=> handleInsertDataToLocalStorage()}>
