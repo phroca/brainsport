@@ -249,10 +249,10 @@ const HomeScreenPreplay = (props) => {
       setUsername(user?.attributes?.given_name);
       setUserId(user?.attributes?.sub);
       dispatch(updateUser({ userId: user?.attributes?.sub }));
-      UserService.getUserByUserId(user?.attributes?.sub).then((value) => {
-        if (value?.data.length < 1) {
+      UserService.fetchGetUserByUserID(user?.attributes?.sub).then(response => response.json()).then((value) => {
+        if (value?.length < 1) {
           UserService.saveUser({ userId: user?.attributes?.sub, email: user?.attributes?.email, firstName: user?.attributes?.given_name, lastName: user?.attributes?.family_name }).then((value) => {
-            if (value.data) {
+            if (value) {
               console.log("first synchro done.");
             }
           }).catch((error) => {

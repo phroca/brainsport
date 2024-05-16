@@ -70,6 +70,21 @@ const getUserByUserId = async (userId) => {
     }
 }
 
+const fetchGetUserByUserID = async (userId) => {
+    const options = {
+        method: 'GET',
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        }
+    }
+    try {
+        return fetch(API + "/users/" + userId, options);
+    } catch (error) {
+        console.error("ERREUR", error)
+    }
+}
+
 
 const getDataCard = async (userId) => {
     try {
@@ -428,7 +443,8 @@ const UserService = {
     rejectOrDeleteFriend,
     rejectOrDeleteFriendById,
     clearAll,
-    showAPIURL
+    showAPIURL,
+    fetchGetUserByUserID
 }
 
 export default UserService
