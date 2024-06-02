@@ -2,7 +2,7 @@ import cardStructure from "../card-structure.json"
 import axios from 'axios';
 import CommunityService from "./Community.service";
 
-const API = "http://13.38.100.228:3000";
+const API = "https://back.brainsport.xyz";
 //const API = "http://192.168.1.19:3000";
 const headers = { headers: { 'Content-Type': 'application/json' } };
 
