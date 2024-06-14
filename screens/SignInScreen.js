@@ -45,11 +45,11 @@ const BrainsportIconText = styled.Image`
 const TextInput = styled.TextInput`
   border: 1px solid #53565f;
   width: ${widthContent}px;
-  height: 60px;
+  height: 55px;
   border-radius: 10px;
   font-size: 17px;
   color: #FFFFFF;
-  padding-left: 120px;
+  padding-left: 40px;
   padding-right: 8px;
   margin-top: 20px;
   background: #3c4560;
@@ -58,11 +58,11 @@ const TextInput = styled.TextInput`
 const TextInputPass = styled.TextInput`
   border: 1px solid #53565f;
   width: ${widthContent}px;
-  height: 60px;
+  height: 55px;
   border-radius: 10px;
   font-size: 17px;
   color: #FFFFFF;
-  padding-left: 120px;
+  padding-left: 40px;
   padding-right: 40px;
   margin-top: 20px;
   background: #3c4560;
@@ -138,11 +138,11 @@ const ButtonTextLink = styled.Text`
 
 const PreText = styled.Text`
 color: #FFFFFF;
-  width: 100px;
+  width: 24px;
   height: 24px;
   font-size: 14px;
   position: absolute;
-  top: 40px;
+  top: 35px;
   left: 10px;
   z-index: 2;
 `;
@@ -244,13 +244,13 @@ const SignInScreen = ({ navigation }) => {
         <SigninForm >
           <TouchableWithoutFeedback onPress={() => handleFocusEmail()}>
             <InputContainer >
-              <PreText>Email</PreText>
+              <PreText><Ionicons name="mail-outline" size={24} color="#FFFFFF" /></PreText>
               <TextInput ref={refEmail} keyboardType="email-address" onChangeText={(e) => setEmail(e)} />
             </InputContainer>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback onPress={() => handleFocusPassword()}>
             <InputContainer>
-              <PreText>Mot de passe</PreText>
+              <PreText><Ionicons name="lock-closed" size={24} color="#FFFFFF" /></PreText>
               <TextInputPass ref={refPassword} secureTextEntry={!showPass} onChangeText={(p) => setPassword(p)} />
               <PostIcon>
                 <TouchableOpacity onPress={() => setShowPass(pass => !pass)}>

@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
-const widthContent = screenWidth  - 50;
+const widthContent = screenWidth - 50;
 
 const PromptModal = styled.Modal`
     
@@ -66,7 +66,7 @@ const PromptContentButtonChoicesContainer = styled.View`
 `;
 const PromptContentButton = styled.View`
     background: ${props => props.color ? "#A138F2" : "#DADADA"};
-  width: ${widthContent -30}px;
+  width: ${widthContent - 30}px;
   height: 50px;
   justify-content: center;
   align-items: center;
@@ -114,7 +114,7 @@ const GameChoicePrompt = (props, ref) => {
     const informationDataCard = props?.informationDataCard;
 
     useEffect(() => {
-        if(ref) {
+        if (ref) {
             ref.current = {
                 setVisible: _setVisible
             }
@@ -122,7 +122,7 @@ const GameChoicePrompt = (props, ref) => {
     }, [ref]);
 
     useEffect(() => {
-        if(_visible) {
+        if (_visible) {
             setVisible(true);
             Animated.timing(
                 animValue,
@@ -151,7 +151,7 @@ const GameChoicePrompt = (props, ref) => {
                 inputRange: [0, 1],
                 outputRange: [500, 0]
             })
-            }   
+        }
         ]
     }
 
@@ -190,14 +190,14 @@ const GameChoicePrompt = (props, ref) => {
         let colorChosen = "";
         let shuffledArrayforPlayGame = [];
         const cardCopyToShuffle = JSON.parse(JSON.stringify(userCardSaved));
-        shuffledArrayforPlayGame = cardCopyToShuffle.sort((a, b) => 0.5 - Math.random()).slice(0,informationDataCard.numberCardToPlayForHistory);
+        shuffledArrayforPlayGame = cardCopyToShuffle.sort((a, b) => 0.5 - Math.random()).slice(0, informationDataCard.numberCardToPlayForHistory);
         handleCloseModal();
-        props.navigation.push("PlayPregame", {userCards: shuffledArrayforPlayGame});
+        props.navigation.push("PlayPregame", { userCards: shuffledArrayforPlayGame });
     }
     return (
         <Modal visible={visible} transparent={true}>
             <PromptContainer>
-                <Animatedbackdrop style={{opacity: animValue}}/>
+                <Animatedbackdrop style={{ opacity: animValue }} />
                 <AnimatedPromptContentContainer style={[interpolateTranslation]}>
                     <Header>
                         <CloseButton>
@@ -207,19 +207,19 @@ const GameChoicePrompt = (props, ref) => {
                         </CloseButton>
                     </Header>
                     <PromptContentHeaderContainer>
-                    <PromptContentTitle>
-                        Vous avez enregistré {informationDataCard.cardDoneLength} cartes. Vous pouvez commencer à vous entrainer.
-                    </PromptContentTitle>
+                        <PromptContentTitle>
+                            Vous avez enregistré {informationDataCard.cardDoneLength} cartes. Vous pouvez commencer à vous entrainer.
+                        </PromptContentTitle>
                     </PromptContentHeaderContainer>
-                    
+
                     <PromptContentButtonValidateContainer>
-                    <TouchableOpacity onPress={() =>handlePlayGame()}>
-                        <PromptContentButtonValidate color={true}>
-                            <PromptContentButtonValidateText color={true}>
-                                    Créer vos histoire avec {informationDataCard.cardDoneLength} cartes
-                            </PromptContentButtonValidateText>
-                        </PromptContentButtonValidate>
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handlePlayGame()}>
+                            <PromptContentButtonValidate color={true}>
+                                <PromptContentButtonValidateText color={true}>
+                                    Créer vos histoires avec {informationDataCard.cardDoneLength} cartes
+                                </PromptContentButtonValidateText>
+                            </PromptContentButtonValidate>
+                        </TouchableOpacity>
                     </PromptContentButtonValidateContainer>
                 </AnimatedPromptContentContainer>
             </PromptContainer>

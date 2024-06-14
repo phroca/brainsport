@@ -676,11 +676,11 @@ const HomeScreenPreplay = (props) => {
                 order={3}
                 name="train">
                 <WalkthroughableButton color={checkAbleToTrain()}>
-                  <ButtonTextGame color={checkAbleToTrain()}>Créer vos histoires</ButtonTextGame>
+                  <ButtonTextGame color={checkAbleToTrain()}>Commencer à jouer</ButtonTextGame>
                 </WalkthroughableButton>
               </CopilotStep>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => checkAbleToLearnAll() && handleGoToMainHome()}>
+            {/* <TouchableOpacity onPress={() => checkAbleToLearnAll() && handleGoToMainHome()}>
               <CopilotStep
                 text="Lorsque vous aurez rempli toutes vos familles et retenus toutes vos cartes, vous pourrez débloquer la dernière étape ! C'est parti !"
                 order={4}
@@ -689,7 +689,7 @@ const HomeScreenPreplay = (props) => {
                   <ButtonTextTab color={checkAbleToLearnAll()}>Apprendre le tableau</ButtonTextTab>
                 </WalkthroughableButton>
               </CopilotStep>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </HomeReplayButton>
         </ScrollView>
         <GameChoicePrompt ref={promptGameRef} userCardSaved={userCardSaved} informationDataCard={informationDataCard} navigation={props.navigation} />

@@ -576,12 +576,12 @@ const ProfilScreen = ({ navigation }) => {
                 <ButtonText>Tout Reinitialiser</ButtonText>
               </ButtonView>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleShowURLAPI()}>
+            {/*<TouchableOpacity onPress={() => handleShowURLAPI()}>
               <ButtonView>
                 <ButtonText>Dev : API</ButtonText>
               </ButtonView>
             </TouchableOpacity>
-            {/* <TouchableOpacity onPress={()=> handleInsertDataToLocalStorage()}>
+            <TouchableOpacity onPress={()=> handleInsertDataToLocalStorage()}>
               <ButtonView>
                 <ButtonText>Generer donnees fictives</ButtonText>
               </ButtonView>
