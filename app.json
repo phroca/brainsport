@@ -20,7 +20,7 @@
         "ios": {
             "supportsTablet": true,
             "bundleIdentifier": "com.irocap.brainsport",
-            "buildNumber": "4",
+            "buildNumber": "5",
             "infoPlist": {
                 "NSPhotoLibraryUsageDescription": "Cette application requiert l'autorisation d'accès à la bibliothèque photo de l'utilisateur.",
                 "NSSpeechRecognitionUsageDescription": "Cette application requiert l'autorisation d'accès à la reconnaissance vocale de l'appareil de l'utilisateur.",
