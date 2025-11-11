@@ -79,6 +79,9 @@
       ],
       [
         "./native-config/android-manifest.plugin.js"
+      ],
+      [
+        "./native-config/androidx-fix.plugin.js"
       ]
     ]
   }
