@@ -35,7 +35,18 @@
                 "image": "latest"
             }
         },
-        "production": {}
+        "preview-android": {
+            "android": {
+                "image": "latest"
+            }
+        },
+        "production": {
+            "android": {
+                "buildType": "apk",
+                "image": "latest",
+                "gradleCommand": "assembleRelease"
+            }
+        }
     },
     "submit": {
         "production": {}
