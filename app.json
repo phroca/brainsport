@@ -1,70 +1,72 @@
 {
-    "expo": {
-        "name": "brainsport",
-        "slug": "brainsport",
-        "version": "0.0.17",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "userInterfaceStyle": "light",
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#000000"
+  "expo": {
+    "name": "brainsport",
+    "slug": "brainsport",
+    "version": "0.0.2",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.irocap.brainsport",
+      "buildNumber": "7",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Cette application requiert l'autorisation d'accès à la bibliothèque photo de l'utilisateur.",
+        "NSSpeechRecognitionUsageDescription": "Cette application requiert l'autorisation d'accès à la reconnaissance vocale de l'appareil de l'utilisateur.",
+        "NSMicrophoneUsageDescription": "Cette application requiert l'autorisation d'accès au microphone de l'appareil de l'utilisateur.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "versionCode": 7,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.DETECT_SCREEN_CAPTURE"
+      ],
+      "intentFilters": [
+        {
+          "action": "android.speech.RecognitionService"
         },
-        "updates": {
-            "fallbackToCacheTimeout": 0
-        },
-        "assetBundlePatterns": [
-            "**/*"
-        ],
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "com.irocap.brainsport",
-            "buildNumber": "6",
-            "infoPlist": {
-                "NSPhotoLibraryUsageDescription": "Cette application requiert l'autorisation d'accès à la bibliothèque photo de l'utilisateur.",
-                "NSSpeechRecognitionUsageDescription": "Cette application requiert l'autorisation d'accès à la reconnaissance vocale de l'appareil de l'utilisateur.",
-                "NSMicrophoneUsageDescription": "Cette application requiert l'autorisation d'accès au microphone de l'appareil de l'utilisateur."
-            }
-        },
-        "android": {
-            "versionCode": 6,
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#000000"
-            },
-            "permissions": [
-                "android.permission.RECORD_AUDIO"
-            ],
-            "intentFilters": [
-                {
-                    "action": "android.speech.RecognitionService"
-                },
-                {
-                    "action": "android.speech.SpeechRecognizer"
-                }
-            ],
-            "package": "com.irocap.brainsport"
-        },
-        "web": {
-            "favicon": "./assets/favicon.png"
-        },
-        "extra": {
-            "eas": {
-                "projectId": "77686e4a-6456-4620-b8ad-baf81be012d5"
-            }
-        },
-        "plugins": [
-            [
-                "@react-native-voice/voice",
-                {
-                    "microphonePermission": "Cette application requiert l'autorisation d'accès au microphone de l'appareil de l'utilisateur.",
-                    "speechRecognitionPermission": "Cette application requiert l'autorisation d'accès à la reconnaissance vocale de l'appareil de l'utilisateur."
-                }
-            ],
-            [
-                "./native-config/android-manifest.plugin.js"
-            ]
-        ]
-    }
+        {
+          "action": "android.speech.SpeechRecognizer"
+        }
+      ],
+      "package": "com.irocap.brainsport"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "77686e4a-6456-4620-b8ad-baf81be012d5"
+      }
+    },
+    "plugins": [
+      [
+        "@react-native-voice/voice",
+        {
+          "microphonePermission": "Cette application requiert l'autorisation d'accès au microphone de l'appareil de l'utilisateur.",
+          "speechRecognitionPermission": "Cette application requiert l'autorisation d'accès à la reconnaissance vocale de l'appareil de l'utilisateur."
+        }
+      ],
+      [
+        "./native-config/android-manifest.plugin.js"
+      ]
+    ]
+  }
 }
